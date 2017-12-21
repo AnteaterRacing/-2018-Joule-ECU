@@ -1,0 +1,15 @@
+"./src/main.o"
+"./src/clocks.o"
+"./src/UART.o"
+"./src/ADC.o"
+"./Project_Settings/Startup_Code/system_SKEAZ1284.o"
+"./Project_Settings/Startup_Code/startup_SKEAZ1284.o"
+-T
+"C:/Users/arnav/workspaceS32DS.ARM/UART/Project_Settings/Linker_Files/SKEAZ_flash.ld"
+-Wl,-Map,"UART.map"
+-Xlinker
+--gc-sections
+-mcpu=cortex-m0plus
+-mthumb
+-specs=ewl_c_noio.specs
+--sysroot="C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2"
