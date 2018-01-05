@@ -11,14 +11,14 @@
 //initializes GPIO for the ECU as well as all of the communication interfaces
 //TODO
 void init_ECU();
-
-//also waits for the start sequence before sending the ready to drive signal
-//TODO
-void wait_for_start_seq();
-
 void init_IRQs(void);
 void init_PIT(void);
 void PIT_CH0_IRQHandler(void);
+
+//initializing PWM pins, timers, and interrupts
+//TODO
+void init_PWM();
+
 
 
 #endif /* ECU_INIT_H_ */
