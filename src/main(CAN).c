@@ -53,15 +53,25 @@ int main(void)
 
     uint8 ZevaDataRX[9] = {8, 0, 0, 0, 0, 0, 0, 0, 0}; //ID: 50, 53
     uint8 ZevaDataTX[9] = {8, 0, 0, 0, 0, 0, 0, 0, 0}; //ID: 51, 52
+    //The following bytes are for Zeva Status (RX)
+    //Byte1: Defines controller type MC600C. Let Byte1 = 1
+    //Byte2: Battery voltage V
+    //Byte3: Battery current A (5x)
+    //Byte4: Motor voltage V
+    //Byte5: Motor current A (5x)
+    //Byte6: Internal temp C
+    //Byte7: Throttle level %
+    //Byte8: Output to power stage (0-255)
+    //additional info and error codes found in http://evwest.com/support/MC600C_Manual.pdf (page 11)
+    
     uint8 OrionDataRX[9] = {5, 0, 0, 0, 0, 0};  //ID: 0x7EB (this can be changed in BMS configuration)
     uint8 OrionDataTX[5] = {4, 0, 0, 0, 0};     //ID: 0x7E3
     //Orion BMS will need to be configured to a baud rate of 125 kbps, and transmit data periodically.
-    //Have BMS transmit data periodically, requesting of data (data polling) is not recommended(???)
+    //Configure BMS to transmit data periodically.
+    //PID: https://www.orionbms.com/downloads/misc/orionbms_obd2_pids.pdf
     //Only one device may request data at a time, multiple devices requesting data from BMS may incur collision
     //BMS default ID: 0x7E3. this can be changed within the configuration settings
     //Multiple requests before a response may be rejected
-
-
 
     err_status = Config_CAN_MB(0, 0, TXDF, 1); //General TX buffer
     err_status = Config_CAN_MB(0, 1, TXDF, 1); //General TX buffer
@@ -79,7 +89,7 @@ int main(void)
 
     while((CAN_status[0] & SYNCH) == 0) // || (syncCounter >= 255))
     {
-        err_status = Check_CAN_Status(0, CAN_status);
+        err_status = Check_CAN_Status(0, CAN_status); //
         UART_Val[0] = 1;
     }
 
@@ -142,10 +152,22 @@ int main(void)
         dataTX[5] = 1;
         dataTX[9] = 10;
         //end
-
-
-
-
+        
+         /*
+         * retrieve_data_from_peripherals(arg1, arg2, arg3, ..., arg_n)
+         * {
+         *      if(arg1, arg2, arg3, ..., arg_n == newValue)
+         *      {
+         *          newDataFlag == true;
+         *          pass_into_Data_TX(arg1, arg2, arg3, ..., arg_n);
+         *      }
+         *
+         *      else
+         *      {
+         *          newDataFlag == false;
+         *      }
+         * }
+         */
 
         //check if dataTX needs to be transmitted/updated
         for(i = 1; i < 9; i++)
@@ -181,38 +203,11 @@ int main(void)
             }
         }
 
-
-
-
-
         //reset values
         dataTX[9] = {9, 0, 0, 0, 0, 0, 0, 0, 0};
         OrionDataRX[5] = {4, 0, 0, 0, 0};
         flag = 0;
         UART_Val = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-
-
-
-
-
-
-        /*
-         * retrieve_data_from_peripherals(arg1, arg2, arg3, ..., arg_n)
-         * {
-         *      if(arg1, arg2, arg3, ..., arg_n == newValue)
-         *      {
-         *          newDataFlag == true;
-         *          pass_into_Data_TX(arg1, arg2, arg3, ..., arg_n);
-         *      }
-         *
-         *      else
-         *      {
-         *          newDataFlag == false;
-         *      }
-         * }
-
-
-
 
     }
 
