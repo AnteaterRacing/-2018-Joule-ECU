@@ -11,18 +11,21 @@ uint16_t PriorCaptureVal = 0;
 uint16_t DeltaCapture = 0;
 
 void init_FTM(void) {
-  SIM_SCGC |= SIM_SCGC_FTM2_MASK; /* Sys Clk Gate Ctrl: enable bus clock to FTM2 */
+SIM_SCGC |= SIM_SCGC_FTM2_MASK; 	/* Sys Clk Gate Ctrl: enable bus clock to FTM2 */
 
-                         /* FTM2 module settings for desired channel modes: */
+                         	 	 	/* FTM2 module settings for desired channel modes: */
   FTM2_MODE |= FTM_MODE_WPDIS_MASK; /* Write protect to registers disabled (default) */
-  FTM2_COMBINE = 0x0;    /* DECAPEN (Dual Edge Capture Mode Enable) = 0 (default) */
-                         /* COMBINE (chans n & n+1) = 0 (default; independent chans) */
-  FTM2_SC = 0x00000007;  /* CWMS (Center aligned PWM Select) = 0 (default, up count) */
-                         /* TOIE (Timer Overflow Interrupt Ena) = 0 (default) */
-                         /* CLKS (Clock source) = 0 (default, no clock; FTM disabled) */
-                         /* PS (Prescaler factor) = 7. Prescaler = 2**7 = 128 */
-  FTM2_MOD = 5000; /*mod value to trigger OVF interrupt */
+  FTM2_COMBINE = 0x0;
+  FTM2_SC |= FTM_SC_PS(7);  		/* PS (Prescaler factor) = 7. Prescaler = 2**7 = 128 */
+  FTM2_SC |= FTM_SC_TOIE_MASK; 		//timer overflow interrupt enable
+  FTM2_MOD = 5000; 					/*mod value to trigger OVF interrupt */
 
+  FTM2_C0SC |= FTM_CnSC_MSB_MASK; 	//edge aligned pwm
+  FTM2_C0SC |= FTM_CnSC_ELSB_MASK;	//high true pulses
+  FTM2_C0SC &= ~FTM_CnSC_ELSA_MASK; //high true pulses
+  FTM2_C0SC |= FTM_CnSC_CHIE_MASK; 	//channel interrupt enable
+  FTM2_C0V = 2500; 					//Compare match value
+  FTM2_SC |= FTM_SC_CLKS(1);  		/* Start FTM2 ctr with clk source TIMER_CLK (20 MHz)*/
 }
 
 void init_FTM2_ch5_IC(void) {
@@ -33,10 +36,6 @@ void init_FTM2_ch5_IC(void) {
   SIM_PINSEL1 &= ~SIM_PINSEL1_FTM2PS5_MASK; /* Use default pad PTB5 */
 }
 
-void start_FTM_counters (void) {
-  FTM1_SC |= FTM_SC_CLKS(2);  /* Start FTM1 ctr with clk source ICSFFCLK (31.25 KHz) */
-  FTM2_SC |= FTM_SC_CLKS(1);  /* Start FTM2 ctr with clk source TIMER_CLK (20 MHz)*/
-}
 
 void output_compare_FTM2_ch1() {
   if (1==((FTM2_C1SC & FTM_CnSC_CHF_MASK)>>FTM_CnSC_CHF_SHIFT)) { /* If chan flag is set */

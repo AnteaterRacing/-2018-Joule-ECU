@@ -18,6 +18,13 @@
 
 int pit0_flag_counter = 0;      /* Counter for PIT0 timer expirations */
 
+
+void init_IRQs (void) {
+  NVIC_ClearPendingIRQ(FTM2_IRQn);  /* Clear any Pending IRQ for all PIT ch0 (#22) */
+  NVIC_EnableIRQ(FTM2_IRQn);        /* Set Enable IRQ for PIT_CH0 */
+  NVIC_SetPriority(FTM2_IRQn,0);    /* Set Priority for PIT_CH0 */
+}
+
 //enabling PIT and interrupt
 void init_PIT(void) {
   SIM_SCGC |= SIM_SCGC_PIT_MASK;     /* Enable bus clock to PIT module */
@@ -40,6 +47,11 @@ void PIT_CH0_IRQHandler (void) {
   PIT_TFLG0 |= PIT_TFLG_TIF_MASK; /* Clear PIT0 flag */
 }
 
+//FTM2 IRQ handler
+void FTM2_IRQHandler(void){
+	//if compare flag or overflow, toggle output pins.
+}
+
 //TODO
 void init_ECU(){
 
@@ -54,7 +66,6 @@ void init_ECU(){
 	//Initialize PWM and clocks
 	init_clks_FEE_40MHz();        /* KEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
 	init_FTM ();  	            /* Enable bus clock to FTM1,2 prescaled by 128 */
-	start_FTM_counters();
 
 }
 
