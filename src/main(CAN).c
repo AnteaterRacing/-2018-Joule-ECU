@@ -147,10 +147,26 @@ int main(void)
             UART_Val[6] = 1;
         }
 
+        //checks test cases from previous transmit
+        if(dataRX_BUF4[5] == 1 && dataRX_BUF4[9] == 10)
+        {
+            UART_Val[9] = 1;
+        }
+        /*
+        if(dataRX_BUF4[6] == 1 && dataRX_BUF4[7] == 10)
+        {
+            UART_Val[9] = 1;
+        }
+        */
+        
         //add test cases for dataTX below
         //start
         dataTX[5] = 1;
         dataTX[9] = 10;
+        /*
+        dataTX[6] = 1;
+        dataTX[7] = 10;
+        */
         //end
         
          /*
