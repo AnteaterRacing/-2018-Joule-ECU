@@ -6,9 +6,16 @@
 #ifndef ADC_H_
 #define ADC_H_
 
-void convertAdcChan(uint16_t);
+void ReadAdcBlock(void);
 void init_ADC(void);
-uint8_t adc_complete(void);
-uint32_t read_adc_chx(void);
+void ADC_Handler(void);
+void ADC_Converter(void);
+
+
+#define ADC_SC1_ADCH0_MASK 0
+#define ADC_SC1_ADCH1_MASK 1
+#define ADC_SC1_ADCH2_MASK 2
+#define ADC_SC1_ADCH4_MASK 4
+#define ADC_SC1_ADCH8_MASK 8
 
 #endif /* ADC_H_ */

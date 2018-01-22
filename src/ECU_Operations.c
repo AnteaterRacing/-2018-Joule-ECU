@@ -72,27 +72,6 @@ int Fault_Not_Resolved(void){
 	return 1;
 }
 
-
-//read ADC values from specified channels (0-3)
-void read_ADC_Values(void){
-	convertAdcChan(0);                 	/* Convert Channel AD1 Pin: J4-13*/
-	while(adc_complete()==0);          /* Wait for conversion complete flag */
-	acc1 = read_adc_chx();     			/* Get channel's conversion results in mv */
-
-	convertAdcChan(1);                 	/* Convert Channel AD2 */
-	while(adc_complete()==0);          /* Wait for conversion complete flag */
-	acc2 = read_adc_chx();     			/* Get channel's conversion results in mv */
-
-	convertAdcChan(2);                 	/* Convert Channel AD3 */
-	while(adc_complete()==0);          /* Wait for conversion complete flag */
-	brakeAngle = read_adc_chx();     	/* Get channel's conversion results in mv */
-
-	convertAdcChan(3);                 	/* Convert Channel AD4*/
-	while(adc_complete()==0);          /* Wait for conversion complete flag */
-	steeringAngle = read_adc_chx();     /* Get channel's conversion results in mv */
-
-}
-
 //sets the throttle value based on the value of acc1
 //this is done by setting the compare match value on the PWM output pin. (0-5000)
 void set_Throttle_Value(void){

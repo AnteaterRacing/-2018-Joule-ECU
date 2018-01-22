@@ -18,6 +18,8 @@
 #define PTH1 25          						/* Port PTH1 output to green LED */
 #define PTH6 30									/* Port PTH6 for throttle output PWM*/
 
+
+//TODO
 int main(void)
 {
 	init_ECU(); 				//initialize ECU and all pins, timers, interrupts, etc.
@@ -38,8 +40,6 @@ int main(void)
 	//this runs continuously once the initialization has completed
 	while(1) {
 		GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1; /* Turn off all LEDs */
-
-		read_ADC_Values(); 			//reading the ADC values from the ADC input pins.
 		print_ECU_Status_UART();
 		//FTM1_C1V = acc1*0.006; //Analog input to PWM led output
 		//FTM2_C0V = FTM_CnV_VAL(acc1);

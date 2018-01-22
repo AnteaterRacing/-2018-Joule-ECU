@@ -1,6 +1,8 @@
 "./src/main.o"
+"./src/main(CAN).o"
 "./src/clocks.o"
 "./src/UART.o"
+"./src/Rear_Input_Scan.o"
 "./src/PWT.o"
 "./src/FTM.o"
 "./src/ECU_Operations.o"

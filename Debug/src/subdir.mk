@@ -11,8 +11,10 @@ C_SRCS_QUOTED += \
 "../src/ECU_Operations.c" \
 "../src/FTM.c" \
 "../src/PWT.c" \
+"../src/Rear_Input_Scan.c" \
 "../src/UART.c" \
 "../src/clocks.c" \
+"../src/main(CAN).c" \
 "../src/main.c" \
 
 C_SRCS += \
@@ -21,8 +23,10 @@ C_SRCS += \
 ../src/ECU_Operations.c \
 ../src/FTM.c \
 ../src/PWT.c \
+../src/Rear_Input_Scan.c \
 ../src/UART.c \
 ../src/clocks.c \
+../src/main(CAN).c \
 ../src/main.c \
 
 OBJS_OS_FORMAT += \
@@ -31,8 +35,10 @@ OBJS_OS_FORMAT += \
 ./src/ECU_Operations.o \
 ./src/FTM.o \
 ./src/PWT.o \
+./src/Rear_Input_Scan.o \
 ./src/UART.o \
 ./src/clocks.o \
+./src/main(CAN).o \
 ./src/main.o \
 
 C_DEPS_QUOTED += \
@@ -41,8 +47,10 @@ C_DEPS_QUOTED += \
 "./src/ECU_Operations.d" \
 "./src/FTM.d" \
 "./src/PWT.d" \
+"./src/Rear_Input_Scan.d" \
 "./src/UART.d" \
 "./src/clocks.d" \
+"./src/main(CAN).d" \
 "./src/main.d" \
 
 OBJS += \
@@ -51,8 +59,10 @@ OBJS += \
 ./src/ECU_Operations.o \
 ./src/FTM.o \
 ./src/PWT.o \
+./src/Rear_Input_Scan.o \
 ./src/UART.o \
 ./src/clocks.o \
+./src/main(CAN).o \
 ./src/main.o \
 
 OBJS_QUOTED += \
@@ -61,8 +71,10 @@ OBJS_QUOTED += \
 "./src/ECU_Operations.o" \
 "./src/FTM.o" \
 "./src/PWT.o" \
+"./src/Rear_Input_Scan.o" \
 "./src/UART.o" \
 "./src/clocks.o" \
+"./src/main(CAN).o" \
 "./src/main.o" \
 
 C_DEPS += \
@@ -71,8 +83,10 @@ C_DEPS += \
 ./src/ECU_Operations.d \
 ./src/FTM.d \
 ./src/PWT.d \
+./src/Rear_Input_Scan.d \
 ./src/UART.d \
 ./src/clocks.d \
+./src/main(CAN).d \
 ./src/main.d \
 
 
@@ -117,9 +131,17 @@ src/PWT.o: ../src/PWT.c
 	@echo 'Finished building: $<'
 	@echo ' '
 
-src/UART.o: ../src/UART.c
+src/Rear_Input_Scan.o: ../src/Rear_Input_Scan.c
 	@echo 'Building file: $<'
 	@echo 'Executing target #8 $<'
+	@echo 'Invoking: Standard S32DS C Compiler'
+	arm-none-eabi-gcc "@src/Rear_Input_Scan.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c -o "src/Rear_Input_Scan.o" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '
+
+src/UART.o: ../src/UART.c
+	@echo 'Building file: $<'
+	@echo 'Executing target #9 $<'
 	@echo 'Invoking: Standard S32DS C Compiler'
 	arm-none-eabi-gcc "@src/UART.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c -o "src/UART.o" "$<"
 	@echo 'Finished building: $<'
@@ -127,15 +149,23 @@ src/UART.o: ../src/UART.c
 
 src/clocks.o: ../src/clocks.c
 	@echo 'Building file: $<'
-	@echo 'Executing target #9 $<'
+	@echo 'Executing target #10 $<'
 	@echo 'Invoking: Standard S32DS C Compiler'
 	arm-none-eabi-gcc "@src/clocks.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c -o "src/clocks.o" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 
+src/main(CAN).o: ../src/main(CAN).c
+	@echo 'Building file: $<'
+	@echo 'Executing target #11 $<'
+	@echo 'Invoking: Standard S32DS C Compiler'
+	arm-none-eabi-gcc "@src/main(CAN).args" -MMD -MP -MF"src/main(CAN).d" -MT"src/main(CAN).d" -c -o "src/main(CAN).o" "$<"
+	@echo 'Finished building: $<'
+	@echo ' '
+
 src/main.o: ../src/main.c
 	@echo 'Building file: $<'
-	@echo 'Executing target #10 $<'
+	@echo 'Executing target #12 $<'
 	@echo 'Invoking: Standard S32DS C Compiler'
 	arm-none-eabi-gcc "@src/main.args" -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@)" -c -o "src/main.o" "$<"
 	@echo 'Finished building: $<'

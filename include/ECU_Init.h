@@ -14,7 +14,7 @@ void init_ECU();
 void init_IRQs(void);
 void init_PIT(void);
 void PIT_CH0_IRQHandler(void);
-
+void FTM2_IRQHandler(void);
 //initializing PWM pins, timers, and interrupts
 //TODO
 void init_PWM();
