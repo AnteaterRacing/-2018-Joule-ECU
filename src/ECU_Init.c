@@ -12,6 +12,7 @@
 #include "FTM.h"
 #include "PWT.h"
 #include "ECU_Init.h"
+#include "Rear_Input_Scan.h"
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
 #define PTH1 25          						/* Port PTH1 output to green LED */
@@ -29,15 +30,10 @@ void init_IRQs (void) {
   NVIC_ClearPendingIRQ(FTM2_IRQn);
   NVIC_EnableIRQ(FTM2_IRQn);			//enable interrupt for FlexTimer2
   NVIC_SetPriority(FTM2_IRQn,0);    	/* Set Priority for FTM2 */
-}
 
-//enabling PIT and interrupt
-void init_PIT(void) {
-  SIM_SCGC |= SIM_SCGC_PIT_MASK;     /* Enable bus clock to PIT module */
-  PIT_MCR = 0x0;                     /* Turn on PIT module, Freeze disabled */
-  PIT_LDVAL0 = 20000000 - 1;         /* PIT0: Load value to count 20M bus clocks */
-  PIT_TCTRL0 |= PIT_TCTRL_TIE_MASK;  /* Enable interrupt */
-  PIT_TCTRL0 |= PIT_TCTRL_TEN_MASK;  /* Enable (start) timer */
+  NVIC_ClearPendingIRQ(ADC0_IRQn);
+  NVIC_EnableIRQ(ADC0_IRQn);
+  NVIC_SetPriority(ADC0_IRQn,0);
 }
 
 //initializing PWM pins, timers, and interrupts
@@ -57,6 +53,7 @@ void init_PWM(void){
 
 //FTM2 IRQ handler. This is called for PWM when interrupts occur
 void FTM2_IRQHandler(void){
+
 	//if overflow flag on ch0, set output high for left motor
 	if(FTM2_SC >> FTM_SC_TOF_SHIFT) {
 		GPIOB_PDOR |= 1<<PTF0; //set output high for left motor
@@ -81,7 +78,7 @@ void init_ECU(){
 	init_ADC(); 	//initialize Analog to Digital Converter Module
 	init_PWM();		//initalize PWM Module and FTM components
 	init_IRQs();	//initializing the interrupt service routines
-	init_PIT();     /* Initialize PIT0: 1 sec timeout, IRQ enabled */
+	init_PIT0();     /* Initialize PIT0: 1 sec timeout, IRQ enabled */
 
 	//Initialize PWM and clocks
 	init_clks_FEE_40MHz();        /* KEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */

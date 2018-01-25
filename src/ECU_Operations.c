@@ -80,7 +80,7 @@ void set_Throttle_Value(void){
 }
 
 //prints out the value of analog inputs and other variables to console with values shown from 0-5V
-//USED FOR DEBUGGING
+//TODO: DELETE. USED FOR DEBUGGING
 void print_ECU_Status_UART(void){
 
 	char c1 = (acc1/1000+48);

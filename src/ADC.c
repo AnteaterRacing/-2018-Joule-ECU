@@ -9,6 +9,9 @@
 #include "ADC.h"
 #include "stdio.h"
 #include "string.h"
+#include "UART.h"
+
+uint16_t ADC_buff[11] = {0};
 
 void init_ADC(void)  {
   SIM_SCGC |= SIM_SCGC_ADC_MASK;		/* Enable bus clock to ADC module */
@@ -32,17 +35,13 @@ void init_ADC(void)  {
 
   ADC_SC1 = 0x0000001F;					/*Disables module to be enabled by specific function*/
 
-
 }
-
-
-uint16_t ADC_buff[11] = {0};
 
 void ReadAdcBlock()
 {
 	if (ADC_buff[0] == 0)
 	{
-		//Dummy the 1st channel = ADC0
+		  //Dummy the 1st channel = ADC0
 		  ADC_SC1 = ADC_SC1_ADCH0_MASK;
 
 		  //Dummy the 2nd channel = ADC1
@@ -56,10 +55,8 @@ void ReadAdcBlock()
 
 		  //Dummy the 5th channel = ADC4 & Interrupt
 		  ADC_SC1 = ADC_SC1_ADCH4_MASK | ADC_SC1_AIEN_MASK;
-
-
 	}
-	if (ADC_buff[0] == 1)
+	if (ADC_buff [0] == 1)
 	{
 		  //Dummy the 1st channel = ADC5
 		  ADC_SC1 = ADC_SC1_ADCH4_MASK | ADC_SC1_ADCH1_MASK;
@@ -77,15 +74,14 @@ void ReadAdcBlock()
 		  ADC_SC1 = ADC_SC1_ADCH8_MASK | ADC_SC1_ADCH1_MASK | ADC_SC1_AIEN_MASK;
 
 	}
+
 	return;
 }
-void ADC_IRQHandler(void)
-{
-	ADC_Handler();
-}
 
-void ADC_Handler()
+
+void ADC0_IRQHandler(void)
 {
+
 	if (ADC_buff [0] == 0)
 	{
 		ADC_buff[0] = 1;        // set block indicator so we can evaluate the next block
@@ -111,6 +107,14 @@ void ADC_Handler()
 		ADC_SC1 = 0x0000001F;	// Disable module until called again
 
 		ADC_Converter();		// Converts buff from bits to mV
+		//FTM2_C0V = ADC_buff[1];
+		transmit_string("ADC");
+		transmit_char(ADC_buff[1]/1000 + 48);
+		transmit_char(ADC_buff[2]/1000 + 48);
+		transmit_char(ADC_buff[3]/1000 + 48);
+		transmit_char(ADC_buff[4]/1000 + 48);
+		transmit_char(ADC_buff[5]/1000 + 48);
+
 		return;
 	}
 }

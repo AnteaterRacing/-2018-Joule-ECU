@@ -176,16 +176,6 @@ Discarded input sections
  .text          0x00000000        0x0 ./src/Rear_Input_Scan.o
  .data          0x00000000        0x0 ./src/Rear_Input_Scan.o
  .bss           0x00000000        0x0 ./src/Rear_Input_Scan.o
- .text.init_PIT0
-                0x00000000       0x4c ./src/Rear_Input_Scan.o
- .text.PIT0_IRQ_Handler
-                0x00000000        0x8 ./src/Rear_Input_Scan.o
- .debug_info    0x00000000      0x1e7 ./src/Rear_Input_Scan.o
- .debug_abbrev  0x00000000       0xc6 ./src/Rear_Input_Scan.o
- .debug_aranges
-                0x00000000       0x28 ./src/Rear_Input_Scan.o
- .debug_ranges  0x00000000       0x18 ./src/Rear_Input_Scan.o
- .debug_macro   0x00000000       0xdb ./src/Rear_Input_Scan.o
  .debug_macro   0x00000000      0x80e ./src/Rear_Input_Scan.o
  .debug_macro   0x00000000       0x40 ./src/Rear_Input_Scan.o
  .debug_macro   0x00000000       0x16 ./src/Rear_Input_Scan.o
@@ -203,12 +193,6 @@ Discarded input sections
  .debug_macro   0x00000000       0x79 ./src/Rear_Input_Scan.o
  .debug_macro   0x00000000     0x6c92 ./src/Rear_Input_Scan.o
  .debug_macro   0x00000000       0x28 ./src/Rear_Input_Scan.o
- .debug_line    0x00000000      0x230 ./src/Rear_Input_Scan.o
- .debug_str     0x00000000    0x2c6e3 ./src/Rear_Input_Scan.o
- .comment       0x00000000       0x71 ./src/Rear_Input_Scan.o
- .debug_frame   0x00000000       0x48 ./src/Rear_Input_Scan.o
- .ARM.attributes
-                0x00000000       0x32 ./src/Rear_Input_Scan.o
  .group         0x00000000        0x8 ./src/PWT.o
  .group         0x00000000        0x8 ./src/PWT.o
  .group         0x00000000        0x8 ./src/PWT.o
@@ -332,12 +316,37 @@ Discarded input sections
  .text          0x00000000        0x0 ./src/ECU_Operations.o
  .data          0x00000000        0x0 ./src/ECU_Operations.o
  .bss           0x00000000        0x0 ./src/ECU_Operations.o
+ .bss.acc1      0x00000000        0x4 ./src/ECU_Operations.o
+ .bss.APPS_flag
+                0x00000000        0x4 ./src/ECU_Operations.o
+ .bss.BSE_flag  0x00000000        0x4 ./src/ECU_Operations.o
+ .bss.APPS_faultcount
+                0x00000000        0x4 ./src/ECU_Operations.o
+ .bss.BSE_faultcount
+                0x00000000        0x4 ./src/ECU_Operations.o
  .bss.throttleValueL
                 0x00000000        0x4 ./src/ECU_Operations.o
  .bss.throttleValueR
                 0x00000000        0x4 ./src/ECU_Operations.o
+ .text.wait_for_start_seq
+                0x00000000       0x18 ./src/ECU_Operations.o
+ .text.APPS_Fault
+                0x00000000       0x48 ./src/ECU_Operations.o
+ .text.BSE_Fault
+                0x00000000       0x58 ./src/ECU_Operations.o
+ .text.Fault_Not_Resolved
+                0x00000000       0x58 ./src/ECU_Operations.o
  .text.set_Throttle_Value
                 0x00000000       0x24 ./src/ECU_Operations.o
+ .rodata        0x00000000       0x23 ./src/ECU_Operations.o
+ .text.print_ECU_Status_UART
+                0x00000000       0xfc ./src/ECU_Operations.o
+ .debug_info    0x00000000      0x1de ./src/ECU_Operations.o
+ .debug_abbrev  0x00000000       0xd6 ./src/ECU_Operations.o
+ .debug_aranges
+                0x00000000       0x48 ./src/ECU_Operations.o
+ .debug_ranges  0x00000000       0x38 ./src/ECU_Operations.o
+ .debug_macro   0x00000000      0x128 ./src/ECU_Operations.o
  .debug_macro   0x00000000      0x80e ./src/ECU_Operations.o
  .debug_macro   0x00000000       0x40 ./src/ECU_Operations.o
  .debug_macro   0x00000000       0x16 ./src/ECU_Operations.o
@@ -357,6 +366,14 @@ Discarded input sections
  .debug_macro   0x00000000       0x28 ./src/ECU_Operations.o
  .debug_macro   0x00000000       0x16 ./src/ECU_Operations.o
  .debug_macro   0x00000000       0x16 ./src/ECU_Operations.o
+ .debug_macro   0x00000000       0x2e ./src/ECU_Operations.o
+ .debug_line    0x00000000      0x302 ./src/ECU_Operations.o
+ .debug_str     0x00000000    0x2c86b ./src/ECU_Operations.o
+ .comment       0x00000000       0x71 ./src/ECU_Operations.o
+ .debug_frame   0x00000000       0xbc ./src/ECU_Operations.o
+ .ARM.attributes
+                0x00000000       0x32 ./src/ECU_Operations.o
+ COMMON         0x00000000        0xc ./src/ECU_Operations.o
  .group         0x00000000        0x8 ./src/ECU_Init.o
  .group         0x00000000        0x8 ./src/ECU_Init.o
  .group         0x00000000        0x8 ./src/ECU_Init.o
@@ -610,7 +627,7 @@ LOAD C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_end.o
  .FlashConfig   0x00000400       0x10 ./Project_Settings/Startup_Code/startup_SKEAZ1284.o
                 0x00000410                . = ALIGN (0x4)
 
-.text           0x00000410      0xe7c
+.text           0x00000410      0xcb4
                 0x00000410                . = ALIGN (0x4)
  *(.text)
  .text          0x00000410       0x44 ./Project_Settings/Startup_Code/startup_SKEAZ1284.o
@@ -634,7 +651,6 @@ LOAD C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_end.o
                 0x0000044c                Reserved18_IRQHandler
                 0x0000044c                FTM1_IRQHandler
                 0x0000044c                UART2_IRQHandler
-                0x0000044c                PIT_CH0_IRQHandler
                 0x0000044c                Reserved20_IRQHandler
                 0x0000044c                Reserved17_IRQHandler
                 0x0000044c                MSCAN_RX_IRQHandler
@@ -666,116 +682,100 @@ LOAD C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_end.o
  .text.__thumb_startup
                 0x00000758       0x3c C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_start.o
                 0x00000758                __thumb_startup
- .text.main     0x00000794       0x98 ./src/main.o
+ .text.main     0x00000794       0x3c ./src/main.o
                 0x00000794                main
  .text.init_clks_FEE_40MHz
-                0x0000082c       0x5c ./src/clocks.o
-                0x0000082c                init_clks_FEE_40MHz
+                0x000007d0       0x5c ./src/clocks.o
+                0x000007d0                init_clks_FEE_40MHz
  .text.init_UART
-                0x00000888       0x48 ./src/UART.o
-                0x00000888                init_UART
+                0x0000082c       0x48 ./src/UART.o
+                0x0000082c                init_UART
  .text.transmit_char
-                0x000008d0       0x34 ./src/UART.o
-                0x000008d0                transmit_char
+                0x00000874       0x34 ./src/UART.o
+                0x00000874                transmit_char
  .text.transmit_string
-                0x00000904       0x38 ./src/UART.o
-                0x00000904                transmit_string
+                0x000008a8       0x38 ./src/UART.o
+                0x000008a8                transmit_string
+ .text.init_PIT0
+                0x000008e0       0x58 ./src/Rear_Input_Scan.o
+                0x000008e0                init_PIT0
+ .text.PIT_CH0_IRQHandler
+                0x00000938       0x28 ./src/Rear_Input_Scan.o
+                0x00000938                PIT_CH0_IRQHandler
  .text.init_FTM
-                0x0000093c       0x98 ./src/FTM.o
-                0x0000093c                init_FTM
- .text.wait_for_start_seq
-                0x000009d4       0x18 ./src/ECU_Operations.o
-                0x000009d4                wait_for_start_seq
- .text.APPS_Fault
-                0x000009ec       0x48 ./src/ECU_Operations.o
-                0x000009ec                APPS_Fault
- .text.BSE_Fault
-                0x00000a34       0x58 ./src/ECU_Operations.o
-                0x00000a34                BSE_Fault
- .text.Fault_Not_Resolved
-                0x00000a8c       0x58 ./src/ECU_Operations.o
-                0x00000a8c                Fault_Not_Resolved
- .text.print_ECU_Status_UART
-                0x00000ae4       0xfc ./src/ECU_Operations.o
-                0x00000ae4                print_ECU_Status_UART
+                0x00000960       0x98 ./src/FTM.o
+                0x00000960                init_FTM
  .text.NVIC_EnableIRQ
-                0x00000be0       0x2c ./src/ECU_Init.o
+                0x000009f8       0x2c ./src/ECU_Init.o
  .text.NVIC_ClearPendingIRQ
-                0x00000c0c       0x30 ./src/ECU_Init.o
+                0x00000a24       0x30 ./src/ECU_Init.o
  .text.NVIC_SetPriority
-                0x00000c3c       0xd4 ./src/ECU_Init.o
+                0x00000a54       0xd4 ./src/ECU_Init.o
  .text.init_IRQs
-                0x00000d10       0x30 ./src/ECU_Init.o
-                0x00000d10                init_IRQs
- .text.init_PIT
-                0x00000d40       0x58 ./src/ECU_Init.o
-                0x00000d40                init_PIT
+                0x00000b28       0x44 ./src/ECU_Init.o
+                0x00000b28                init_IRQs
  .text.init_PWM
-                0x00000d98       0x38 ./src/ECU_Init.o
-                0x00000d98                init_PWM
+                0x00000b6c       0x38 ./src/ECU_Init.o
+                0x00000b6c                init_PWM
  .text.FTM2_IRQHandler
-                0x00000dd0       0x84 ./src/ECU_Init.o
-                0x00000dd0                FTM2_IRQHandler
+                0x00000ba4       0x84 ./src/ECU_Init.o
+                0x00000ba4                FTM2_IRQHandler
  .text.init_ECU
-                0x00000e54       0x24 ./src/ECU_Init.o
-                0x00000e54                init_ECU
+                0x00000c28       0x24 ./src/ECU_Init.o
+                0x00000c28                init_ECU
  .text.init_ADC
-                0x00000e78       0x40 ./src/ADC.o
-                0x00000e78                init_ADC
+                0x00000c4c       0x40 ./src/ADC.o
+                0x00000c4c                init_ADC
  .text.ReadAdcBlock
-                0x00000eb8       0x60 ./src/ADC.o
-                0x00000eb8                ReadAdcBlock
+                0x00000c8c       0x60 ./src/ADC.o
+                0x00000c8c                ReadAdcBlock
  .text.ADC0_IRQHandler
-                0x00000f18        0xc ./src/ADC.o
-                0x00000f18                ADC0_IRQHandler
- .text.ADC_Handler
-                0x00000f24       0xa4 ./src/ADC.o
-                0x00000f24                ADC_Handler
+                0x00000cec      0x158 ./src/ADC.o
+                0x00000cec                ADC0_IRQHandler
  .text.ADC_Converter
-                0x00000fc8       0x5c ./src/ADC.o
-                0x00000fc8                ADC_Converter
+                0x00000e44       0x5c ./src/ADC.o
+                0x00000e44                ADC_Converter
  .text.SystemInit
-                0x00001024       0x24 ./Project_Settings/Startup_Code/system_SKEAZ1284.o
-                0x00001024                SystemInit
- .text.exit     0x00001048       0x38 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
-                0x00001048                exit
- .text.memset   0x00001080        0xc C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
-                0x00001080                memset
+                0x00000ea0       0x24 ./Project_Settings/Startup_Code/system_SKEAZ1284.o
+                0x00000ea0                SystemInit
+ .text.exit     0x00000ec4       0x38 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
+                0x00000ec4                exit
+ .text.memset   0x00000efc        0xc C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
+                0x00000efc                memset
  .text.__fill_mem
-                0x0000108c       0x82 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
-                0x0000108c                __fill_mem
- *fill*         0x0000110e        0x2 
+                0x00000f08       0x82 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
+                0x00000f08                __fill_mem
+ *fill*         0x00000f8a        0x2 
  .text.__init_cpp
-                0x00001110       0x48 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
-                0x00001110                __init_cpp
+                0x00000f8c       0x48 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
+                0x00000f8c                __init_cpp
  .text.__fini_cpp
-                0x00001158       0x34 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
-                0x00001158                __fini_cpp
+                0x00000fd4       0x34 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
+                0x00000fd4                __fini_cpp
  .text._ExitProcess
-                0x0000118c        0x2 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
-                0x0000118c                _ExitProcess
- *fill*         0x0000118e        0x2 
+                0x00001008        0x2 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
+                0x00001008                _ExitProcess
+ *fill*         0x0000100a        0x2 
  .text.__destroy_global_chain
-                0x00001190       0x1c C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
-                0x00001190                __destroy_global_chain
+                0x0000100c       0x1c C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
+                0x0000100c                __destroy_global_chain
  .text.__init_registers
-                0x000011ac       0x1c C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
-                0x000011ac                __init_registers
+                0x00001028       0x1c C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
+                0x00001028                __init_registers
  .text.__init_hardware
-                0x000011c8        0x4 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
-                0x000011c8                __init_hardware
+                0x00001044        0x4 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
+                0x00001044                __init_hardware
  .text.__init_user
-                0x000011cc        0x4 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
-                0x000011cc                __init_user
+                0x00001048        0x4 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
+                0x00001048                __init_user
  .text.__copy_rom_section
-                0x000011d0       0x40 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
-                0x000011d0                __copy_rom_section
+                0x0000104c       0x40 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
+                0x0000104c                __copy_rom_section
  .text.__copy_rom_sections_to_ram
-                0x00001210       0x34 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
-                0x00001210                __copy_rom_sections_to_ram
+                0x0000108c       0x34 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
+                0x0000108c                __copy_rom_sections_to_ram
  *(.rodata)
- .rodata        0x00001244       0x24 ./src/main.o
- .rodata        0x00001268       0x23 ./src/ECU_Operations.o
+ .rodata        0x000010c0        0x4 ./src/ADC.o
  *(.rodata*)
  *(.glue_7)
  .glue_7        0x00000000        0x0 linker stubs
@@ -784,65 +784,64 @@ LOAD C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_end.o
  *(.eh_frame)
  *(.init)
  *(.fini)
-                0x0000128c                . = ALIGN (0x4)
- *fill*         0x0000128b        0x1 
+                0x000010c4                . = ALIGN (0x4)
 
-.vfp11_veneer   0x0000128c        0x0
+.vfp11_veneer   0x000010c4        0x0
  .vfp11_veneer  0x00000000        0x0 linker stubs
 
-.v4_bx          0x0000128c        0x0
+.v4_bx          0x000010c4        0x0
  .v4_bx         0x00000000        0x0 linker stubs
 
-.iplt           0x0000128c        0x0
+.iplt           0x000010c4        0x0
  .iplt          0x00000000        0x0 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_start.o
 
-.rel.dyn        0x0000128c        0x0
+.rel.dyn        0x000010c4        0x0
  .rel.iplt      0x00000000        0x0 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_start.o
 
 .ARM.extab
  *(.ARM.extab* .gnu.linkonce.armextab.*)
 
-.ARM            0x0000128c        0x0
-                0x0000128c                __exidx_start = .
+.ARM            0x000010c4        0x0
+                0x000010c4                __exidx_start = .
  *(.ARM.exidx*)
-                0x0000128c                __exidx_end = .
+                0x000010c4                __exidx_end = .
 
-.ctors          0x0000128c        0x0
-                0x0000128c                __CTOR_LIST__ = .
+.ctors          0x000010c4        0x0
+                0x000010c4                __CTOR_LIST__ = .
  *crtbegin.o(.ctors)
  *crtbegin?.o(.ctors)
  *(EXCLUDE_FILE(*crtend.o *crtend?.o) .ctors)
  *(SORT(.ctors.*))
  *(.ctors)
-                0x0000128c                __CTOR_END__ = .
+                0x000010c4                __CTOR_END__ = .
 
-.dtors          0x0000128c        0x0
-                0x0000128c                __DTOR_LIST__ = .
+.dtors          0x000010c4        0x0
+                0x000010c4                __DTOR_LIST__ = .
  *crtbegin.o(.dtors)
  *crtbegin?.o(.dtors)
  *(EXCLUDE_FILE(*crtend.o *crtend?.o) .dtors)
  *(SORT(.dtors.*))
  *(.dtors)
-                0x0000128c                __DTOR_END__ = .
+                0x000010c4                __DTOR_END__ = .
 
-.preinit_array  0x0000128c        0x0
-                0x0000128c                PROVIDE (__preinit_array_start, .)
+.preinit_array  0x000010c4        0x0
+                0x000010c4                PROVIDE (__preinit_array_start, .)
  *(.preinit_array*)
-                0x0000128c                PROVIDE (__preinit_array_end, .)
+                0x000010c4                PROVIDE (__preinit_array_end, .)
 
-.init_array     0x0000128c        0x0
-                0x0000128c                PROVIDE (__init_array_start, .)
+.init_array     0x000010c4        0x0
+                0x000010c4                PROVIDE (__init_array_start, .)
  *(SORT(.init_array.*))
  *(.init_array*)
-                0x0000128c                PROVIDE (__init_array_end, .)
+                0x000010c4                PROVIDE (__init_array_end, .)
 
-.fini_array     0x0000128c        0x0
-                0x0000128c                PROVIDE (__fini_array_start, .)
+.fini_array     0x000010c4        0x0
+                0x000010c4                PROVIDE (__fini_array_start, .)
  *(SORT(.fini_array.*))
  *(.fini_array*)
-                0x0000128c                PROVIDE (__fini_array_end, .)
-                0x0000128c                __etext = .
-                0x0000128c                __DATA_ROM = .
+                0x000010c4                PROVIDE (__fini_array_end, .)
+                0x000010c4                __etext = .
+                0x000010c4                __DATA_ROM = .
 
 .mtb            0x1ffff000        0x0
                 0x1ffff000                . = ALIGN (0x8)
@@ -851,7 +850,7 @@ LOAD C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_end.o
                 0x1ffff000                . = ALIGN (0x8)
                 0x1ffff000                _mtb_end = .
 
-.data           0x1ffff000        0x0 load address 0x0000128c
+.data           0x1ffff000        0x0 load address 0x000010c4
                 0x1ffff000                . = ALIGN (0x4)
                 0x1ffff000                __DATA_RAM = .
                 0x1ffff000                __data_start__ = .
@@ -862,80 +861,63 @@ LOAD C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_end.o
                 0x1ffff000                . = ALIGN (0x4)
                 0x1ffff000                __data_end__ = .
                 0x1ffff000                _edata = .
-                0x0000128c                __DATA_END = (__DATA_ROM + (__data_end__ - __data_start__))
+                0x000010c4                __DATA_END = (__DATA_ROM + (__data_end__ - __data_start__))
                 0x00000000                ___data_size = (_edata - _sdata)
 
 .igot.plt       0x1ffff000        0x0
  .igot.plt      0x00000000        0x0 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_start.o
 
-.bss            0x1ffff000       0x48
+.bss            0x1ffff000       0x28
                 0x1ffff000                . = ALIGN (0x4)
                 0x1ffff000                __START_BSS = .
                 0x1ffff000                __bss_start__ = .
  *(.bss)
  *(.bss*)
  .bss.argv      0x1ffff000        0x4 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_start.o
- .bss.acc1      0x1ffff004        0x4 ./src/ECU_Operations.o
-                0x1ffff004                acc1
- .bss.APPS_flag
-                0x1ffff008        0x4 ./src/ECU_Operations.o
-                0x1ffff008                APPS_flag
- .bss.BSE_flag  0x1ffff00c        0x4 ./src/ECU_Operations.o
-                0x1ffff00c                BSE_flag
- .bss.APPS_faultcount
-                0x1ffff010        0x4 ./src/ECU_Operations.o
-                0x1ffff010                APPS_faultcount
- .bss.BSE_faultcount
-                0x1ffff014        0x4 ./src/ECU_Operations.o
-                0x1ffff014                BSE_faultcount
- .bss.ADC_buff  0x1ffff018       0x16 ./src/ADC.o
-                0x1ffff018                ADC_buff
- *fill*         0x1ffff02e        0x2 
+ .bss.ADC_buff  0x1ffff004       0x16 ./src/ADC.o
+                0x1ffff004                ADC_buff
+ *fill*         0x1ffff01a        0x2 
  .bss.__stdio_exit
-                0x1ffff030        0x4 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
-                0x1ffff030                __stdio_exit
+                0x1ffff01c        0x4 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
+                0x1ffff01c                __stdio_exit
  .bss.__console_exit
-                0x1ffff034        0x4 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
-                0x1ffff034                __console_exit
+                0x1ffff020        0x4 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
+                0x1ffff020                __console_exit
  .bss.__global_destructor_chain
-                0x1ffff038        0x4 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
-                0x1ffff038                __global_destructor_chain
+                0x1ffff024        0x4 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
+                0x1ffff024                __global_destructor_chain
  *(COMMON)
- COMMON         0x1ffff03c        0xc ./src/ECU_Operations.o
-                0x1ffff03c                acc2
-                0x1ffff040                brakeAngle
-                0x1ffff044                steeringAngle
-                0x1ffff048                . = ALIGN (0x4)
-                0x1ffff048                __bss_end__ = .
-                0x1ffff048                __END_BSS = .
-                0x0000128c                _romp_at = (__DATA_ROM + SIZEOF (.data))
+                0x1ffff028                . = ALIGN (0x4)
+                0x1ffff028                __bss_end__ = .
+                0x1ffff028                __END_BSS = .
+                0x000010c4                _romp_at = (__DATA_ROM + SIZEOF (.data))
 
-.romp           0x1ffff048       0x18 load address 0x0000128c
-                0x0000128c                __S_romp = _romp_at
-                0x1ffff048        0x4 LONG 0x128c __DATA_ROM
-                0x1ffff04c        0x4 LONG 0x1ffff000 _sdata
-                0x1ffff050        0x4 LONG 0x0 ___data_size
-                0x1ffff054        0x4 LONG 0x0
-                0x1ffff058        0x4 LONG 0x0
-                0x1ffff05c        0x4 LONG 0x0
+.romp           0x1ffff028       0x18 load address 0x000010c4
+                0x000010c4                __S_romp = _romp_at
+                0x1ffff028        0x4 LONG 0x10c4 __DATA_ROM
+                0x1ffff02c        0x4 LONG 0x1ffff000 _sdata
+                0x1ffff030        0x4 LONG 0x0 ___data_size
+                0x1ffff034        0x4 LONG 0x0
+                0x1ffff038        0x4 LONG 0x0
+                0x1ffff03c        0x4 LONG 0x0
 
-.heap           0x1ffff060      0x500 load address 0x000012a4
-                0x1ffff060                . = ALIGN (0x8)
-                0x1ffff060                __end__ = .
-                0x1ffff060                _end = .
-                0x1ffff060                PROVIDE (end, .)
-                0x1ffff060                __HeapBase = .
-                0x1ffff560                . = (. + HEAP_SIZE)
- *fill*         0x1ffff060      0x500 
-                0x1ffff560                __HeapLimit = .
+.heap           0x1ffff040      0x500 load address 0x000010dc
+                0x1ffff040                . = ALIGN (0x8)
+                0x1ffff040                __end__ = .
+                0x1ffff040                _end = .
+                0x1ffff040                PROVIDE (end, .)
+                0x1ffff040                __HeapBase = .
+                0x1ffff540                . = (. + HEAP_SIZE)
+ *fill*         0x1ffff040      0x500 
+                0x1ffff540                __HeapLimit = .
 
-.stack          0x1ffff560      0x400 load address 0x000017a4
-                0x1ffff560                . = ALIGN (0x8)
-                0x1ffff960                . = (. + STACK_SIZE)
- *fill*         0x1ffff560      0x400 
-                0x1ffff960                __StackTop = .
-                0x1ffff560                __StackLimit = (__StackTop - STACK_SIZE)
-                0x1ffff960                PROVIDE (__stack, __StackTop)
+.stack          0x1ffff540      0x400 load address 0x000015dc
+                0x1ffff540                . = ALIGN (0x8)
+                0x1ffff940                . = (. + STACK_SIZE)
+ *fill*         0x1ffff540      0x400 
+                0x1ffff940                __StackTop = .
+                0x1ffff540                __StackLimit = (__StackTop - STACK_SIZE)
+                0x1ffff940                PROVIDE (__stack, __StackTop)
 
 .ARM.attributes
                 0x00000000       0x2f
@@ -949,9 +931,9 @@ LOAD C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_end.o
  .ARM.attributes
                 0x00000095       0x32 ./src/UART.o
  .ARM.attributes
-                0x000000c7       0x32 ./src/FTM.o
+                0x000000c7       0x32 ./src/Rear_Input_Scan.o
  .ARM.attributes
-                0x000000f9       0x32 ./src/ECU_Operations.o
+                0x000000f9       0x32 ./src/FTM.o
  .ARM.attributes
                 0x0000012b       0x32 ./src/ECU_Init.o
  .ARM.attributes
@@ -980,43 +962,43 @@ LOAD C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_end.o
                 0x0000032b       0x31 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
 OUTPUT(ECU.elf elf32-littlearm)
 
-.debug_info     0x00000000     0x2220
+.debug_info     0x00000000     0x20d2
  .debug_info    0x00000000      0x144 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_start.o
  .debug_info    0x00000144      0x119 ./src/main.o
  .debug_info    0x0000025d      0x1c2 ./src/clocks.o
  .debug_info    0x0000041f      0x263 ./src/UART.o
- .debug_info    0x00000682      0x358 ./src/FTM.o
- .debug_info    0x000009da      0x1de ./src/ECU_Operations.o
- .debug_info    0x00000bb8      0x766 ./src/ECU_Init.o
- .debug_info    0x0000131e      0x243 ./src/ADC.o
- .debug_info    0x00001561      0x31d ./Project_Settings/Startup_Code/system_SKEAZ1284.o
- .debug_info    0x0000187e       0x89 ./Project_Settings/Startup_Code/startup_SKEAZ1284.o
- .debug_info    0x00001907       0xe8 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
- .debug_info    0x000019ef       0xec C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
- .debug_info    0x00001adb      0x137 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
- .debug_info    0x00001c12      0x14a C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
- .debug_info    0x00001d5c      0x2b5 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
- .debug_info    0x00002011      0x20f C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
+ .debug_info    0x00000682      0x1e7 ./src/Rear_Input_Scan.o
+ .debug_info    0x00000869      0x358 ./src/FTM.o
+ .debug_info    0x00000bc1      0x620 ./src/ECU_Init.o
+ .debug_info    0x000011e1      0x232 ./src/ADC.o
+ .debug_info    0x00001413      0x31d ./Project_Settings/Startup_Code/system_SKEAZ1284.o
+ .debug_info    0x00001730       0x89 ./Project_Settings/Startup_Code/startup_SKEAZ1284.o
+ .debug_info    0x000017b9       0xe8 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
+ .debug_info    0x000018a1       0xec C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
+ .debug_info    0x0000198d      0x137 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
+ .debug_info    0x00001ac4      0x14a C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
+ .debug_info    0x00001c0e      0x2b5 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
+ .debug_info    0x00001ec3      0x20f C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
 
-.debug_abbrev   0x00000000      0xcf9
+.debug_abbrev   0x00000000      0xd01
  .debug_abbrev  0x00000000       0xc0 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_start.o
  .debug_abbrev  0x000000c0       0x8b ./src/main.o
  .debug_abbrev  0x0000014b       0x98 ./src/clocks.o
  .debug_abbrev  0x000001e3      0x136 ./src/UART.o
- .debug_abbrev  0x00000319       0xbb ./src/FTM.o
- .debug_abbrev  0x000003d4       0xd6 ./src/ECU_Operations.o
- .debug_abbrev  0x000004aa      0x153 ./src/ECU_Init.o
- .debug_abbrev  0x000005fd       0xfc ./src/ADC.o
- .debug_abbrev  0x000006f9      0x102 ./Project_Settings/Startup_Code/system_SKEAZ1284.o
- .debug_abbrev  0x000007fb       0x14 ./Project_Settings/Startup_Code/startup_SKEAZ1284.o
- .debug_abbrev  0x0000080f       0x7a C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
- .debug_abbrev  0x00000889       0x62 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
- .debug_abbrev  0x000008eb       0x78 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
- .debug_abbrev  0x00000963       0xae C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
- .debug_abbrev  0x00000a11      0x1ba C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
- .debug_abbrev  0x00000bcb      0x12e C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
+ .debug_abbrev  0x00000319       0xde ./src/Rear_Input_Scan.o
+ .debug_abbrev  0x000003f7       0xbb ./src/FTM.o
+ .debug_abbrev  0x000004b2      0x153 ./src/ECU_Init.o
+ .debug_abbrev  0x00000605       0xfc ./src/ADC.o
+ .debug_abbrev  0x00000701      0x102 ./Project_Settings/Startup_Code/system_SKEAZ1284.o
+ .debug_abbrev  0x00000803       0x14 ./Project_Settings/Startup_Code/startup_SKEAZ1284.o
+ .debug_abbrev  0x00000817       0x7a C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
+ .debug_abbrev  0x00000891       0x62 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
+ .debug_abbrev  0x000008f3       0x78 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
+ .debug_abbrev  0x0000096b       0xae C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
+ .debug_abbrev  0x00000a19      0x1ba C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
+ .debug_abbrev  0x00000bd3      0x12e C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
 
-.debug_aranges  0x00000000      0x328
+.debug_aranges  0x00000000      0x2f8
  .debug_aranges
                 0x00000000       0x28 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_start.o
  .debug_aranges
@@ -1026,49 +1008,49 @@ OUTPUT(ECU.elf elf32-littlearm)
  .debug_aranges
                 0x00000070       0x40 ./src/UART.o
  .debug_aranges
-                0x000000b0       0x38 ./src/FTM.o
+                0x000000b0       0x28 ./src/Rear_Input_Scan.o
  .debug_aranges
-                0x000000e8       0x48 ./src/ECU_Operations.o
+                0x000000d8       0x38 ./src/FTM.o
  .debug_aranges
-                0x00000130       0x58 ./src/ECU_Init.o
+                0x00000110       0x50 ./src/ECU_Init.o
  .debug_aranges
-                0x00000188       0x40 ./src/ADC.o
+                0x00000160       0x38 ./src/ADC.o
  .debug_aranges
-                0x000001c8       0x28 ./Project_Settings/Startup_Code/system_SKEAZ1284.o
+                0x00000198       0x28 ./Project_Settings/Startup_Code/system_SKEAZ1284.o
  .debug_aranges
-                0x000001f0       0x20 ./Project_Settings/Startup_Code/startup_SKEAZ1284.o
+                0x000001c0       0x20 ./Project_Settings/Startup_Code/startup_SKEAZ1284.o
  .debug_aranges
-                0x00000210       0x20 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
+                0x000001e0       0x20 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
  .debug_aranges
-                0x00000230       0x20 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
+                0x00000200       0x20 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
  .debug_aranges
-                0x00000250       0x20 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
+                0x00000220       0x20 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
  .debug_aranges
-                0x00000270       0x30 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
+                0x00000240       0x30 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
  .debug_aranges
-                0x000002a0       0x58 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
+                0x00000270       0x58 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
  .debug_aranges
-                0x000002f8       0x30 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
+                0x000002c8       0x30 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
 
-.debug_line     0x00000000     0x1ad4
+.debug_line     0x00000000     0x19ff
  .debug_line    0x00000000       0x68 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_start.o
- .debug_line    0x00000068      0x31f ./src/main.o
- .debug_line    0x00000387      0x232 ./src/clocks.o
- .debug_line    0x000005b9      0x25f ./src/UART.o
- .debug_line    0x00000818      0x23f ./src/FTM.o
- .debug_line    0x00000a57      0x302 ./src/ECU_Operations.o
- .debug_line    0x00000d59      0x38b ./src/ECU_Init.o
- .debug_line    0x000010e4      0x341 ./src/ADC.o
- .debug_line    0x00001425      0x22e ./Project_Settings/Startup_Code/system_SKEAZ1284.o
- .debug_line    0x00001653       0x86 ./Project_Settings/Startup_Code/startup_SKEAZ1284.o
- .debug_line    0x000016d9       0x8d C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
- .debug_line    0x00001766       0x90 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
- .debug_line    0x000017f6       0xaf C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
- .debug_line    0x000018a5       0x74 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
- .debug_line    0x00001919      0x10f C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
- .debug_line    0x00001a28       0xac C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
+ .debug_line    0x00000068      0x316 ./src/main.o
+ .debug_line    0x0000037e      0x232 ./src/clocks.o
+ .debug_line    0x000005b0      0x25f ./src/UART.o
+ .debug_line    0x0000080f      0x232 ./src/Rear_Input_Scan.o
+ .debug_line    0x00000a41      0x23f ./src/FTM.o
+ .debug_line    0x00000c80      0x38c ./src/ECU_Init.o
+ .debug_line    0x0000100c      0x344 ./src/ADC.o
+ .debug_line    0x00001350      0x22e ./Project_Settings/Startup_Code/system_SKEAZ1284.o
+ .debug_line    0x0000157e       0x86 ./Project_Settings/Startup_Code/startup_SKEAZ1284.o
+ .debug_line    0x00001604       0x8d C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
+ .debug_line    0x00001691       0x90 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
+ .debug_line    0x00001721       0xaf C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
+ .debug_line    0x000017d0       0x74 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
+ .debug_line    0x00001844      0x10f C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
+ .debug_line    0x00001953       0xac C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
 
-.debug_str      0x00000000    0x2d74a
+.debug_str      0x00000000    0x2d5eb
  .debug_str     0x00000000      0x1e7 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_start.o
                                 0x270 (size before relaxing)
  .debug_str     0x000001e7    0x2c8ae ./src/main.o
@@ -1077,27 +1059,27 @@ OUTPUT(ECU.elf elf32-littlearm)
                               0x2c64d (size before relaxing)
  .debug_str     0x0002cb31       0x7c ./src/UART.o
                               0x2c682 (size before relaxing)
- .debug_str     0x0002cbad      0x131 ./src/FTM.o
+ .debug_str     0x0002cbad       0x76 ./src/Rear_Input_Scan.o
+                              0x2c6e5 (size before relaxing)
+ .debug_str     0x0002cc23      0x126 ./src/FTM.o
                               0x2c736 (size before relaxing)
- .debug_str     0x0002ccde      0x194 ./src/ECU_Operations.o
-                              0x2c86b (size before relaxing)
- .debug_str     0x0002ce72      0x2f4 ./src/ECU_Init.o
-                              0x2d033 (size before relaxing)
- .debug_str     0x0002d166       0x96 ./src/ADC.o
-                              0x2cca9 (size before relaxing)
- .debug_str     0x0002d1fc       0xbf ./Project_Settings/Startup_Code/system_SKEAZ1284.o
+ .debug_str     0x0002cd49      0x2ca ./src/ECU_Init.o
+                              0x2cfcd (size before relaxing)
+ .debug_str     0x0002d013       0x8a ./src/ADC.o
+                              0x2cca6 (size before relaxing)
+ .debug_str     0x0002d09d       0xbf ./Project_Settings/Startup_Code/system_SKEAZ1284.o
                               0x2c6d2 (size before relaxing)
- .debug_str     0x0002d2bb      0x18f C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
+ .debug_str     0x0002d15c      0x18f C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
                                 0x22d (size before relaxing)
- .debug_str     0x0002d44a       0x1c C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
+ .debug_str     0x0002d2eb       0x1c C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
                                 0x216 (size before relaxing)
- .debug_str     0x0002d466       0x2d C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
+ .debug_str     0x0002d307       0x2d C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
                                 0x228 (size before relaxing)
- .debug_str     0x0002d493      0x113 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
+ .debug_str     0x0002d334      0x113 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
                                 0x28e (size before relaxing)
- .debug_str     0x0002d5a6      0x103 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
+ .debug_str     0x0002d447      0x103 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
                                 0x2b5 (size before relaxing)
- .debug_str     0x0002d6a9       0xa1 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
+ .debug_str     0x0002d54a       0xa1 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
                                 0x233 (size before relaxing)
 
 .comment        0x00000000       0x70
@@ -1106,8 +1088,8 @@ OUTPUT(ECU.elf elf32-littlearm)
  .comment       0x00000000       0x71 ./src/main.o
  .comment       0x00000000       0x71 ./src/clocks.o
  .comment       0x00000000       0x71 ./src/UART.o
+ .comment       0x00000000       0x71 ./src/Rear_Input_Scan.o
  .comment       0x00000000       0x71 ./src/FTM.o
- .comment       0x00000000       0x71 ./src/ECU_Operations.o
  .comment       0x00000000       0x71 ./src/ECU_Init.o
  .comment       0x00000000       0x71 ./src/ADC.o
  .comment       0x00000000       0x71 ./Project_Settings/Startup_Code/system_SKEAZ1284.o
@@ -1118,36 +1100,36 @@ OUTPUT(ECU.elf elf32-littlearm)
  .comment       0x00000000       0x71 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
  .comment       0x00000000       0x71 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
 
-.debug_frame    0x00000000      0x694
+.debug_frame    0x00000000      0x5e8
  .debug_frame   0x00000000       0x30 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m/__arm_start.o
  .debug_frame   0x00000030       0x2c ./src/main.o
  .debug_frame   0x0000005c       0x48 ./src/clocks.o
  .debug_frame   0x000000a4       0xac ./src/UART.o
- .debug_frame   0x00000150       0x80 ./src/FTM.o
- .debug_frame   0x000001d0       0xbc ./src/ECU_Operations.o
- .debug_frame   0x0000028c      0x100 ./src/ECU_Init.o
- .debug_frame   0x0000038c       0xa0 ./src/ADC.o
- .debug_frame   0x0000042c       0x4c ./Project_Settings/Startup_Code/system_SKEAZ1284.o
- .debug_frame   0x00000478       0x2c C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
- .debug_frame   0x000004a4       0x28 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
- .debug_frame   0x000004cc       0x2c C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
- .debug_frame   0x000004f8       0x20 c:/nxp/s32ds_arm_v2.0/cross_tools/gcc-arm-none-eabi-4_9/bin/../lib/gcc/arm-none-eabi/4.9.3/armv6-m\libgcc.a(_udivsi3.o)
- .debug_frame   0x00000518       0x20 c:/nxp/s32ds_arm_v2.0/cross_tools/gcc-arm-none-eabi-4_9/bin/../lib/gcc/arm-none-eabi/4.9.3/armv6-m\libgcc.a(_divsi3.o)
- .debug_frame   0x00000538       0x50 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
- .debug_frame   0x00000588       0xbc C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
- .debug_frame   0x00000644       0x50 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
+ .debug_frame   0x00000150       0x48 ./src/Rear_Input_Scan.o
+ .debug_frame   0x00000198       0x80 ./src/FTM.o
+ .debug_frame   0x00000218       0xe4 ./src/ECU_Init.o
+ .debug_frame   0x000002fc       0x84 ./src/ADC.o
+ .debug_frame   0x00000380       0x4c ./Project_Settings/Startup_Code/system_SKEAZ1284.o
+ .debug_frame   0x000003cc       0x2c C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)
+ .debug_frame   0x000003f8       0x28 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(memset.o)
+ .debug_frame   0x00000420       0x2c C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(__filll_mem.o)
+ .debug_frame   0x0000044c       0x20 c:/nxp/s32ds_arm_v2.0/cross_tools/gcc-arm-none-eabi-4_9/bin/../lib/gcc/arm-none-eabi/4.9.3/armv6-m\libgcc.a(_udivsi3.o)
+ .debug_frame   0x0000046c       0x20 c:/nxp/s32ds_arm_v2.0/cross_tools/gcc-arm-none-eabi-4_9/bin/../lib/gcc/arm-none-eabi/4.9.3/armv6-m\libgcc.a(_divsi3.o)
+ .debug_frame   0x0000048c       0x50 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(gcc_ctor_dtor.o)
+ .debug_frame   0x000004dc       0xbc C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(__arm_eabi_init.o)
+ .debug_frame   0x00000598       0x50 C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\librt.a(ROMCopy.o)
 
-.debug_ranges   0x00000000      0x148
+.debug_ranges   0x00000000      0x118
  .debug_ranges  0x00000000       0x10 ./src/main.o
  .debug_ranges  0x00000010       0x18 ./src/clocks.o
  .debug_ranges  0x00000028       0x30 ./src/UART.o
- .debug_ranges  0x00000058       0x28 ./src/FTM.o
- .debug_ranges  0x00000080       0x38 ./src/ECU_Operations.o
- .debug_ranges  0x000000b8       0x48 ./src/ECU_Init.o
- .debug_ranges  0x00000100       0x30 ./src/ADC.o
- .debug_ranges  0x00000130       0x18 ./Project_Settings/Startup_Code/system_SKEAZ1284.o
+ .debug_ranges  0x00000058       0x18 ./src/Rear_Input_Scan.o
+ .debug_ranges  0x00000070       0x28 ./src/FTM.o
+ .debug_ranges  0x00000098       0x40 ./src/ECU_Init.o
+ .debug_ranges  0x000000d8       0x28 ./src/ADC.o
+ .debug_ranges  0x00000100       0x18 ./Project_Settings/Startup_Code/system_SKEAZ1284.o
 
-.debug_macro    0x00000000     0x8947
+.debug_macro    0x00000000     0x88e0
  .debug_macro   0x00000000      0x1d1 ./src/main.o
  .debug_macro   0x000001d1      0x80e ./src/main.o
  .debug_macro   0x000009df       0x40 ./src/main.o
@@ -1176,14 +1158,13 @@ OUTPUT(ECU.elf elf32-littlearm)
  .debug_macro   0x000080e6       0x20 ./src/main.o
  .debug_macro   0x00008106       0xd2 ./src/clocks.o
  .debug_macro   0x000081d8       0xd2 ./src/UART.o
- .debug_macro   0x000082aa       0xd2 ./src/FTM.o
- .debug_macro   0x0000837c      0x128 ./src/ECU_Operations.o
- .debug_macro   0x000084a4       0x2e ./src/ECU_Operations.o
- .debug_macro   0x000084d2      0x1c3 ./src/ECU_Init.o
- .debug_macro   0x00008695      0x198 ./src/ADC.o
- .debug_macro   0x0000882d       0x10 ./src/ADC.o
- .debug_macro   0x0000883d       0xbf ./Project_Settings/Startup_Code/system_SKEAZ1284.o
- .debug_macro   0x000088fc       0x4b ./Project_Settings/Startup_Code/system_SKEAZ1284.o
+ .debug_macro   0x000082aa       0xdb ./src/Rear_Input_Scan.o
+ .debug_macro   0x00008385       0xd2 ./src/FTM.o
+ .debug_macro   0x00008457      0x1cd ./src/ECU_Init.o
+ .debug_macro   0x00008624      0x1a2 ./src/ADC.o
+ .debug_macro   0x000087c6       0x10 ./src/ADC.o
+ .debug_macro   0x000087d6       0xbf ./Project_Settings/Startup_Code/system_SKEAZ1284.o
+ .debug_macro   0x00008895       0x4b ./Project_Settings/Startup_Code/system_SKEAZ1284.o
 
 .debug_loc      0x00000000      0x4eb
  .debug_loc     0x00000000       0x3e C:/NXP/S32DS_ARM_v2.0/S32DS/arm_ewl2/lib/armv6-m\libc.a(exit.o)

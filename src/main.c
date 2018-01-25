@@ -23,7 +23,7 @@
 int main(void)
 {
 	init_ECU(); 				//initialize ECU and all pins, timers, interrupts, etc.
-	wait_for_start_seq(); 	//wait for the startup sequence (brake + start button)
+	//wait_for_start_seq(); 	//wait for the startup sequence (brake + start button)
 
 	//transmit_string("run");
 
@@ -39,24 +39,24 @@ int main(void)
 
 	//this runs continuously once the initialization has completed
 	while(1) {
-		GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1; /* Turn off all LEDs */
-		print_ECU_Status_UART();
+		//GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1; /* Turn off all LEDs */
+		//print_ECU_Status_UART();
 		//FTM1_C1V = acc1*0.006; //Analog input to PWM led output
 		//FTM2_C0V = FTM_CnV_VAL(acc1);
 		//traps program inside loop if a fault is detected. Doesn't exit until fault condition clears
-		if(APPS_Fault() || BSE_Fault()){
-			while(Fault_Not_Resolved()){
-				//set throttle outputs to 0;
-				GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1; /* Turn off all LEDs */
-				GPIOB_PCOR |= PTH0;
-				transmit_string("Triggered Fault!");
-			}
-			transmit_string("Fault Resolved!");
-		}
-		//regular ECU execution
-		else {
-			//throttle output controlled by interrupt service routine
-		}
+//		if(APPS_Fault() || BSE_Fault()){
+//			while(Fault_Not_Resolved()){
+//				//set throttle outputs to 0;
+//				GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1; /* Turn off all LEDs */
+//				GPIOB_PCOR |= PTH0;
+//				transmit_string("Triggered Fault!");
+//			}
+//			transmit_string("Fault Resolved!");
+//		}
+//		//regular ECU execution
+//		else {
+//			//throttle output controlled by interrupt service routine
+//		}
 
 	}
 }

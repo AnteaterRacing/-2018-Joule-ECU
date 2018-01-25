@@ -10,7 +10,7 @@ void ReadAdcBlock(void);
 void init_ADC(void);
 void ADC_Handler(void);
 void ADC_Converter(void);
-
+void ADC0_IRQHandler(void);
 
 #define ADC_SC1_ADCH0_MASK 0
 #define ADC_SC1_ADCH1_MASK 1
