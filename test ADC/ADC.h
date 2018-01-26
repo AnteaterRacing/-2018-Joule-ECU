@@ -8,9 +8,9 @@
 
 void ReadAdcBlock(void);
 void init_ADC(void);
-void ADC_Handler(void);
-void ADC_Converter(void);
 void ADC0_IRQHandler(void);
 
 
+
 #endif /* ADC_H_ */
+
