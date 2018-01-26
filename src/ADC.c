@@ -10,6 +10,7 @@
 #include "stdio.h"
 #include "string.h"
 #include "UART.h"
+#include "SKEAZ1284.h"
 
 uint16_t ADC_buff[11] = {0};
 
@@ -51,7 +52,7 @@ void ReadAdcBlock()
 		  ADC_SC1 = ADC_SC1_ADCH2_MASK;
 
 		  //Dummy the 4th channel = ADC3
-		  ADC_SC1 = ADC_SC1_ADCH1_MASK | ADC_SC1_ADCH2_MASK;
+		  ADC_SC1 = ADC_SC1_ADCH3_MASK;
 
 		  //Dummy the 5th channel = ADC4 & Interrupt
 		  ADC_SC1 = ADC_SC1_ADCH4_MASK | ADC_SC1_AIEN_MASK;
@@ -59,19 +60,19 @@ void ReadAdcBlock()
 	if (ADC_buff [0] == 1)
 	{
 		  //Dummy the 1st channel = ADC5
-		  ADC_SC1 = ADC_SC1_ADCH4_MASK | ADC_SC1_ADCH1_MASK;
+		  ADC_SC1 = ADC_SC1_ADCH5_MASK;
 
 		  //Dummy the 2nd channel = ADC6
-		  ADC_SC1 = ADC_SC1_ADCH4_MASK | ADC_SC1_ADCH2_MASK;
+		  ADC_SC1 = ADC_SC1_ADCH6_MASK;
 
 		  //Dummy the 3rd channel = ADC7
-		  ADC_SC1 = ADC_SC1_ADCH4_MASK | ADC_SC1_ADCH2_MASK | ADC_SC1_ADCH1_MASK;
+		  ADC_SC1 = ADC_SC1_ADCH7_MASK;
 
 		  //Dummy the 4th channel = ADC8
 		  ADC_SC1 = ADC_SC1_ADCH8_MASK;
 
 		  //Dummy the 5th channel = ADC9 & Interrupt
-		  ADC_SC1 = ADC_SC1_ADCH8_MASK | ADC_SC1_ADCH1_MASK | ADC_SC1_AIEN_MASK;
+		  ADC_SC1 = ADC_SC1_ADCH9_MASK | ADC_SC1_AIEN_MASK;
 
 	}
 
