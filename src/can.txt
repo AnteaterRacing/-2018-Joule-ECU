@@ -25,100 +25,6 @@ void LED_TEAL(void);
 void LED_WHT(void);
 void LED_OFF(void);
 
-#ifdef UserDefineNode1
-int main(void)
-{
-#define COUNTER_LIMIT 100
-
-	/*FLL Engaged external*/
-	ICS_ConfigType ics_config={0};
-	ics_config.u8ClkMode=ICS_CLK_MODE_FEE;
-	ics_config.bdiv=0;						/* Bdiv=1*/
-	ics_config.oscConfig.bRange=1;			/*Oscillator high range*/
-	ics_config.oscConfig.bIsCryst=1;		/*Oscillator clock source selected*/
-	ics_config.oscConfig.bStopEnable=1;		/* Oscillator enable in stop*/
-	ics_config.oscConfig.u32OscFreq=8000;	/*8 MHz oscillator*/
-	ics_config.oscConfig.bEnable=1;			/*Enable external oscillator*/
-
-	ICS_Init(&ics_config);					/* Initialize Clock */
-
-	SBC_Init();							/* Initialize the System Basis Chip */
-	MSCAN_ModuleEn();
-	/*write your own code here*/
-
-	__attribute__ ((unused)) uint8 err_status;
-
-	GPIOB_PDDR |= 1<<PTH0; 			/* Setup PTH0 as an output for RED LED */
-	GPIOB_PDDR |= 1<<PTH1; 			/* Setup PTH1 as an output for GREEN LED */
-	GPIOB_PDDR |= 1<<PTE7;
-
-	GPIOB_PSOR |= 1<<PTH0; 		/* Set output port PTH0 */
-	GPIOB_PSOR |= 1<<PTH1; 		/* Clear output port PTH1 */
-	GPIOB_PSOR |= 1<<PTE7; 		/* Set output port PTE7 */
-
-	err_status = Init_CAN(0, FAST); //initialize CAN0 to FAST mode
-
-	int i;
-	uint8 data[7] = {8, 0, 0xff, 0, 0xff, 0, 0xff}; //data to transmit. data[0] corresponds to data length
-	uint8 data_rec[7]; //receive array to store received data
-
-
-	err_status = Config_CAN_MB(0, 0, RXDF, 1); //configure CAN0 ch0 as receive
-
-
-	err_status = Config_CAN_MB(0, 1, TXDF, 1); //configure CAN0 ch1 as transmit
-
-
-	err_status = Load_CAN_MB(0, 1, data);//load into: channel 0 buffer 1, object "data"
-
-
-	err_status = Transmit_CAN_MB(0, 1);//push data into the data link layer
-
-
-
-
-	err_status = Read_CAN_MB_Data(0, 0, data_rec);//channel 0 buffer 0, object "data_rec", waiting to receive data from other board
-
-
-	while(err_status != ERR_OK) //waiting for successful read operation completion
-	{
-		err_status = Read_CAN_MB_Data(0, 0, data_rec);//channel 0 buffer 0, object "data_rec"
-
-
-	}
-
-
-	if(data_rec[0] == 8) //checking data length matches what was transmitted
-	{
-		err_status = ERR_OK;
-
-	}
-	else
-	{
-		err_status = ERR_MB; //toggle message buffer error flag
-
-	}
-
-	int counter = 0;
-
-	for(;;) {
-		counter++;
-
-		if(counter > COUNTER_LIMIT) {
-			counter = 0;
-		}
-	}
-
-	/* to avoid the warning message for GHS: statement is unreachable*/
-#if defined (__ghs__)
-#pragma ghs nowarning 111
-#endif
-#if defined (__ICCARM__)
-#pragma diag_suppress=Pe111
-#endif
-	return 0;
-}
-#endif
 #define NodeTemplate
 #ifdef NodeTemplate
 int main(void)
@@ -257,56 +163,6 @@ int main(void)
 				//err_status = Transmit_CAN_MB(0, 0);//ch0, buff_0
 			}
 
-			//used to verify conditions
-			/*
-			if(err_status == ERR_OK)
-			{
-				//LED_GRN();
-			}
-			else if(err_status == ERR_QED)
-			{
-				//LED_BLU();
-			}
-			else if(err_status == OVERRUN)
-			{
-				//LED_WHT();
-			}
-			else
-			{
-				//LED_RED();
-			}
-			LED_OFF();
-			*/
-
-			/*
-			err_status = Check_CAN_MB_Status(0, 2, dataTX_2); //ch0, buff2, dataTX_2
-			if(buffer_status[0] != QUEUED)
-			{
-				err_status = Load_CAN_MB(0, 2, dataTX_2);
-				err_status = Transmit_CAN_MB(0, 2);
-			}
-			*/
-
-			//used to verify conditions
-			/*if(err_status == ERR_OK)
-			{
-				//LED_GRN();
-			}
-			else if(err_status == ERR_QED)
-			{
-				//LED_BLU();
-			}
-			else if(err_status == OVERRUN)
-			{
-				//LED_WHT();
-			}
-			else
-			{
-				//LED_RED();
-			}
-			LED_OFF();
-			*/
-
 			err_status = Transmit_CAN_MB(0, 0);//ch0, buff_0
 			//err_status = Transmit_CAN_MB(0, 2);//ch0, buff_2
 			if(err_status == ERR_OK)
@@ -323,7 +179,8 @@ int main(void)
 			{
 				LED_RED();
 			}
-
+			LED_OFF();
+			
 			err_status == Check_CAN_MB_Status(0, 1, buffer_status);//check RX buffer 1
 			if(buffer_status[0] == NEWDATA)
 			{
@@ -339,19 +196,6 @@ int main(void)
 		flag_2 = 0;
 		//clear LED
 		LED_OFF();
-
-
-		//general RX buffer. ID1
-		/*
-		err_status = Check_CAN_MB_Status(0, 4, buffer_status);//ch0, buffer_4, 2 byte memory buffer. ID1
-
-		if(buffer_status[0] == NEWDATA)
-		{
-			err_status = Read_CAN_MB_Data(0, 4, dataRX_1);
-			UART_Val[1] = 1;
-		}
-		 */
-
 
 		//general RX buffer. ID1
 		err_status = Check_CAN_MB_Status(0, 1, buffer_status);//ch0, buffer 1, return status & mode into buffer_status. ID1
@@ -383,65 +227,14 @@ int main(void)
 		}
 		LED_OFF();
 
-
-		//Zeva status buffer. ID50
-		/*err_status = Check_CAN_MB_Status(0, 6, buffer_status);//ch0, buffer_6. ID50. Zeva status
-		if(buffer_status[0] == NEWDATA)
-		{
-			err_status = Read_CAN_MB_Data(0, 6, ZevaDataRX1);
-			UART_Val[3] = 1;
-		}
-		 */
-
-		err_status = Read_CAN_MB_Data(0, 6, ZevaDataRX1);
-		if(err_status == ERR_OK)
-		{
-			//UART_Val[3] = 1;
-		}
-
-		//Zeva transmit setting buffer. ID53
-		/*err_status = Check_CAN_MB_Status(0, 7, buffer_status);//ch0, buffer_7. ID53. Zeva Transmit settings
-		if(buffer_status[0] == NEWDATA)
-		{
-			err_status = Read_CAN_MB_Data(0, 7, ZevaDataRX2);
-			UART_Val[4] = 1;
-		}
-		 */
-
-		err_status = Read_CAN_MB_Data(0, 7, ZevaDataRX2);
-		if(err_status == ERR_OK)
-		{
-			//UART_Val[4] = 1;
-		}
-
-		//BMS data buffer. ID0x7EB
-		/*err_status = Check_CAN_MB_Status(0, 8, buffer_status);//ch0, buffer_8. ID0x7EB. Orion
-		if(buffer_status[0] == NEWDATA)
-		{
-			err_status = Read_CAN_MB_Data(0, 8, OrionDataRX);
-			UART_Val[5] = 1;
-		}
-		 */
-
+		
 		err_status = Read_CAN_MB_Data(0, 8, OrionDataRX);
 		if(err_status == ERR_OK)
 		{
 			//UART_Val[5] = 1;
 		}
 
-		//Request BMS for state of charge
-		/*
-		OrionDataTX[5] = {4, 2019, 4, 22, 61455};    //from App note
-		err_status = Load_CAN_MB(0, 9, OrionDataTX);    //ch0, buffer_9, data transmitted: OrionDataTX
-		err_check = Transmit_CAN_MB(0, 9);              //ch0, buffer_9
-		if(err_status == ERR_OK)
-		{
-			UART_Val[6] = 1;
-		}
-		 */
-
-
-		//check test case (RX)
+		//check that data is valid (RX)
 		for(i = 1; i < 9; i++)
 		{
 			if(dataRX_1[i] != 0)
@@ -456,61 +249,6 @@ int main(void)
 			LED_WHT();
 		}
 		//LED_OFF();
-
-
-
-
-
-
-
-		//check if dataTX needs to be transmitted/updated
-		/*
-		for(i = 1; i < 9; i++)
-		{
-			if(dataTX[i] != 0)
-			{
-				flag = 1;
-				UART_Val[7] = 1;
-			}
-		}
-		//if flag is true, then load into general TX buffer_1 and transmit
-		if(flag == 1)
-		{
-			err_status = Load_CAN_MB(0, 1, dataTX); //currently [5] = 1, [9] = 10
-			err_status = Transmit_CAN_MB(0, 1);
-			if(err_status == ERR_OK)
-			{
-				UART_Val[8] = 1;
-
-				//turns LED to YLW for data transmission
-				GPIOB_PCOR |= 1<<PTH0;
-				GPIOB_PCOR |= 1<<PTH1;
-				GPIOB_PSOR |= 1<<PTE7;
-
-				delay();
-				delay();
-
-			}
-		}
-		 */
-
-		//Examines err_status and returns UART PASS/FAIL
-		/*
-		transmit_string("1");
-		for(i = 0; i < 10; i++)
-		{
-
-			if(UART_Val[i] == 1)
-			{
-				transmit_string("PASS\n");
-			}
-			else if(UART_Val[i] == 0)
-			{
-				transmit_string("FAIL\n");
-			}
-		}
-		transmit_string("10");
-		 */
 
 		//reset values
 		memcpy(dataTX_1, (int [9]){8, 0, 0, 0, 0, 0, 0, 0, 0}, 9*sizeof(int));
