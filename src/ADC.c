@@ -15,26 +15,30 @@
 uint16_t ADC_buff[11] = {0};
 
 void init_ADC(void)  {
-  SIM_SCGC |= SIM_SCGC_ADC_MASK;		/* Enable bus clock to ADC module */
 
-  ADC_APCTL1 = 0x0000FFFF;              /* Disables the IO Control of all ADC channel pins */
+	NVIC_ClearPendingIRQ(ADC0_IRQn);
+	NVIC_EnableIRQ(ADC0_IRQn);
+	NVIC_SetPriority(ADC0_IRQn,0);
+	SIM_SCGC |= SIM_SCGC_ADC_MASK;			/* Enable bus clock to ADC module */
 
-  ADC_SC3 = 0x00000008;                 /* Select ADCACLK, no divide, 12 bit conversion */
-  	                                    /* ADLPC = 0 (default): hi speed config */
-  	                                    /* ADIV = 0 (default): clock rate = input clock/1 */
-  	                                    /* ADLSMP = 0 (default): long sample time */
-  	                                    /* MODE = 1: 12 bit conversion */
-  	                                    /* ADICLK= 1:Bus clock */
+	ADC_APCTL1 = 0x0000FFFF;              	/* Disables the IO Control of all ADC channel pins */
 
-  ADC_SC4 =0x00000044;                  /* 5 level FIFO = 100*/
-  	  	  	  	  	  	  	  	  	  	/* FIFO Scan Enabled = 1*/
+	ADC_SC3 = 0x00000008;                 	/* Select ADCACLK, no divide, 12 bit conversion */
+											/* ADLPC = 0 (default): hi speed config */
+											/* ADIV = 0 (default): clock rate = input clock/1 */
+											/* ADLSMP = 0 (default): long sample time */
+											/* MODE = 1: 12 bit conversion */
+											/* ADICLK= 1:Bus clock */
 
-  ADC_SC2 =0x00000000;                  /* SW trigger, default ref pins, no compare */
-  	  	  	  	  	  	  	  	  	  	/* ADTRG = 0 (default): SW Trigger */
-  	                                    /* ACFE = 0 (default):  compare function disabled */
-  	  	  	  	  	  	  	  	  	  	/* REFSEL = 0 (default): default ref volt pin pair */
+	ADC_SC4 =0x00000044;                  	/* 5 level FIFO = 100*/
+											/* FIFO Scan Enabled = 1*/
 
-  ADC_SC1 = 0x0000001F;					/*Disables module to be enabled by specific function*/
+	ADC_SC2 =0x00000000;                  	/* SW trigger, default ref pins, no compare */
+											/* ADTRG = 0 (default): SW Trigger */
+											/* ACFE = 0 (default):  compare function disabled */
+											/* REFSEL = 0 (default): default ref volt pin pair */
+
+	ADC_SC1 = 0x0000001F;					/*Disables module to be enabled by specific function*/
 
 }
 
@@ -130,6 +134,25 @@ void ADC_Converter ()
 	}
 	return;
 }
+
+//OLD ADC CODE:
+
+uint32_t adcResult = 0;
+
+void convertAdcChan(uint16_t adcChan) {
+  ADC_SC1 &= ~ADC_SC1_ADCH_MASK;       /* Clear any prior ADCH bits*/
+  ADC_SC1 |= ADC_SC1_ADCH(adcChan);    /* Specify next channel for conversion */
+}
+
+uint8_t adc_complete(void)  {
+  return ((ADC_SC1 & ADC_SC1_COCO_MASK)>>ADC_SC1_COCO_SHIFT);	 /* Return value of Conversion Complete flag */
+}
+
+uint32_t read_adc_chx(void)  {
+  adcResult = ADC_R;                            /* Read ADC conversion result (clears COCO flag) */
+  return  (uint32_t) ((5000*adcResult)/0x3FF);  /* Convert result to mv for 0-5V range */
+}
+
 
 
 

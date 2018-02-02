@@ -18,14 +18,16 @@
 #define PTH1 25          						/* Port PTH1 output to green LED */
 #define PTH6 30									/* Port PTH6 for throttle output PWM*/
 
+//SELECT A DEFINITION TO CHOOSE FRONT OR REAR ECU PROGRAMMING:
+#define RearECU
+//#define FrontECU
 
-//TODO
+//REAR ECU CODE MAIN METHOD
+#ifdef RearECU
 int main(void)
 {
 	init_ECU(); 				//initialize ECU and all pins, timers, interrupts, etc.
-	//wait_for_start_seq(); 	//wait for the startup sequence (brake + start button)
-
-	//transmit_string("run");
+	wait_for_start_seq(); 		//wait for the startup sequence (brake + start button)
 
 	//LED initialization
 	//PCOR = Port Clear Output Register, PSOR = Port Set Output Register
@@ -38,25 +40,13 @@ int main(void)
 
 
 	//this runs continuously once the initialization has completed
-	while(1) {
-		//GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1; /* Turn off all LEDs */
-		//print_ECU_Status_UART();
-		//FTM1_C1V = acc1*0.006; //Analog input to PWM led output
-		//FTM2_C0V = FTM_CnV_VAL(acc1);
-		//traps program inside loop if a fault is detected. Doesn't exit until fault condition clears
-//		if(APPS_Fault() || BSE_Fault()){
-//			while(Fault_Not_Resolved()){
-//				//set throttle outputs to 0;
-//				GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1; /* Turn off all LEDs */
-//				GPIOB_PCOR |= PTH0;
-//				transmit_string("Triggered Fault!");
-//			}
-//			transmit_string("Fault Resolved!");
-//		}
-//		//regular ECU execution
-//		else {
-//			//throttle output controlled by interrupt service routine
-//		}
-
-	}
+	while(1);
 }
+#endif
+
+//FRONT ECU CODE MAIN METHOD
+#ifdef FrontECU
+int main(void){
+
+}
+#endif

@@ -1,0 +1,5 @@
+
+*.mk
+*.args
+*.map
+Debug/makefile

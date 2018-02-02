@@ -11,10 +11,10 @@
 #include "UART.h"
 #include "stdlib.h"
 //Analog to Digital Converter input values:
-uint32_t acc1 = 0; 			//channel 1 Pin J4-13  represents signal from accelerator pedal sensor 1
-uint32_t acc2; 				//channel 2  Pin J4-15 represents signal from accelerator pedal sensor 2
-uint32_t brakeAngle; 		//channel 3 Pin J5-07? represents signal from brake pedal position sensor
-uint32_t steeringAngle; 	//channel 4	Pin J5-09  represents signal from steering wheel position sensor
+uint32_t acc1 = 0;
+uint32_t acc2;
+uint32_t brakeAngle;
+uint32_t steeringAngle;
 int APPS_flag = 0; 			//0 when no fault, 1 when fault
 int BSE_flag = 0;			//0 when no fault, 1 when fault
 int APPS_faultcount = 0; 	//number of times APPS faults have occurred
@@ -24,7 +24,7 @@ uint32_t throttleValueR = 0;//value used to set throttle value for right motor c
 
 //waiting for the start sequence to be pressed before starting the vehicle
 void wait_for_start_seq(){
-	while(brakeAngle==0); //TODO add busy wait for start button to initiate start
+	//while(brakeAngle==0); //TODO add busy wait for start button to initiate start
 						  //TODO add RTDS output signal
 
 }

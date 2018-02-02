@@ -21,35 +21,16 @@
 int pit0_flag_counter = 0;      /* Counter for PIT0 timer expirations */
 
 
-//initializing the global interrupt service routines
-void init_IRQs (void) {
-  NVIC_ClearPendingIRQ(PIT_CH0_IRQn);  /* Clear any Pending IRQ for all PIT ch0 (#22) */
-  NVIC_EnableIRQ(PIT_CH0_IRQn);        /* Set Enable IRQ for PIT_CH0 */
-  NVIC_SetPriority(PIT_CH0_IRQn,0);    /* Set Priority for PIT_CH0 */
-
-  NVIC_ClearPendingIRQ(FTM2_IRQn);
-  NVIC_EnableIRQ(FTM2_IRQn);			//enable interrupt for FlexTimer2
-  NVIC_SetPriority(FTM2_IRQn,0);    	/* Set Priority for FTM2 */
-
-  NVIC_ClearPendingIRQ(ADC0_IRQn);
-  NVIC_EnableIRQ(ADC0_IRQn);
-  NVIC_SetPriority(ADC0_IRQn,0);
-}
-
 //initializing PWM pins, timers, and interrupts
 //TODO
 void init_PWM(void){
 	GPIOB_PDDR |= 1<<PTF0 | 1<<PTF1; //set data direction to output
 	GPIOB_PIDR &= ~(1<<PTF0 | 1<<PTF1); //disable inputs
 	GPIOB_PDOR &= ~(1<<PTF0 | 1<<PTF1); //setting initial value to 0.
+	NVIC_ClearPendingIRQ(FTM2_IRQn);
+	NVIC_EnableIRQ(FTM2_IRQn);			//enable interrupt for FlexTimer2
+	NVIC_SetPriority(FTM2_IRQn,0);    	/* Set Priority for FTM2 */
 }
-
-////interrupt handler for PIT. flashes blue LED and sends UART message
-//void PIT_CH0_IRQHandler (void) {
-//  pit0_flag_counter++;            /* PIT0 expired. Increment counter */
-//  GPIOB_PTOR |= 1<<PTE7;          /* Toggle Output (1) on port E7 (blue LED) */
-//  PIT_TFLG0 |= PIT_TFLG_TIF_MASK; /* Clear PIT0 flag */
-//}
 
 //FTM2 IRQ handler. This is called for PWM when interrupts occur
 void FTM2_IRQHandler(void){
@@ -71,18 +52,14 @@ void FTM2_IRQHandler(void){
 	}
 }
 
-//TODO
 void init_ECU(){
 
-	init_UART(); 	//Initialize UART
-	init_ADC(); 	//initialize Analog to Digital Converter Module
-	init_PWM();		//initalize PWM Module and FTM components
-	init_IRQs();	//initializing the interrupt service routines
-	init_PIT0();     /* Initialize PIT0: 1 sec timeout, IRQ enabled */
-
-	//Initialize PWM and clocks
-	init_clks_FEE_40MHz();        /* KEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
+	init_UART(); 		//Initialize UART
+	init_ADC(); 		//initialize Analog to Digital Converter Module
+	init_PWM();			//initialize PWM Module and FTM components
+	init_PIT0();     	// Initialize PIT0
 	init_FTM ();  	            /* Enable bus clock to FTM1,2 prescaled by 128 */
+	init_clks_FEE_40MHz();        /* KEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
 
 }
 
