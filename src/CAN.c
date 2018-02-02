@@ -15,6 +15,7 @@
 #include "nvic.h"
 #include "msCANdrv.h"
 #include "msCANcfg.h"
+#include "ADC.h"
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
 #define PTH1 25          						/* Port PTH1 output to green LED */
