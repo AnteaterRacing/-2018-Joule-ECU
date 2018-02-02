@@ -194,7 +194,7 @@ int main(void)
 
         ADC0_IRQHandler();
 	    
-	for(i = 0; i < 11; i++)
+	for(i = 1; i < 11; i++)
 	{
 		if(ADC_buff[i] != 0)
 		{
