@@ -137,7 +137,9 @@ int main(void)
     SBC_Init();							/* Initialize the System Basis Chip for CAN */
     MSCAN_ModuleEn();
     EnableInterrupts;
+    init_ADC();
 
+    
     __attribute__ ((unused)) uint8 err_status;
 
     GPIOB_PDDR |= 1<<PTH0; 			/* Setup PTH0 as an output for RED LED */
@@ -187,21 +189,17 @@ int main(void)
 
     for(;;)
     {
-        for(i = 1; i < 9; i++)//insert read ADC here or set dataTX_1 = {8, 1, 1, 1, 1, 1, 1, 1, 1)
-        {
-            if(dataTX_1[i] != 0)
-            {
-                flag_1 = 1;
-            }
-        }
+	//insert read ADC here or set dataTX_1 = {8, 1, 1, 1, 1, 1, 1, 1, 1}
 
-        for(i = 1; i < 9; i++) //insert read ADC here 
-        {
-            if(dataTX_2[i] != 0)
-            {
-                flag_2 = 1;
-            }
-        }
+        ADC0_IRQHandler();
+	    
+	for(i = 0; i < 11; i++)
+	{
+		if(ADC_buff[i] != 0)
+		{
+			flag_1 = 1;
+		}
+	}
 
         while((flag_1 == 1 || flag_2 == 1) & counterTX < 255)
         {
@@ -248,7 +246,7 @@ int main(void)
 
         }
 
-
+	//abstract to abort TX
         if(counterTX >= 255)
         {
             err_status = Abort_CAN_MB(0, 0);
@@ -271,7 +269,14 @@ int main(void)
 
             err_status = Read_Rec_Err_Counter(0, counterRX);
         }
+	
+	//abstract to abort RX
+        if(counterRX >= 255)
+        {
+            err_status = Abort_CAN_MB(0, 1);
+        }
 
+	//abstact to error check function
         if(err_status == ERR_OK && buffer_status[0] == READDATA)
         {
             LED_GRN();
@@ -285,8 +290,32 @@ int main(void)
         }
 
 
-
-
+	    
+	    
+	//ADD FOR ORION BMS RX
+	/*
+	err_status = Check_CAN_MB_Status(0, 8, buffer_status);
+	err_status = Read_CAN_MB_Data(0, 8, OrionDataRX);
+	    
+	while((err_status != ERR_OK && buffer_status[0] == NEWDATA) & (counterRX <= 255)
+	{
+		err_status = Read_CAN_MB_Data(0, 8, OrionDataRX);
+		LED_RED();
+		
+		if(err_status != ERR_OK)
+		{
+			err_status = Read_Rec_Err_Counter(0, counterRX);
+		}
+	}
+	if(counterRX >= 255)
+	{
+		err_status = Abort_CAN_MB(0, 8);	      
+	}
+	*/
+	
+	
+	
+	
         //reset values
         memcpy(dataTX_1, (int [9]){8, 0, 0, 0, 0, 0, 0, 0, 0}, 9*sizeof(int));
         memcpy(dataTX_2, (int [9]){8, 0, 0, 0, 0, 0, 0, 0, 0}, 9*sizeof(int));
