@@ -130,7 +130,7 @@
 * Define msCAN module re-synchronisation jump width
 * Permitted values: 1 to smaller of 4 and PHASE_SEG1_CAN time quanta
 ******************************************************************************/
-#define RJW_CAN0               (0)
+#define RJW_CAN0               (4) //0
 #define RJW_CAN1               (0)
 #define RJW_CAN2               (0)
 #define RJW_CAN3               (0)
