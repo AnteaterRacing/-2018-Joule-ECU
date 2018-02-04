@@ -37,6 +37,7 @@ void LED_BLU(void);
 void LED_TEAL(void);
 void LED_WHT(void);
 void LED_OFF(void);
+void LED_YEL(void);
 
 #ifdef UserDefineNode1
 int main(void)
@@ -194,7 +195,7 @@ int main(void)
 
         ADC0_IRQHandler();
 	    
-	for(i = 1; i < 11; i++)
+	for(i = 1; i < 11; i++)N
 	{
 		if(ADC_buff[i] != 0)
 		{
@@ -244,14 +245,21 @@ int main(void)
             LED_OFF();
 
             err_status = Tran_Err_Counter(0, &Tran_Err_Counter);
-
+		
+	    if(counterTX >= 255)
+            {
+            	err_status = Abort_CAN_MB(0, 0);
+	    }
+	    else if(TSTAT == 3)
+	    {
+		err_status = Abort_CAN_MB(0, 0);
+	    }
+	    else if(OVRIF == 1)
+	    {
+		    
         }
 
-	//abstract to abort TX
-        if(counterTX >= 255)
-        {
-            err_status = Abort_CAN_MB(0, 0);
-        }
+	
 
 
         flag_1 = 0;
@@ -267,17 +275,22 @@ int main(void)
         {
             err_status = Read_CAN_MB_Data(0, 1, dataRX_1);
             LED_RED();
-
+		
             err_status = Read_Rec_Err_Counter(0, counterRX);
-        }
+        
 	
-	//abstract to abort RX
-        if(counterRX >= 255)
-        {
-            err_status = Abort_CAN_MB(0, 1);
-        }
+            if(counterRX >= 255)
+            {
+            	err_status = Abort_CAN_MB(0, 1);
+	    }
+	    else if(RSTAT == 3)
+	    {
+		err_status = Abort_CAN_MB(0, 1);
+	    }
+	}
+	    
 
-	//abstact to error check function
+
         if(err_status == ERR_OK && buffer_status[0] == READDATA)
         {
             LED_GRN();
@@ -436,6 +449,15 @@ void LED_WHT(void)
 
 }
 
+void LED_YEL(void)
+{
+	//ON
+	GPIOB_PCOR |= 1<<PTH0; //RED
+	GPIOB_PCOR |= 1<<PTH1; //GRN
+	GPIOB_PSOR |= 1<<PTE7; //BLU
+
+}
+	
 void LED_OFF(void)
 {
 	//OFF
