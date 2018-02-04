@@ -208,10 +208,11 @@ int main(void)
 		while((flag_1 == 1 || flag_2 == 1) & counterTX < 255)
 		{
 			err_status = Check_CAN_MB_Status(0, 0, buffer_status);
-			if(buffer_status[0] != QUEUED)
+			if(buffer_status[0] != QUEUED || buffer_status[0] != QUEUED2)//id
 			{
 				err_status = Load_CAN_MB(0, 0, dataTX_1);//ch0, buff_0, dataTX_1
 			}
+
 
 
 			err_status = Check_CAN_MB_Status(0, 0, buffer_status);
@@ -219,48 +220,69 @@ int main(void)
 			{
 				LED_RED();
 			}
-
-
-			err_status = Transmit_CAN_MB(0, 0);//ch0, buff_0
-
-			//START, visual debug
-			err_status = Check_CAN_MB_Status(0, 0, buffer_status);
-			if(buffer_status[0] != TRANSMITTED)
+			else if(buffer_status[0] == VALIDDATA)
 			{
-				LED_RED();
+				err_status = Transmit_CAN_MB(0, 0);//ch0, buff_0
+				LED_GRN();
 			}
+			LED_OFF();
+			
 
+			
+			//START, visual debug
 			if(err_status == ERR_OK)
 			{
 				LED_GRN();
-				//remove flag to show QED status & STUCK force transmission
-				flag_1 = 0;
 			}
 			else if(err_status == ERR_QED) //occasionally gets stuck here
 			{
 				LED_BLU();
 			}
+			else if(err_status == ERR_BOFF)
+			{
+				err_status = Reset_CAN(0, CMPTX);
+			}
 			else//other conditions
 			{
 				LED_RED();
 			}
+			
+			
+			
+			err_status = Check_CAN_MB_Status(0, 0, buffer_status);
+			if(buffer_status[0] != TRANSMITTED)
+			{
+				//check arbitration 
+			}
+			else if(buffer_status[0] == TRANSMITTED)
+			{
+				LED_GRN();
+				flag_1 = 0;
+			}
+			else if(buffer_status[0] == QUEUED2)
+			{
+				LED_YEL();
+			}
+
 			LED_OFF();
 			//END
+
+
 
 			//error checking
 			err_status = Read_Tran_Err_Counter(0, &counterTX);
 
-			err_status = Check_CAN_Status(0, CAN_status);
+
+
 
 			if(counterTX >= 255)
 			{
-				err_status = Abort_CAN_MB(0, 0);
+				err_status = Abort_CAN_MB(0, 0);//opt
 			}
-
 		}
 		flag_1 = 0;
 		flag_2 = 0;
-		counterTX = 0;
+		//counterTX = 0;
 
 
 
@@ -269,7 +291,6 @@ int main(void)
 		err_status = Read_CAN_MB_Data(0, 1, dataRX_1); //ch0, buffer 1, dataRX buff
 		while((err_status != ERR_OK && buffer_status[0] == NEWDATA) & (counterRX <= 255))
 		{
-			err_status = Read_CAN_MB_Data(0, 1, dataRX_1);
 			LED_RED();
 
 			err_status = Read_Rec_Err_Counter(0, &counterRX);
@@ -282,10 +303,10 @@ int main(void)
 			else if((CAN_status[2] & RSTAT0 == 1) && (CAN_status[2] & RSTAT1 == 1))
 			{
 				err_status = Abort_CAN_MB(0, 1);
+				err_status = Reset_CAN(0, CMPTX);
 			}
+			err_status = Read_CAN_MB_Data(0, 1, dataRX_1);
 		}
-
-
 
 
 
