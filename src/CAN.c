@@ -124,198 +124,197 @@ int main(void)
 {
 #define COUNTER_LIMIT 100
 
-    /*FLL Engaged external*/
-    ICS_ConfigType ics_config={0};
-    ics_config.u8ClkMode=ICS_CLK_MODE_FEE;
-    ics_config.bdiv=0;						/* Bdiv=1*/
-    ics_config.oscConfig.bRange=1;			/*Oscillator high range*/
-    ics_config.oscConfig.bIsCryst=1;		/*Oscillator clock source selected*/
-    ics_config.oscConfig.bStopEnable=1;		/* Oscillator enable in stop*/
-    ics_config.oscConfig.u32OscFreq=8000;	/*8 MHz oscillator*/
-    ics_config.oscConfig.bEnable=1;			/*Enable external oscillator*/
+	/*FLL Engaged external*/
+	ICS_ConfigType ics_config={0};
+	ics_config.u8ClkMode=ICS_CLK_MODE_FEE;
+	ics_config.bdiv=0;						/* Bdiv=1*/
+	ics_config.oscConfig.bRange=1;			/*Oscillator high range*/
+	ics_config.oscConfig.bIsCryst=1;		/*Oscillator clock source selected*/
+	ics_config.oscConfig.bStopEnable=1;		/* Oscillator enable in stop*/
+	ics_config.oscConfig.u32OscFreq=8000;	/*8 MHz oscillator*/
+	ics_config.oscConfig.bEnable=1;			/*Enable external oscillator*/
 
-    ICS_Init(&ics_config);					/* Initialize Clock */
+	ICS_Init(&ics_config);					/* Initialize Clock */
 
-    SBC_Init();							/* Initialize the System Basis Chip for CAN */
-    MSCAN_ModuleEn();
-    EnableInterrupts;
-    init_ADC();
-
-    
-    __attribute__ ((unused)) uint8 err_status;
-
-    GPIOB_PDDR |= 1<<PTH0; 			/* Setup PTH0 as an output for RED LED */
-    GPIOB_PDDR |= 1<<PTH1; 			/* Setup PTH1 as an output for GREEN LED */
-    GPIOB_PDDR |= 1<<PTE7;
-
-    GPIOB_PSOR |= 1<<PTH0; 		/* Set output port PTH0 */
-    GPIOB_PSOR |= 1<<PTH1; 		/* set output port PTH1 */
-    GPIOB_PSOR |= 1<<PTE7; 		/* Set output port PTE7 */
+	SBC_Init();							/* Initialize the System Basis Chip for CAN */
+	MSCAN_ModuleEn();
+	EnableInterrupts;
+	//init_ADC();
 
 
-    err_status = Init_CAN(0, CMPTX); //init CAN ch0 to FAST mode
-    while(err_status != ERR_OK)
-    {
-        err_status = Init_CAN(0, CMPTX);
-        LED_TEAL();
+	__attribute__ ((unused)) uint8 err_status;
 
-    }
-    LED_OFF();
+	GPIOB_PDDR |= 1<<PTH0; 			/* Setup PTH0 as an output for RED LED */
+	GPIOB_PDDR |= 1<<PTH1; 			/* Setup PTH1 as an output for GREEN LED */
+	GPIOB_PDDR |= 1<<PTE7;
 
-
-    int i = 0;
-    int flag_1 = 0;
-    int flag_2 = 0;
-    int counterTX = 0;
-    int counterRX = 0;
-
-    uint8 CAN_status[3];
-    uint8 buffer_status[2];
-
-    uint8 dataTX_1[9] =  {8, 0, 0, 0, 0, 0, 0, 0, 0};
-    uint8 dataTX_2[9] = {8, 0, 0, 0, 0, 0, 0, 0, 0};
-    uint8 dataTX_temp[9] =  {8, 0, 0, 0, 0, 0, 0, 0, 0};
-    uint8 dataRX_1[9] = {8, 0, 0, 0, 0, 0, 0, 0, 0};
-    uint8 dataRX_2[9] = {8, 0, 0, 0, 0, 0, 0, 0, 0};
-    uint8 OrionDataRX[9] = {5, 0, 0, 0, 0, 0};  		//ID: 0x7EB (this can be changed in BMS configuration)
-    uint8 OrionDataTX[5] = {4, 0, 0, 0, 0};    			//ID: 0x7E3
+	GPIOB_PSOR |= 1<<PTH0; 		/* Set output port PTH0 */
+	GPIOB_PSOR |= 1<<PTH1; 		/* set output port PTH1 */
+	GPIOB_PSOR |= 1<<PTE7; 		/* Set output port PTE7 */
 
 
-    err_status = Config_CAN_MB(0, 0, TXDF, 1); //General TX buffer, ID1 - dataTX
-    err_status = Config_CAN_MB(0, 1, RXDF, 1); //General RX buffer, ID1
-    err_status = Config_CAN_MB(0, 2, TXDF, 2); //General TX buffer, ID2
-    err_status = Config_CAN_MB(0, 3, RXDF, 2); //General RX buffer, ID2
+	err_status = Init_CAN(0, CMPTX); //init CAN ch0 to FAST mode
+	while(err_status != ERR_OK)
+	{
+		err_status = Init_CAN(0, CMPTX);
+		LED_TEAL();
 
-    err_status = Config_CAN_MB(0, 8, RXDF, 0x7EB); //Orion RX (ID exceeds max)
-    err_status = Config_CAN_MB(0, 9, TXDF, 0x7E3); //Orion TX, Data Request (ID exceeds max)
+	}
+	LED_OFF();
 
-    for(;;)
-    {
-	//insert read ADC here or set dataTX_1 = {8, 1, 1, 1, 1, 1, 1, 1, 1}
 
-        ADC0_IRQHandler();
-	    
-	for(i = 1; i < 11; i++)N
+	int i = 0;
+	int flag_1 = 0;
+	int flag_2 = 0;
+	int counterTX = 0;
+	int counterRX = 0;
+
+	uint8 CAN_status[3];
+	uint8 buffer_status[2];
+
+	uint8 dataTX_1[9] =  {8, 0, 0, 0, 0, 0, 0, 0, 0};
+	uint8 dataTX_2[9] = {8, 0, 0, 0, 0, 0, 0, 0, 0};
+	uint8 dataTX_temp[9] =  {8, 0, 0, 0, 0, 0, 0, 0, 0};
+	uint8 dataRX_1[9] = {8, 0, 0, 0, 0, 0, 0, 0, 0};
+	uint8 dataRX_2[9] = {8, 0, 0, 0, 0, 0, 0, 0, 0};
+	uint8 OrionDataRX[9] = {5, 0, 0, 0, 0, 0};  		//ID: 0x7EB (this can be changed in BMS configuration)
+	uint8 OrionDataTX[5] = {4, 0, 0, 0, 0};    			//ID: 0x7E3
+
+
+	err_status = Config_CAN_MB(0, 0, TXDF, 1); //General TX buffer, ID1 - dataTX
+	err_status = Config_CAN_MB(0, 1, RXDF, 1); //General RX buffer, ID1
+	err_status = Config_CAN_MB(0, 2, TXDF, 2); //General TX buffer, ID2
+	err_status = Config_CAN_MB(0, 3, RXDF, 2); //General RX buffer, ID2
+
+	err_status = Config_CAN_MB(0, 8, RXDF, 0x7EB); //Orion RX (ID exceeds max)
+	err_status = Config_CAN_MB(0, 9, TXDF, 0x7E3); //Orion TX, Data Request (ID exceeds max)
+
+	for(;;)
+	{
+		//insert read ADC here or set dataTX_1 = {8, 1, 1, 1, 1, 1, 1, 1, 1}
+
+		//ADC0_IRQHandler();
+
+		/*
+	for(i = 1; i < 11; i++)
 	{
 		if(ADC_buff[i] != 0)
 		{
 			flag_1 = 1;
 		}
 	}
+		 */
 
-        while((flag_1 == 1 || flag_2 == 1) & counterTX < 255)
-        {
-            err_status = Check_CAN_MB_Status(0, 0, buffer_status);
-            if(buffer_status[0] != QUEUED)
-            {
-                err_status = Load_CAN_MB(0, 0, dataTX_1);//ch0, buff_0, dataTX_1
-            }
-
-
-            err_status = Check_CAN_MB_Status(0, 0, buffer_status);
-            if(buffer_status[0] != VALIDDATA)
-            {
-                LED_RED();
-            }
+		while((flag_1 == 1 || flag_2 == 1) & counterTX < 255)
+		{
+			err_status = Check_CAN_MB_Status(0, 0, buffer_status);
+			if(buffer_status[0] != QUEUED)
+			{
+				err_status = Load_CAN_MB(0, 0, dataTX_1);//ch0, buff_0, dataTX_1
+			}
 
 
-            err_status = Transmit_CAN_MB(0, 0);//ch0, buff_0
+			err_status = Check_CAN_MB_Status(0, 0, buffer_status);
+			if(buffer_status[0] != VALIDDATA)
+			{
+				LED_RED();
+			}
 
 
-            err_status = Check_CAN_MB_Status(0, 0, buffer_status);
-            if(buffer_status[0] != TRANSMITTED)
-            {
-                LED_RED();
-            }
+			err_status = Transmit_CAN_MB(0, 0);//ch0, buff_0
 
-            if(err_status == ERR_OK)
-            {
-                LED_GRN();
-                //remove flag to show QED status
-                flag_1 = 0;
-            }
-            else if(err_status == ERR_QED) //occasionally gets stuck here
-            {
-                LED_BLU();
-            }
-            else//other conditions
-            {
-                LED_RED();
-            }
-            LED_OFF();
+			//START, visual debug
+			err_status = Check_CAN_MB_Status(0, 0, buffer_status);
+			if(buffer_status[0] != TRANSMITTED)
+			{
+				LED_RED();
+			}
 
-            err_status = Tran_Err_Counter(0, &Tran_Err_Counter);
-		
-	    if(counterTX >= 255)
-            {
-            	err_status = Abort_CAN_MB(0, 0);
-	    }
-	    else if(TSTAT == 3)
-	    {
-		err_status = Abort_CAN_MB(0, 0);
-	    }
-	    else if(OVRIF == 1)
-	    {
-		    
-        }
+			if(err_status == ERR_OK)
+			{
+				LED_GRN();
+				//remove flag to show QED status & STUCK force transmission
+				flag_1 = 0;
+			}
+			else if(err_status == ERR_QED) //occasionally gets stuck here
+			{
+				LED_BLU();
+			}
+			else//other conditions
+			{
+				LED_RED();
+			}
+			LED_OFF();
+			//END
 
-	
+			//error checking
+			err_status = Read_Tran_Err_Counter(0, &counterTX);
 
+			err_status = Check_CAN_Status(0, CAN_status);
 
-        flag_1 = 0;
-        flag_2 = 0;
-        counterTX = 0;
+			if(counterTX >= 255)
+			{
+				err_status = Abort_CAN_MB(0, 0);
+			}
+
+		}
+		flag_1 = 0;
+		flag_2 = 0;
+		counterTX = 0;
 
 
 
-        //general RX buffer. ID1
-        err_status = Check_CAN_MB_Status(0, 1, buffer_status);//ch0, buffer 1, return status & mode into buffer_status. ID1
-        err_status = Read_CAN_MB_Data(0, 1, dataRX_1); //ch0, buffer 1, dataRX buff
-        while((err_status != ERR_OK && buffer_status[0] == NEWDATA) & (counterRX <= 255))
-        {
-            err_status = Read_CAN_MB_Data(0, 1, dataRX_1);
-            LED_RED();
-		
-            err_status = Read_Rec_Err_Counter(0, counterRX);
-        
-	
-            if(counterRX >= 255)
-            {
-            	err_status = Abort_CAN_MB(0, 1);
-	    }
-	    else if(RSTAT == 3)
-	    {
-		err_status = Abort_CAN_MB(0, 1);
-	    }
-	}
-	    
+		//general RX buffer. ID1
+		err_status = Check_CAN_MB_Status(0, 1, buffer_status);//ch0, buffer 1, return status & mode into buffer_status. ID1
+		err_status = Read_CAN_MB_Data(0, 1, dataRX_1); //ch0, buffer 1, dataRX buff
+		while((err_status != ERR_OK && buffer_status[0] == NEWDATA) & (counterRX <= 255))
+		{
+			err_status = Read_CAN_MB_Data(0, 1, dataRX_1);
+			LED_RED();
+
+			err_status = Read_Rec_Err_Counter(0, &counterRX);
+
+			err_status = Check_CAN_Status(0, CAN_status);
+			if(counterRX >= 255)
+			{
+				err_status = Abort_CAN_MB(0, 1);
+			}
+			else if((CAN_status[2] & RSTAT0 == 1) && (CAN_status[2] & RSTAT1 == 1))
+			{
+				err_status = Abort_CAN_MB(0, 1);
+			}
+		}
 
 
-        if(err_status == ERR_OK && buffer_status[0] == READDATA)
-        {
-            LED_GRN();
-        }
-        LED_OFF();
-
-        err_status = Check_CAN_Status(0, CAN_status);
-        if(SYNCH == 0 || CANE == 0)
-        {
-            err_status = Reset_CAN(0, CMPTX);
-        }
 
 
-	    
-	    
-	//ADD FOR ORION BMS RX
-	/*
+
+
+		if(err_status == ERR_OK && buffer_status[0] == READDATA)
+		{
+			LED_GRN();
+		}
+		LED_OFF();
+
+		err_status = Check_CAN_Status(0, CAN_status);
+		if((CAN_status[0] & SYNCH) == 0)
+		{
+			err_status = Reset_CAN(0, CMPTX);
+		}
+
+
+
+
+		//ADD FOR ORION BMS RX
+		/*
 	err_status = Check_CAN_MB_Status(0, 8, buffer_status);
 	err_status = Read_CAN_MB_Data(0, 8, OrionDataRX);
-	    
+
 	while((err_status != ERR_OK && buffer_status[0] == NEWDATA) & (counterRX <= 255)
 	{
 		err_status = Read_CAN_MB_Data(0, 8, OrionDataRX);
 		LED_RED();
-		
+
 		if(err_status != ERR_OK)
 		{
 			err_status = Read_Rec_Err_Counter(0, counterRX);
@@ -323,24 +322,24 @@ int main(void)
 	}
 	if(counterRX >= 255)
 	{
-		err_status = Abort_CAN_MB(0, 8);	      
+		err_status = Abort_CAN_MB(0, 8);
 	}
-	*/
-	
-	
-	
-	
-        //reset values
-        memcpy(dataTX_1, (int [9]){8, 0, 0, 0, 0, 0, 0, 0, 0}, 9*sizeof(int));
-        memcpy(dataTX_2, (int [9]){8, 0, 0, 0, 0, 0, 0, 0, 0}, 9*sizeof(int));
-        memcpy(dataRX_1, (int [9]){8, 0, 0, 0, 0, 0, 0, 0, 0}, 9*sizeof(int));
-        memcpy(dataRX_2, (int [9]){8, 0, 0, 0, 0, 0, 0, 0, 0}, 9*sizeof(int));
-        memcpy(OrionDataRX, (int [5]){4, 0, 0, 0, 0}, 5*sizeof(int));
-        flag_1 = 0;
-        flag_2 = 0;
-        counterRX = 0;
-        counterTX = 0;
-    }
+		 */
+
+
+
+
+		//reset values
+		memcpy(dataTX_1, (int [9]){8, 0, 0, 0, 0, 0, 0, 0, 0}, 9*sizeof(int));
+		memcpy(dataTX_2, (int [9]){8, 0, 0, 0, 0, 0, 0, 0, 0}, 9*sizeof(int));
+		memcpy(dataRX_1, (int [9]){8, 0, 0, 0, 0, 0, 0, 0, 0}, 9*sizeof(int));
+		memcpy(dataRX_2, (int [9]){8, 0, 0, 0, 0, 0, 0, 0, 0}, 9*sizeof(int));
+		memcpy(OrionDataRX, (int [5]){4, 0, 0, 0, 0}, 5*sizeof(int));
+		flag_1 = 0;
+		flag_2 = 0;
+		counterRX = 0;
+		counterTX = 0;
+	}
 
 
 
@@ -350,14 +349,14 @@ int main(void)
 
 
 
-    /* to avoid the warning message for GHS: statement is unreachable*/
+	/* to avoid the warning message for GHS: statement is unreachable*/
 #if defined (__ghs__)
 #pragma ghs nowarning 111
 #endif
 #if defined (__ICCARM__)
 #pragma diag_suppress=Pe111
 #endif
-    return 0;
+	return 0;
 }
 #endif
 
