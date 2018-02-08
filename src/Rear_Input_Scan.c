@@ -26,7 +26,6 @@ void init_PIT0 (void)
 void PIT_CH0_IRQHandler(void)
 {
 		PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
-		ReadAdcBlock();
 		//Fault = GPIOA_PDIR & Fault_Mask; 		// faults are read in
 		//C_D   = GPIOA_PDIR & C_D_Mask;		// charge vs discharge is read in
 

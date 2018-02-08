@@ -60,7 +60,7 @@
 * Number of Message Buffers for msCAN module
 * Define the number of Message Buffers for each msCAN module.
 ******************************************************************************/
-#define no_of_mb_CAN0         (32)
+#define no_of_mb_CAN0         (16)
 #define no_of_mb_CAN1         (16) 
 #define no_of_mb_CAN2         (16) 
 #define no_of_mb_CAN3         (16)
@@ -130,7 +130,7 @@
 * Define msCAN module re-synchronisation jump width
 * Permitted values: 1 to smaller of 4 and PHASE_SEG1_CAN time quanta
 ******************************************************************************/
-#define RJW_CAN0               (4) //0
+#define RJW_CAN0               (0)
 #define RJW_CAN1               (0)
 #define RJW_CAN2               (0)
 #define RJW_CAN3               (0)

@@ -13,13 +13,12 @@
 #include "PWT.h"
 #include "ECU_Init.h"
 #include "Rear_Input_Scan.h"
+#include "CAN.h"
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
 #define PTH1 25          						/* Port PTH1 output to green LED */
 #define PTF0 8
 #define PTF1 9
-int pit0_flag_counter = 0;      /* Counter for PIT0 timer expirations */
-
 
 //initializing PWM pins, timers, and interrupts
 //TODO
@@ -52,12 +51,23 @@ void FTM2_IRQHandler(void){
 	}
 }
 
-void init_ECU(){
 
-	init_UART(); 		//Initialize UART
+//initializes ECU subsystems
+void init_ECU(uint8_t ecu){
 	init_ADC(); 		//initialize Analog to Digital Converter Module
-	init_PWM();			//initialize PWM Module and FTM components
-	init_PIT0();     	// Initialize PIT0
+	//INIT GPIO (INPUT SCAN.H)
+	/*while(inChargeMode()){
+		GPIOB_PCOR |= 1<<PTE7;
+		GPIOB_PSOR |= 1<<PTH0 | 1<<PTH1;
+		//TODO: initialize the PDDR of these pins beforehand or else this will not work
+		GPIOB_PDOR &= ~(1<<PTF0); //set output low for left motor
+		GPIOB_PDOR &= ~(1<<PTF1); //set output low for right motor
+	}
+	*/
+	init_UART(); 				//Initialize UART
+	CAN_Init(ecu);				//initialize CAN bus
+	init_PWM();					//initialize PWM Module and FTM components
+	init_PIT0();     			// Initialize PIT0
 	init_FTM ();  	            /* Enable bus clock to FTM1,2 prescaled by 128 */
 	init_clks_FEE_40MHz();        /* KEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
 

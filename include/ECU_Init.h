@@ -10,7 +10,7 @@
 
 //initializes GPIO for the ECU as well as all of the communication interfaces
 //TODO
-void init_ECU();
+void init_ECU(uint8_t);
 void init_IRQs(void);
 void init_PIT(void);
 void PIT_CH0_IRQHandler(void);

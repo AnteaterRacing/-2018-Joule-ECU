@@ -39,6 +39,15 @@ void LED_WHT(void);
 void LED_OFF(void);
 void LED_YEL(void);
 
+//CAN initialization
+void CAN_Init(uint8_t ecu){
+
+}
+
+uint8_t startSignal(){
+	return 0;
+}
+
 #ifdef UserDefineNode1
 int main(void)
 {
@@ -118,7 +127,7 @@ int main(void)
 }
 #endif
 
-#define NodeTemplate
+//#define NodeTemplate
 #ifdef NodeTemplate
 int main(void)
 {
