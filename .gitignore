@@ -3,3 +3,10 @@
 *.args
 *.map
 Debug/makefile
+.settings/language.settings.xml
+*.xml
+*.args
+*.map
+*.map
+*.mk
+*.launch

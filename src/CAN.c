@@ -39,6 +39,15 @@ void LED_WHT(void);
 void LED_OFF(void);
 void LED_YEL(void);
 
+//CAN initialization
+void CAN_Init(uint8_t ecu){
+
+}
+
+uint8_t startSignal(){
+	return 0;
+}
+
 #ifdef UserDefineNode1
 int main(void)
 {
@@ -118,7 +127,7 @@ int main(void)
 }
 #endif
 
-#define NodeTemplate
+//#define NodeTemplate
 #ifdef NodeTemplate
 int main(void)
 {
@@ -381,6 +390,105 @@ int main(void)
 }
 #endif
 
+
+#ifdef CandapterTest
+int main(void)
+{
+#define COUNTER_LIMIT 100
+
+	/*FLL Engaged external*/
+	ICS_ConfigType ics_config={0};
+	ics_config.u8ClkMode=ICS_CLK_MODE_FEE;
+	ics_config.bdiv=0;						/* Bdiv=1*/
+	ics_config.oscConfig.bRange=1;			/*Oscillator high range*/
+	ics_config.oscConfig.bIsCryst=1;		/*Oscillator clock source selected*/
+	ics_config.oscConfig.bStopEnable=1;		/* Oscillator enable in stop*/
+	ics_config.oscConfig.u32OscFreq=8000;	/*8 MHz oscillator*/
+	ics_config.oscConfig.bEnable=1;			/*Enable external oscillator*/
+
+	ICS_Init(&ics_config);					/* Initialize Clock */
+
+	SBC_Init();							/* Initialize the System Basis Chip */
+	MSCAN_ModuleEn();
+	/*write your own code here*/
+
+	__attribute__ ((unused)) uint8_t err_status;
+
+	GPIOB_PDDR |= 1<<PTH0; 			/* Setup PTH0 as an output for RED LED */
+	GPIOB_PDDR |= 1<<PTH1; 			/* Setup PTH1 as an output for GREEN LED */
+	GPIOB_PDDR |= 1<<PTE7;
+
+	GPIOB_PSOR |= 1<<PTH0; 		/* Set output port PTH0 */
+	GPIOB_PSOR |= 1<<PTH1; 		/* Clear output port PTH1 */
+	GPIOB_PSOR |= 1<<PTE7; 		/* Set output port PTE7 */
+
+	err_status = Init_CAN(0, CMPTX); 
+	
+	int i;
+	uint8 data_rec[5] = {4, 0, 0, 0, 0}; //DLC = 4
+	uint8 buff_status[2];
+
+	err_status = Config_CAN_MB(0, 0, RXDF, 1); //corresponds to #200 on adapter
+	err_status = Config_CAN_MB(0, 1, TXDF, 2); //corresponds to #82 on adapter
+
+	data_rec[3] = 1; //used to verify proper data transmission
+	
+	
+	//will continually transmit from data_rec
+	//receiving data will overwrite data_rec
+	for(;;)
+	{
+		err_status = Check_CAN_MB_Status(0, 0, buff_status);
+
+		err_status = Read_CAN_MB_Data(0, 0, data_rec);
+
+		Load_CAN_MB(0, 1, data_rec);
+		Transmit_CAN_MB(0, 1);
+
+		//no errors occurred during testing with adapter
+		if(err_status == ERR_BOFF) 
+		{
+			Reset_CAN(0, CMPTX);
+			LED_RED();
+		}
+		else if(err_status == ERR_SYNCH)
+		{
+			LED_BLU();
+		}
+		else if(err_status == ERR_ID)
+		{
+			LED_WHT();
+		}
+
+		if(data_rec[2] == 1) //will flash green if transmitted data transmitted has value 1 at index 2
+		{
+			LED_GRN();
+		}
+
+
+	}
+
+
+	int counter = 0;
+
+	for(;;) {
+		counter++;
+
+		if(counter > COUNTER_LIMIT) {
+			counter = 0;
+		}
+	}
+
+	/* to avoid the warning message for GHS: statement is unreachable*/
+#if defined (__ghs__)
+#pragma ghs nowarning 111
+#endif
+#if defined (__ICCARM__)
+#pragma diag_suppress=Pe111
+#endif
+	return 0;
+}
+#endif
 
 
 void delay(void)

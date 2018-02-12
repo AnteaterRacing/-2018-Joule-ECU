@@ -11,128 +11,80 @@
 #include "string.h"
 #include "UART.h"
 #include "SKEAZ1284.h"
+#include "Error.h"
 
-uint16_t ADC_buff[11] = {0};
+uint8_t currentChan = 0; 	//stores the current channel that is being converted
 
 void init_ADC(void)  {
-
+	int i = 0;
+	for(;i<10;i++){
+		ADC_buf[i] = 0;
+	}
+	//enable ADC interrupt service routine
 	NVIC_ClearPendingIRQ(ADC0_IRQn);
 	NVIC_EnableIRQ(ADC0_IRQn);
 	NVIC_SetPriority(ADC0_IRQn,0);
+
 	SIM_SCGC |= SIM_SCGC_ADC_MASK;			/* Enable bus clock to ADC module */
 
 	ADC_APCTL1 = 0x0000FFFF;              	/* Disables the IO Control of all ADC channel pins */
-
-	ADC_SC3 = 0x00000008;                 	/* Select ADCACLK, no divide, 12 bit conversion */
+	ADC_SC3  = 0x00000003;					/* Select ADCACLK, no divide, 12 bit conversion */
 											/* ADLPC = 0 (default): hi speed config */
 											/* ADIV = 0 (default): clock rate = input clock/1 */
 											/* ADLSMP = 0 (default): long sample time */
-											/* MODE = 1: 12 bit conversion */
+											/* MODE = 1: 10 bit conversion */
 											/* ADICLK= 1:Bus clock */
 
-	ADC_SC4 =0x00000044;                  	/* 5 level FIFO = 100*/
-											/* FIFO Scan Enabled = 1*/
-
-	ADC_SC2 =0x00000000;                  	/* SW trigger, default ref pins, no compare */
+	ADC_SC2 = 0x00;                  		/* SW trigger, default ref pins, no compare */
 											/* ADTRG = 0 (default): SW Trigger */
 											/* ACFE = 0 (default):  compare function disabled */
 											/* REFSEL = 0 (default): default ref volt pin pair */
 
-	ADC_SC1 = 0x0000001F;					/*Disables module to be enabled by specific function*/
+	ADC_SC1 = ADC_SC1_ADCH0_MASK | ADC_SC1_AIEN_MASK;/*Disables module to be enabled by specific function*/
 
 }
-
-void ReadAdcBlock()
-{
-	if (ADC_buff[0] == 0)
-	{
-		  //Dummy the 1st channel = ADC0
-		  ADC_SC1 = ADC_SC1_ADCH0_MASK;
-
-		  //Dummy the 2nd channel = ADC1
-		  ADC_SC1 = ADC_SC1_ADCH1_MASK;
-
-		  //Dummy the 3rd channel = ADC2
-		  ADC_SC1 = ADC_SC1_ADCH2_MASK;
-
-		  //Dummy the 4th channel = ADC3
-		  ADC_SC1 = ADC_SC1_ADCH3_MASK;
-
-		  //Dummy the 5th channel = ADC4 & Interrupt
-		  ADC_SC1 = ADC_SC1_ADCH4_MASK | ADC_SC1_AIEN_MASK;
-	}
-	if (ADC_buff [0] == 1)
-	{
-		  //Dummy the 1st channel = ADC5
-		  ADC_SC1 = ADC_SC1_ADCH5_MASK;
-
-		  //Dummy the 2nd channel = ADC6
-		  ADC_SC1 = ADC_SC1_ADCH6_MASK;
-
-		  //Dummy the 3rd channel = ADC7
-		  ADC_SC1 = ADC_SC1_ADCH7_MASK;
-
-		  //Dummy the 4th channel = ADC8
-		  ADC_SC1 = ADC_SC1_ADCH8_MASK;
-
-		  //Dummy the 5th channel = ADC9 & Interrupt
-		  ADC_SC1 = ADC_SC1_ADCH9_MASK | ADC_SC1_AIEN_MASK;
-
-	}
-
-	return;
-}
-
 
 void ADC0_IRQHandler(void)
 {
+	ADC_buf[currentChan] = read_adc_chx();
 
-	if (ADC_buff [0] == 0)
-	{
-		ADC_buff[0] = 1;        // set block indicator so we can evaluate the next block
-		ADC_buff[1] = ADC_R;	//ADC0 is pulled from the FIFO
-		ADC_buff[2] = ADC_R;	//ADC1
-		ADC_buff[3] = ADC_R;	//ADC2
-		ADC_buff[4] = ADC_R;	//ADC3
-		ADC_buff[5] = ADC_R;	//ADC4
-
-		ReadAdcBlock();   		// Initiated to begin the reading of the second block
-		return;
+	currentChan++;
+	if(currentChan > 9){
+		currentChan = 0;
 	}
-
-	if (ADC_buff [0] == 1)
-	{
-		ADC_buff[0] = 0;        // reset the block indicator so we read from the beginning when called
-		ADC_buff[6] = ADC_R;	//ADC5
-		ADC_buff[7] = ADC_R;	//ADC6
-		ADC_buff[8] = ADC_R;	//ADC7
-		ADC_buff[9] = ADC_R;	//ADC8
-		ADC_buff[10] = ADC_R;	//ADC9
-
-		ADC_SC1 = 0x0000001F;	// Disable module until called again
-
-		ADC_Converter();		// Converts buff from bits to mV
-		//FTM2_C0V = ADC_buff[1];
-		transmit_string("ADC");
-		transmit_char(ADC_buff[1]/1000 + 48);
-		transmit_char(ADC_buff[2]/1000 + 48);
-		transmit_char(ADC_buff[3]/1000 + 48);
-		transmit_char(ADC_buff[4]/1000 + 48);
-		transmit_char(ADC_buff[5]/1000 + 48);
-
-		return;
+	//setting ADC_SC1 to begin next conversion
+	switch(currentChan){
+		case 0:
+			ADC_SC1 = ADC_SC1_ADCH0_MASK | ADC_SC1_AIEN_MASK;
+			break;
+		case 1:
+			ADC_SC1 = ADC_SC1_ADCH1_MASK | ADC_SC1_AIEN_MASK;
+			break;
+		case 2:
+			ADC_SC1 = ADC_SC1_ADCH2_MASK | ADC_SC1_AIEN_MASK;
+			break;
+		case 3:
+			ADC_SC1 = ADC_SC1_ADCH3_MASK | ADC_SC1_AIEN_MASK;
+			break;
+		case 4:
+			ADC_SC1 = ADC_SC1_ADCH4_MASK | ADC_SC1_AIEN_MASK;
+			break;
+		case 5:
+			ADC_SC1 = ADC_SC1_ADCH5_MASK | ADC_SC1_AIEN_MASK;
+			break;
+		case 6:
+			ADC_SC1 = ADC_SC1_ADCH6_MASK | ADC_SC1_AIEN_MASK;
+			break;
+		case 7:
+			ADC_SC1 = ADC_SC1_ADCH7_MASK | ADC_SC1_AIEN_MASK;
+			break;
+		case 8:
+			ADC_SC1 = ADC_SC1_ADCH8_MASK | ADC_SC1_AIEN_MASK;
+			break;
+		case 9:
+			ADC_SC1 = ADC_SC1_ADCH9_MASK | ADC_SC1_AIEN_MASK;
+			break;
 	}
-}
-
-void ADC_Converter ()
-{
-	uint8_t i = 1;
-	while (i<11)
-	{
-		ADC_buff[i] = (ADC_buff[i] * 5000)/0x3FF; /* Convert result to mv for 0-5V range */
-		i++;
-	}
-	return;
 }
 
 //OLD ADC CODE:
@@ -148,9 +100,9 @@ uint8_t adc_complete(void)  {
   return ((ADC_SC1 & ADC_SC1_COCO_MASK)>>ADC_SC1_COCO_SHIFT);	 /* Return value of Conversion Complete flag */
 }
 
-uint32_t read_adc_chx(void)  {
+uint16_t read_adc_chx(void)  {
   adcResult = ADC_R;                            /* Read ADC conversion result (clears COCO flag) */
-  return  (uint32_t) ((5000*adcResult)/0x3FF);  /* Convert result to mv for 0-5V range */
+  return  (uint16_t) ((5000*adcResult)/0x3FF);  /* Convert result to mv for 0-5V range */
 }
 
 
