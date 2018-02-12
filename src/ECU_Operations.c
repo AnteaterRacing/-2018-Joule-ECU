@@ -10,6 +10,7 @@
 #include "ADC.h"
 #include "UART.h"
 #include "stdlib.h"
+#include "Input_Scan.h"
 //Analog to Digital Converter input values:
 uint32_t acc1 = 0;
 uint32_t acc2;
@@ -24,9 +25,13 @@ uint32_t throttleValueR = 0;//value used to set throttle value for right motor c
 
 //waiting for the start sequence to be pressed before starting the vehicle
 void wait_for_start_seq(){
-	//while(brakeAngle==0); //TODO add busy wait for start button to initiate start
-						  //TODO add RTDS output signal
+	//while(brakeAngle==0 | Start ==0)
+	{
+		;
+	}
 
+	GPIOB_PCOR |= RTDS_MASK; //RTDS is bit 15 of GPIOB
+return;
 }
 
 //returns 1 if fault, 0 if no fault. (checks acc pedal transfer functions)

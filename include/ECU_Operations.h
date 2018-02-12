@@ -10,7 +10,7 @@
 
 //waits for the start sequence before sending the ready to drive signal
 void wait_for_start_seq();
-
+#define RTDS_MASK 32768
 
 //returns 1 if fault, 0 if no fault. (checks acc pedal transfer functions)
 int APPS_Fault();

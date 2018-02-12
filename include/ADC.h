@@ -12,6 +12,8 @@ void ADC_Handler(void);
 void ADC_Converter(void);
 void ADC0_IRQHandler(void);
 
+uint16_t ADC_buf[10] = {0};
+
 #define ADC_SC1_ADCH0_MASK 0x0
 #define ADC_SC1_ADCH1_MASK 0x1
 #define ADC_SC1_ADCH2_MASK 0x2
