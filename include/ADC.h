@@ -15,7 +15,7 @@ uint16_t read_adc_chx(void);
 void convertAdcChan(uint16_t adcChan);
 uint8_t adc_complete(void);
 
-<<<<<<< HEAD
+/*<<<<<<< HEAD
 uint16_t ADC_buf[10] = {0};
 
 #define ADC_SC1_ADCH0_MASK 0x0
@@ -28,7 +28,7 @@ uint16_t ADC_buf[10] = {0};
 #define ADC_SC1_ADCH7_MASK 0x7
 #define ADC_SC1_ADCH8_MASK 0x8
 #define ADC_SC1_ADCH9_MASK 0x9
-=======
+======= */
 uint16_t ADC_buf[10];
 
 
@@ -42,7 +42,8 @@ uint16_t ADC_buf[10];
 #define ADC_SC1_ADCH7_MASK 0x07
 #define ADC_SC1_ADCH8_MASK 0x08
 #define ADC_SC1_ADCH9_MASK 0x09
+/*
 >>>>>>> 702a833daaad94bd10c8688dbcc756e3f9f59e2b
-
+*/
 
 #endif /* ADC_H_ */

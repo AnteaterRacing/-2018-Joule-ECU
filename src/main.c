@@ -44,6 +44,15 @@ int main(void)
 	}
 }
 #endif
+	uint16_t MT_L;
+	uint16_t MT_R;
+	uint16_t TT_RL_1;
+	uint16_t TT_RL_2;
+	uint16_t TT_RL_3;
+	uint16_t TT_RR_1;
+	uint16_t TT_RR_2;
+	uint16_t TT_RR_3;
+	uint32_t Fault;
 
 //FRONT ECU CODE MAIN METHOD
 #ifdef FrontECU

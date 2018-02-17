@@ -10,6 +10,7 @@
 #include "ADC.h"
 
 uint32_t C_D;
+uint8_t Count = 0;
 
 void init_PIT0 (void)
 {
@@ -23,10 +24,13 @@ void init_PIT0 (void)
 	PIT_TCTRL0 |= PIT_TCTRL_TIE_MASK;  /* Enable interrupt */
 	PIT_TCTRL0 |= PIT_TCTRL_TEN_MASK;  /* Enable (start) timer */
 
+	return;
 }
 
 
 #ifdef FrontMCU
+
+uint8_t Start; Error_Count; Error_LED;
 
 void GPIO_init(void)
 {
@@ -40,38 +44,28 @@ void GPIO_init(void)
 	GPIOB_PIDR = 6442450175; //inputs on PTH7 & PTF0 & PTF1
 	GPIOC_PIDR = 0xFF; // no inputs on GPIO C
 
-
+return;
 }
 
 void PIT_CH0_IRQHandler(void)
 {
-	uint16_t ACC1_Input;
-	uint16_t ACC2_Input;
-	uint16_t Steer_Input;
-	uint16_t Brake_Input;
-	uint16_t TT_FL_1;
-	uint16_t TT_FL_2;
-	uint16_t TT_FL_3;
-	uint16_t TT_FR_1;
-	uint16_t TT_FR_2;
-	uint16_t TT_FR_3;
-	uint32_t Fault;
+	Start = GPIOB_PDIR & Start_Mask >>15
+#ifdef CAN_Fucked
+	Error_Count = Error_Count + GPIOA_PDIR & Error_Count_Mask >>3
+	if (Count == 19) // CAN Error Display Backup
+	{
+		if     (Error_Count =  0) Error_LED = 0;
+		else if(0 < Error_Count && Error_Count <=  5) Error_LED = 1; // IMD Error LED
+		else if(5 < Error_Count && Error_Count <= 10) Error_LED = 2; // BMS Error LED
+		else if(10 < Error_Count && Error_Count <= 15) Error_LED = 4; // BSPD Error LED
+		else if(15 < Error_Count) Error_LED = 3; // BMS and IMD LED
 
-
-		PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
-			MT_L = ADC_buf[0];
-			MT_R = ADC_buf[1];
-			TT_RL-1 = ADC_buf[2];
-			TT_RL-2 = ADC_buf[3];
-			TT_RL-3 = ADC_buf[4];
-			TT_RR-1 = ADC_buf[5];
-			TT_RR-2 = ADC_buf[6];
-			TT_RR-3 = ADC_buf[7];
+		Error_Count = 0;
+		Count = 0;
+	}
+	Count++;
+#endif
 	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
-		ReadAdcBlock();
-		//Fault = GPIOA_PDIR & Fault_Mask; 		// faults are read in
-		//C_D   = GPIOA_PDIR & C_D_Mask;		// charge vs discharge is read in
-
 		return;
 }
 #endif
@@ -106,30 +100,42 @@ void GPIO_init(void)
 
 void PIT_CH0_IRQHandler(void)
 {
-	uint16_t MT_L;
-	uint16_t MT_R;
-	uint16_t TT_RL_1;
-	uint16_t TT_RL_2;
-	uint16_t TT_RL_3;
-	uint16_t TT_RR_1;
-	uint16_t TT_RR_2;
-	uint16_t TT_RR_3;
-	uint32_t Fault;
 
 
 	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
-		MT_L = ADC_buf[0];
-		MT_R = ADC_buf[1];
-		TT_RL-1 = ADC_buf[2];
-		TT_RL-2 = ADC_buf[3];
-		TT_RL-3 = ADC_buf[4];
-		TT_RR-1 = ADC_buf[5];
-		TT_RR-2 = ADC_buf[6];
-		TT_RR-3 = ADC_buf[7];
 
-		Fault = GPIOA_PDIR & Fault_Mask; 		// faults are read in
+
+		Fault = GPIOA_PDIR & Fault_Mask >> 28; 		// faults are read in pin D4 = bit A28 = IMD; pin D6 = bit A30 = BMS; pin D7 = bit A31 = BSPD;
 		C_D   = GPIOA_PDIR & C_D_Mask >> 26;		// charge vs discharge is read in
 
+#ifdef CAN_Fucked
+	if (Fault = 0)	GPIOC_PCOR = 16;
+	else if (Fault = 1)
+	{
+		if (Count >= 0 && Count < 5) GPIO_PSOR = 16;
+		if (Count >= 5) GPIO_PCOR = 16;
+	}
+
+	else if (Fault = 4)
+	{
+		if (Count >= 0 && Count < 10) GPIO_PSOR = 16;
+		if (Count >= 10) GPIO_PCOR = 16;
+	}
+	else if (Fault = 8)
+	{
+		if (Count >= 0 && Count < 15) GPIO_PSOR = 16;
+		if (Count >= 15) GPIO_PCOR = 16;
+	}
+	else if (Fault = 5 || Fault = 9 || Fault = 12)
+	{
+		if (Count >= 0 && Count <20) GPIO_PSOR = 16;
+		if (Count = 20) GPIO_PCOR = 16;
+	}
+	if (Count <20 ) Count ++;
+	else Count = 0;
+
+
+#endif
 		return;
 }
 #endif

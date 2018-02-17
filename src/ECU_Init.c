@@ -12,7 +12,7 @@
 #include "FTM.h"
 #include "PWT.h"
 #include "ECU_Init.h"
-#include "Rear_Input_Scan.h"
+#include "Input_Scan.h"
 #include "CAN.h"
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
