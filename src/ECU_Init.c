@@ -65,13 +65,16 @@ void init_ECU(uint8_t ecu){
 	GPIOB_PIDR &= 1<<PTE7 | 1<< PTH0 | 1<<PTH1;   				/* Disable inputs (default) */
 	GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1; 				/* Turn off all LEDs */
 
+	#ifdef RearECU
 	//CHARGE MODE WAITING LOOP. The car waits in this loop while in charge mode.
+	//Only the Rear ECU needs to run this block of code.
 	while(inChargeMode()){
 		GPIOB_PCOR |= 1<<PTE7;
 		GPIOB_PSOR |= 1<<PTH0 | 1<<PTH1;
 		GPIOB_PDOR &= ~(1<<PTF0); //set output low for left motor
 		GPIOB_PDOR &= ~(1<<PTF1); //set output low for right motor
 	}
+	#endif
 	init_PIT0();     			// Initialize PIT0
 	init_UART(); 				//Initialize UART
 	CAN_Init(ecu);				//initialize CAN bus

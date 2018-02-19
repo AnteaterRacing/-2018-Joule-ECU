@@ -10,7 +10,7 @@
 
 void init_PIT0(void); //initializes PIT
 void PIT_CH0_IRQHandler(void); //PIT ISR
-void init_GPIO(void);
+void GPIO_Init(void);
 
 
 //TODO: @Xavier: give these correct values

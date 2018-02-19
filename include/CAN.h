@@ -59,7 +59,6 @@
 void CAN_Init(uint8_t ecu); //front or rear ecu init
 void CAN_Transmit(uint16_t messageID, uint8_t* message); 	//transmits CAN message with specified messageID
 void CAN_Receive(uint16_t messageID, uint8_t* message);		//receives CAN message with specified messageID
-uint8_t startSignal(void); //returns 0 if no start message received. 1 if received
 void delay(void);
 
 #endif /* CAN_H_ */

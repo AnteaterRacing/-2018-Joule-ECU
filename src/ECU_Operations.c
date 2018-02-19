@@ -13,42 +13,37 @@
 #include "Input_Scan.h"
 #include "CAN.h"
 //Analog to Digital Converter input values:
-uint32_t acc1 = 0;
-uint32_t acc2;
 uint32_t brakeAngle;
 uint32_t steeringAngle;
 int APPS_flag = 0; 			//0 when no fault, 1 when fault
 int BSE_flag = 0;			//0 when no fault, 1 when fault
 int APPS_faultcount = 0; 	//number of times APPS faults have occurred
 int BSE_faultcount = 0; 	//number of times BSE faults have occurred
-uint32_t throttleValueL = 0;//value used to set throttle value for left motor controller
-uint32_t throttleValueR = 0;//value used to set throttle value for right motor controller
-
-//waiting for the start sequence to be pressed before starting the vehicle
-void wait_for_start_seq(){
-	while(!startSignal() && brakeAngle>0.25); //waiting for start button press and brake to be depressed.
-	//TODO verify that brake angle is being set properly
-	GPIOB_PCOR |= RTDS_MASK; //RTDS is bit 15 of GPIOB. set RTDS on.
-	delay();				 //leave RTDS on for 1 sec
-	GPIOB_PCOR &= ~RTDS_MASK; //set RTDS off.
-	return;
-}
 
 //returns 1 if fault, 0 if no fault. (checks acc pedal transfer functions)
-int APPS_Fault(void){
+int APPS_Fault(uint16_t acc1, uint16_t acc2){
 
-	if(abs(acc1-acc2) > 500) { 		//500 is 10% of 5000mV which is the max value for ADC inputs
-		APPS_flag = 1;
-		APPS_faultcount++;
-		//TODO:toggle fault LEDs on dashboard corresponding to fault
+	//500 is 10% of 5000mV which is the max value for ADC inputs
+	//if apps flag has been already triggered but fault is still occurring, do nothing
+	if(APPS_flag && abs(acc1-acc2) > 500) {
 		return 1;
 	}
-	return 0;
+	//if no apps flag triggered but fault occurring, trigger apps flag and increase faultcount
+	else if(abs(acc1-acc2) > 500) {
+		APPS_flag = 1;
+		APPS_faultcount++;
+		return 1;
+	}
+	//if there is no fault occurring, disable APPS flag if it is triggered and continue execution.
+	else {
+		APPS_flag = 0;
+		return 0;
+	}
 }
 
-//returns 1 if APBS fault, 0 if no fault (checks that acc is not depressed when brake is depressed >10%)
-int BSE_Fault(void){
-	if((BSE_flag) || ((acc1 > 0 || acc2 > 0) && brakeAngle > 500)) { //500 is 10% of 5000mV
+//returns 1 if APBS fault, 0 if no fault (checks that acc is not depressed when brake is depressed >20%)
+int BSE_Fault(uint16_t brakeAngle, uint16_t acc1, uint16_t acc2){
+	if((BSE_flag) || ((acc1 > 0 || acc2 > 0) && brakeAngle > 1000)) { //1000 is 20% of 5000mV
 		BSE_flag = 1;
 		BSE_faultcount++;
 		//TODO:toggle fault LEDs on dashboard corresponding to fault
@@ -59,7 +54,7 @@ int BSE_Fault(void){
 }
 
 //returns 0 if the fault exit condition has been satisfied. returns 1 if not.
-int Fault_Not_Resolved(void){
+int Fault_Not_Resolved(uint16_t acc1, uint16_t acc2){
 	if(BSE_flag){
 		if(acc1==0 && acc2==0){ //if acc1 and acc2 show accelerator is released, clear BSE fault
 			BSE_flag = 0;
@@ -68,7 +63,7 @@ int Fault_Not_Resolved(void){
 		}
 	}
 	if(APPS_flag){
-		if(!APPS_Fault()){ //if APPS signals are within 10%, clear APPS fault
+		if(!APPS_Fault(acc1, acc2)){ //if APPS signals are within 10%, clear APPS fault
 			APPS_flag = 0;
 			//TODO:toggle fault LEDs on dashboard corresponding to fault
 			return 0;
@@ -77,10 +72,10 @@ int Fault_Not_Resolved(void){
 	return 1;
 }
 
-//sets the throttle value based on the value of acc1
-//this is done by setting the compare match value on the PWM output pin. (0-5000)
+//sets the throttle value based on the value of acc1 (0-255)
+//this is done by setting the compare match value on the PWM output pin. (0-1020)
+//TODO: add torque vectoring functionality
 void set_Throttle_Value(uint8_t acceleratorPosition){
-	//TODO: add torque vectoring functionality
 	FTM2_C0V = ((uint16_t)(acceleratorPosition))*4;
 	FTM2_C1V = ((uint16_t)(acceleratorPosition))*4;
 }
@@ -90,24 +85,3 @@ uint8_t inChargeMode(void) {
 	return 0;
 }
 
-//prints out the value of analog inputs and other variables to console with values shown from 0-5V
-//TODO: DELETE. USED FOR DEBUGGING
-void print_ECU_Status_UART(void){
-
-	char c1 = (acc1/1000+48);
-	transmit_string("acc1=");
-	transmit_char(c1);
-	transmit_char(' ');
-	char c2 = (acc2/1000+48);
-	transmit_string(" acc2=");
-	transmit_char(c2);
-	transmit_char(' ');
-	char c3 = (brakeAngle/1000+48);
-	transmit_string(" brake=");
-	transmit_char(c3);
-	transmit_char(' ');
-	char c4 = (steeringAngle/1000+48);
-	transmit_string(" steering=");
-	transmit_char(c4);
-	transmit_char('\r');
-}

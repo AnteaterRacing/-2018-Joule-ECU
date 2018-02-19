@@ -24,8 +24,6 @@ void init_PIT0 (void)
 	PIT_LDVAL0  = 2500000-1;			// set clock delay based upon 20 sample per second goal
 	PIT_TCTRL0 |= PIT_TCTRL_TIE_MASK;  /* Enable interrupt */
 	PIT_TCTRL0 |= PIT_TCTRL_TEN_MASK;  /* Enable (start) timer */
-
-	return;
 }
 
 
@@ -44,13 +42,12 @@ void GPIO_Init(void)
 	GPIOA_PIDR = 8053063677; //inputs at PTD5 & PTA1
 	GPIOB_PIDR = 6442450175; //inputs on PTH7 & PTF0 & PTF1
 	GPIOC_PIDR = 0xFF; // no inputs on GPIO C
-
-return;
 }
 
+//TODO @Xavier: finish this definition for the Front ECU
 void PIT_CH0_IRQHandler(void)
 {
-	Start = GPIOB_PDIR & Start_Mask >>15
+	//Start = GPIOB_PDIR & Start_Mask >>15 //This line threw an error: called object is not a function or function pointer
 #ifdef CAN_Fucked
 	Error_Count = Error_Count + GPIOA_PDIR & Error_Count_Mask >>3
 	if (Count == 19) // CAN Error Display Backup
@@ -67,7 +64,6 @@ void PIT_CH0_IRQHandler(void)
 	Count++;
 #endif
 	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
-		return;
 }
 #endif
 
@@ -137,7 +133,6 @@ void PIT_CH0_IRQHandler(void)
 
 
 #endif
-		return;
 }
 #endif
 
