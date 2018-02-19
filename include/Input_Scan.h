@@ -12,6 +12,11 @@ void init_PIT0(void); //initializes PIT
 void PIT_CH0_IRQHandler(void); //PIT ISR
 void init_GPIO(void);
 
+
+//TODO: @Xavier: give these correct values
+uint32_t Fault;
+uint32_t Fault_Mask;
+
 #ifdef FrontECU
 #define Start_Mask 32768
 #define Error_Count_Mask 8

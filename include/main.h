@@ -11,6 +11,6 @@
 //SELECT A DEFINITION TO CHOOSE FRONT OR REAR ECU PROGRAMMING:
 #define RearECU
 //#define FrontECU
-//#define CAN_Fucked
+//#define CAN_Fucked 		//used to revert to alternate settings if CAN bus is not functional
 
 #endif /* MAIN_H_ */

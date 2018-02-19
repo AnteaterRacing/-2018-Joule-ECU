@@ -44,6 +44,7 @@ void FTM2_IRQHandler(void){
 		GPIOB_PDOR &= ~(1<<PTF0); //set output low for left motor
 		FTM2_C0SC &= ~FTM_CnSC_CHF_MASK; //clear CH0 flag
 	}
+	//if compare match ch1, set output low for right motor
 	else {
 		GPIOB_PDOR &= ~(1<<PTF1); //set output low for right motor
 		FTM2_C1SC &= ~FTM_CnSC_CHF_MASK; //clear CH1 flag

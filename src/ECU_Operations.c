@@ -79,9 +79,15 @@ int Fault_Not_Resolved(void){
 
 //sets the throttle value based on the value of acc1
 //this is done by setting the compare match value on the PWM output pin. (0-5000)
-void set_Throttle_Value(void){
-	throttleValueL = acc1;
-	throttleValueR = acc1;
+void set_Throttle_Value(uint8_t acceleratorPosition){
+	//TODO: add torque vectoring functionality
+	FTM2_C0V = ((uint16_t)(acceleratorPosition))*4;
+	FTM2_C1V = ((uint16_t)(acceleratorPosition))*4;
+}
+
+//TODO: @Xavier. define this function so it returns 1 if in charge mode or 0 if not.
+uint8_t inChargeMode(void) {
+	return 0;
 }
 
 //prints out the value of analog inputs and other variables to console with values shown from 0-5V

@@ -15,6 +15,7 @@
 #include "Data_Logging.h"
 #include "CAN.h"
 #include "main.h"
+#include "Input_Scan.h"
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
 #define PTH1 25          						/* Port PTH1 output to green LED */
@@ -26,7 +27,6 @@ uint16_t TT_RL_3;
 uint16_t TT_RR_1;
 uint16_t TT_RR_2;
 uint16_t TT_RR_3;
-uint32_t Fault;
 
 uint8_t data_RX_buffer[FrontToRearDataMessageSize+1] = {0};
 uint8_t telemetry_RX_buffer[FrontToRearTelemetryMessageSize+1] = {0};
@@ -43,9 +43,12 @@ int main(void)
 	//this runs continuously once the initialization has completed
 	while(1){
 		CAN_Receive(FrontToRearDataMessageID,data_RX_buffer);
-
 		CAN_Transmit(RearToFrontDataMessageID,data_TX_buffer);
 		CAN_Receive(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
+
+		//set throttle position for
+		set_Throttle_Value(data_RX_buffer[Accelerator]);
+
 	}
 }
 #endif

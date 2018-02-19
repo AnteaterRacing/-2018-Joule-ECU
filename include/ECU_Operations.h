@@ -5,6 +5,8 @@
  *      Author: arnav
  */
 
+#include "derivative.h"
+
 #ifndef ECU_OPERATIONS_H_
 #define ECU_OPERATIONS_H_
 
@@ -25,7 +27,10 @@ int Fault_Not_Resolved(void);
 void read_ADC_Values(void);
 
 //sets the throttle output value to the current value of acc1 whenever called (Torque Vectoring added later)
-void set_Throttle_Value(void);
+void set_Throttle_Value(uint8_t);
+
+//returns 1 if in charge mode, 0 if not.
+uint8_t inChargeMode(void);
 
 //USED FOR DEBUGGING
 void print_ECU_Status_UART(void);
