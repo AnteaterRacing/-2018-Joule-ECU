@@ -10,3 +10,7 @@ Debug/makefile
 *.map
 *.mk
 *.launch
+*.xml
+*.xml
+*.args
+*.mk

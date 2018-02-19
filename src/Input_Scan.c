@@ -8,6 +8,7 @@
 #include "derivative.h" /* include peripheral declarations SKEAZ128M4 */
 #include "Input_Scan.h"
 #include "ADC.h"
+#include "main.h"
 
 uint32_t C_D;
 uint8_t Count = 0;
@@ -28,11 +29,11 @@ void init_PIT0 (void)
 }
 
 
-#ifdef FrontMCU
+#ifdef FrontECU
 
 uint8_t Start; Error_Count; Error_LED;
 
-void GPIO_init(void)
+void GPIO_Init(void)
 {
 							  //Data Direction, 1 is output, 0 is input
 	GPIOA_PDDR = 2621190168; //all of the Front MCU GPIOA pins added together, Error LED signal is input A2, pin 2
@@ -71,9 +72,9 @@ void PIT_CH0_IRQHandler(void)
 #endif
 
 
-#ifdef RearMCU
+#ifdef RearECU
 
-void GPIO_init(void)
+void GPIO_Init(void)
 {
 							  //Data Direction, 1 is output, 0 is input
 	GPIOA_PDDR = 134217728; //all of the Front MCU GPIOA pins added together, Error LED signal is input A2, pin 2
