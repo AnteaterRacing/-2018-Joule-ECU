@@ -85,6 +85,7 @@ uint8_t inChargeMode(void) {
 	if(C_D == 0) return 0; //discharge is 0
 	else return 1;
 }
+
 #ifdef FrontECU
 void Speed (uint8_t Speed)
 {

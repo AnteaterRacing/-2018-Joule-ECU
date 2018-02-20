@@ -54,7 +54,7 @@ void GPIO_Init(void)
 				| 1 << 7/*BSPD Fault*/| 1 << 26/*BMS Fault*/| 1 << 6/*WSRL*/| 1 << 24/*WSRR*/
 				| 1 << 4/*TVRL*/| 1 << 5/*TVRR*/| 1 << 3/*CS1*/| 1 << 30/*CS2*/
 				| 1 << 8/*APPSL*/| 1<< 9/*APPSR*/;
->>>>>>> 409ad39bf6c5a8ee3405e55d5693a725f1db0e7d
+
 	GPIOC_PDDR = 0x00000000; // no outputs on GPIOC
 
 							 //Front ECU Input Disable, 1 is not input , 0 is input

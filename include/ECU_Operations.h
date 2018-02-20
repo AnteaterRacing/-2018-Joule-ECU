@@ -27,8 +27,6 @@ void set_Throttle_Value(uint8_t);
 // sets the speed or error code for the front ecu
 void Speed(uint8_t);
 
-//returns 1 if in charge mode, 0 if not.
-uint8_t inChargeMode(void);
 
 //USED FOR DEBUGGING
 void print_ECU_Status_UART(void);
