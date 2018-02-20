@@ -34,15 +34,21 @@ uint8_t Start; Error_Count; Error_LED;
 
 void GPIO_init(void)
 {
-							  //Data Direction, 1 is output, 0 is input
-	GPIOA_PDDR = 2621190168; //all of the Front MCU GPIOA pins added together, Error LED signal is input A2, pin 2
-	GPIOB_PDDR = 1192195064; // Front GPIOB pins, only start, F7, pin 15 is an input
-	GPIOC_PDDR = 0x00;		// no outputs on GPIOC
+							 //Front MCU Data Direction, 1 is output, 0 is input
+	GPIOA_PDDR = 1 << 26 /*MTempY*/| 1 << 28/*MTempR*/| 1 << 31/*S5A*/| 1 << 18/*S7A*/
+				| 1 << 19/*S1B*/| 1 << 12/*S2B*/| 1 << 13/*S3B*/| 1 << 4/*S4B*/
+				| 1 << 27/*IMDFault*/| 1 << 20 /*WSFL*/| 1 << 21/*WSFR*/;
+	GPIOB_PDDR = 1 << 19/*S1A*/| 1 << 18/*S2A*/| 1 << 17/*S3A*/| 1 << 18/*S4A*/
+				| 1 << 25/*S6A*/| 1 << 14/*S5B*/| 1 << 13/*S6B*/| 1 << 12 /*S7B*/
+				| 1 << 7/*BSPD Fault*/| 1 << 26/*BMS Fault*/| 1 << 6/*WSRL*/| 1 << 24/*WSRR*/
+				| 1 << 4/*TVRL*/| 1 << 5/*TVRR*/ 1 << 3/*CS1*/ 1 << 30/*CS2*/
+				| 1 << 8/*APPSL*/| 1<< 9/*APPSR*/;
+	GPIOC_PDDR = 0x00000000; // no outputs on GPIOC
 
-							  //Input Disable, 1 is output, 0 is input
-	GPIOA_PIDR = 8053063677; //inputs at PTD5 & PTA1
-	GPIOB_PIDR = 6442450175; //inputs on PTH7 & PTF0 & PTF1
-	GPIOC_PIDR = 0xFF; // no inputs on GPIO C
+							 //Input Disable, 1 is output, 0 is input
+	GPIOA_PIDR = 0XFFFFFFFF | 0 << 15/*Start*/;
+	GPIOB_PIDR = 0XFFFFFFFF | 0 << 2/*Error*/;
+	GPIOC_PIDR = 0xFFFFFFFF; // no inputs on GPIO C
 
 return;
 }
@@ -72,6 +78,11 @@ void PIT_CH0_IRQHandler(void)
 
 
 #ifdef RearMCU
+
+void I2C_init(void)
+{
+
+}
 
 void GPIO_init(void)
 {
@@ -138,5 +149,7 @@ void PIT_CH0_IRQHandler(void)
 #endif
 		return;
 }
+
+
 #endif
 
