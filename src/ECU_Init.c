@@ -53,7 +53,7 @@ void FTM2_IRQHandler(void){
 
 
 //initializes ECU subsystems
-void init_ECU(uint8_t ecu){
+void init_ECU(){
 	init_ADC(); 		//initialize Analog to Digital Converter Module
 	GPIO_Init();
 
@@ -77,9 +77,9 @@ void init_ECU(uint8_t ecu){
 	#endif
 	init_PIT0();     			// Initialize PIT0
 	init_UART(); 				//Initialize UART
-	CAN_Init(ecu);				//initialize CAN bus
-	init_PWM();					//initialize PWM Module and FTM components
-	init_FTM ();  	            /* Enable bus clock to FTM1,2 prescaled by 128 */
+	CAN_Init();				//initialize CAN bus
+	init_PWM();				      //initialize PWM Module and FTM components
+	init_FTM ();  	              /* Enable bus clock to FTM1,2 prescaled by 128 */
 	init_clks_FEE_40MHz();        /* KEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
 
 }

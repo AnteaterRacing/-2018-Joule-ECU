@@ -38,7 +38,7 @@ uint8_t data_TX_buffer[RearToFrontDataMessageSize+1] = {0};
 //REAR ECU CODE MAIN METHOD
 int main(void)
 {
-	init_ECU(Rear_ECU_CAN_Init); 				//initialize Rear ECU settings
+	init_ECU(); 				//initialize Rear ECU settings
 
 	//setting message sizes for transmit buffers
 	data_TX_buffer[0] = RearToFrontDataMessageSize;
@@ -47,9 +47,9 @@ int main(void)
 
 	//this runs continuously once the initialization has completed
 	while(1){
-		CAN_Receive(FrontToRearDataMessageID,data_RX_buffer);
-		CAN_Transmit(RearToFrontDataMessageID,data_TX_buffer);
-		CAN_Receive(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
+		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
+		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
+		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
 
 		set_Throttle_Value(data_RX_buffer[Accelerator]);
 
@@ -68,7 +68,7 @@ uint8_t data_TX_buffer[FrontToRearDataMessageSize+1] = {0};
 
 int main(void){
 
-	init_ECU(Front_ECU_CAN_Init);	//initialize front ECU settings
+	init_ECU();	//initialize front ECU settings
 
 	//setting message sizes for transmit buffers
 	data_TX_buffer[0] = FrontToRearDataMessageSize;
@@ -90,10 +90,10 @@ int main(void){
 		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
 		data_TX_buffer[TVEnable] = 0x00;					//TODO: set up torque vectoring toggle somewhere on DASH & connect
 		data_TX_buffer[StartButton] = 0xFF;
-		CAN_Transmit(FrontToRearDataMessageID,data_TX_buffer);
+		CAN_TransmitData(FrontToRearDataMessageID,data_TX_buffer);
 
 		//TODO: set LED values/Speedometer based on received data from rear
-		CAN_Receive(RearToFrontDataMessageID,data_RX_buffer);
+		CAN_ReceiveData(RearToFrontDataMessageID,data_RX_buffer);
 
 		//TODO: convert/transmit wheelspeed data
 		telemetry_TX_buffer[WheelSpeed_L] = 0x00;
@@ -104,7 +104,7 @@ int main(void){
 		telemetry_TX_buffer[TireTemp_R1] = ADC_buf[7];
 		telemetry_TX_buffer[TireTemp_R2] = ADC_buf[8];
 		telemetry_TX_buffer[TireTemp_R3] = ADC_buf[9];
-		CAN_Transmit(FrontToRearTelemetryMessageID,telemetry_TX_buffer);
+		CAN_TransmitData(FrontToRearTelemetryMessageID,telemetry_TX_buffer);
 
 	}
 }
@@ -115,7 +115,7 @@ void wait_for_start_seq(){
 	//waiting for start button press and brake to be depressed.
 	set_Throttle_Value(0);//zeroing out throttle value (precautionary).
 	while(data_RX_buffer[StartButton]!=0xFF && ADC_buf[3] < 1000){
-		CAN_Receive(FrontToRearDataMessageID,data_RX_buffer);
+		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 	}
 
 	GPIOB_PCOR |= RTDS_MASK; //RTDS is bit 15 of GPIOB. set RTDS on.

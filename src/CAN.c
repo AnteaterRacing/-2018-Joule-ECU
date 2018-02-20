@@ -16,11 +16,14 @@
 #include "msCANdrv.h"
 #include "msCANcfg.h"
 #include "ADC.h"
+#include "main.h"
+#include "CAN.h"
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
 #define PTH1 25          						/* Port PTH1 output to green LED */
 #define PTH6 30									/* Port PTH6 for throttle output PWM*/
 //#include "UART.h" 							/*include UART function definitions */
+
 /*Macro to choose which main to run
  *
  */
@@ -39,17 +42,61 @@ void LED_WHT(void);
 void LED_OFF(void);
 void LED_YEL(void);
 
-//CAN initialization
-void CAN_Init(uint8_t ecu){
+uint8_t err_status;
+
+//CAN initialization for rear ECU
+#ifdef RearECU
+void CAN_Init(){
+	init_CAN_clocks();
+	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
+	Config_CAN_MB(0,1,RXDF,FrontToRearDataMessageIDRef); //messagebuffer to receive the FrontToRearDataMessage
+	Config_CAN_MB(0,2,RXDF,FrontToRearTelemetryMessageIDRef); //messagebuffer to receive the FrontToRearTelemetryMessage
+	Config_CAN_MB(0,3,TXDF,RearToFrontDataMessageIDRef); //messagebuffer to transmit the RearToFrontDataMessage
+
+}
+#endif
+
+//CAN initialization for front ECU
+#ifdef FrontECU
+void CAN_Init() {
+	init_CAN_clocks();
+	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
+	Config_CAN_MB(0,1,TXDF,FrontToRearDataMessageIDRef); //messagebuffer to transmit the FrontToRearDataMessage
+	Config_CAN_MB(0,2,TXDF,FrontToRearTelemetryMessageIDRef); //messagebuffer to transmit the FrontToRearTelemetryMessage
+	Config_CAN_MB(0,3,RXDF,RearToFrontDataMessageIDRef); //messagebuffer to receive the RearToFrontDataMessage
+
+
+}
+#endif
+//transmits CAN message with specified messageID
+void CAN_TransmitData(uint16_t messageID, uint8_t* message) {
 
 }
 
-uint8_t startSignal(){
-	return 0;
+//receives CAN message with specified messageID
+void CAN_ReceiveData(uint16_t messageID, uint8_t* message) {
+
+}
+
+void init_CAN_clocks() {
+	/*FLL Engaged external*/
+	ICS_ConfigType ics_config={0};
+	ics_config.u8ClkMode=ICS_CLK_MODE_FEE;
+	ics_config.bdiv=0;						/* Bdiv=1*/
+	ics_config.oscConfig.bRange=1;			/*Oscillator high range*/
+	ics_config.oscConfig.bIsCryst=1;		/*Oscillator clock source selected*/
+	ics_config.oscConfig.bStopEnable=1;		/* Oscillator enable in stop*/
+	ics_config.oscConfig.u32OscFreq=8000;	/*8 MHz oscillator*/
+	ics_config.oscConfig.bEnable=1;			/*Enable external oscillator*/
+
+	ICS_Init(&ics_config);					/* Initialize Clock */
+
+	SBC_Init();							/* Initialize the System Basis Chip */
+	MSCAN_ModuleEn();
 }
 
 
-#define Test_02_18_18
+//#define Test_02_18_18
 #ifdef Test_02_18_18
 int main(void)
 {
@@ -176,7 +223,6 @@ int main(void)
 	return 0;
 }
 #endif
-
 
 
 #ifdef UserDefineNode1
