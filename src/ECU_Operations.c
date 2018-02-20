@@ -19,6 +19,8 @@ int APPS_flag = 0; 			//0 when no fault, 1 when fault
 int BSE_flag = 0;			//0 when no fault, 1 when fault
 int APPS_faultcount = 0; 	//number of times APPS faults have occurred
 int BSE_faultcount = 0; 	//number of times BSE faults have occurred
+uint16_t Throttle_L = 0;
+uint16_t Throttle_R = 0;
 
 //returns 1 if fault, 0 if no fault. (checks acc pedal transfer functions)
 int APPS_Fault(uint16_t acc1, uint16_t acc2){
@@ -76,15 +78,15 @@ int Fault_Not_Resolved(uint16_t acc1, uint16_t acc2){
 //this is done by setting the compare match value on the PWM output pin. (0-1020)
 //TODO: add torque vectoring functionality
 void set_Throttle_Value(uint8_t acceleratorPosition){
-	FTM2_C0V = ((uint16_t)(acceleratorPosition))*4;
-	FTM2_C1V = ((uint16_t)(acceleratorPosition))*4;
+	Throttle_L = ((uint16_t)(acceleratorPosition))*4;
+	Throttle_R = ((uint16_t)(acceleratorPosition))*4;
+
+	TorqV_LED(Throttle_L, Throttle_R); //sets LEDs based upon which value is larger
+
+	FTM2_C0V = Throttle_L;
+	FTM2_C1V = Throttle_R;
 }
 
-
-uint8_t inChargeMode(void) {
-	if(C_D == 0) return 0; //discharge is 0
-	else return 1;
-}
 
 #ifdef FrontECU
 void Speed (uint8_t Speed)
@@ -228,6 +230,20 @@ void Speed (uint8_t Speed)
 
 }
 
+void Fault_LED(uint8_t IMD, uint8_t BMS, uint8_t BSPD, uint8_t APPS)
+{
+	if(IMD != 0)  FGPIOA_PSOR = 1 << 27;
+	if(BMS != 0)  FGPIOB_PSOR = 1 << 26;
+	if(BSPD != 0) FGPIOB_PSOR = 1 <<  7;
+	if(APPS != 0) FGPIOA_PSOR = 1 <<  3;
+	return;
+}
 
+void TorqV_LED(uint16_t Throttle_L, uint16_t Throttle_R)
+{
+	if(Throttle_L > Throttle_R) FGPIOB_PSOR = 1 << 4;
+	if(Throttle_R > Throttle_L) FGPIOB_PSOR = 1 << 5;
+	return;
+}
 
 #endif

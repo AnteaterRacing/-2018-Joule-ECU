@@ -35,55 +35,33 @@ uint8_t Error_LED;
 
 void GPIO_Init(void)
 {
-<<<<<<< HEAD
-
-							 //Front ECU Data Direction, 1 is output, 0 is not output
-=======
- //Front MCU Data Direction, 1 is output, 0 is input
->>>>>>> 409ad39bf6c5a8ee3405e55d5693a725f1db0e7d
+				 //Front ECU Data Direction, 1 is output, 0 is not output
 	GPIOA_PDDR = 1 << 26 /*MTempY*/| 1 << 28/*MTempR*/| 1 << 31/*S5A*/| 1 << 18/*S7A*/
 				| 1 << 19/*S1B*/| 1 << 12/*S2B*/| 1 << 13/*S3B*/| 1 << 4/*S4B*/
 				| 1 << 27/*IMD LED*/| 1 << 20 /*WSFL*/| 1 << 21/*WSFR*/| 1 << 3/*APPS LED*/;
 	GPIOB_PDDR = 1 << 19/*S1A*/| 1 << 18/*S2A*/| 1 << 17/*S3A*/| 1 << 18/*S4A*/
 				| 1 << 25/*S6A*/| 1 << 14/*S5B*/| 1 << 13/*S6B*/| 1 << 12 /*S7B*/
-<<<<<<< HEAD
-				| 1 << 7/*BSPD LED*/| 1 << 26/*BMS LED*/| 1 << 6/*WSRL*/| 1 << 24/*WSRR*/
-				| 1 << 4/*TVRL*/| 1 << 5/*TVRR*/| 1 << 3/*CS1*/| 1 << 30/*CS2*/| 1 << 8/*APPSL*/
-				| 1 << 9/*APPSR*/;
-=======
 				| 1 << 7/*BSPD Fault*/| 1 << 26/*BMS Fault*/| 1 << 6/*WSRL*/| 1 << 24/*WSRR*/
 				| 1 << 4/*TVRL*/| 1 << 5/*TVRR*/| 1 << 3/*CS1*/| 1 << 30/*CS2*/
 				| 1 << 8/*APPSL*/| 1<< 9/*APPSR*/;
 
 	GPIOC_PDDR = 0x00000000; // no outputs on GPIOC
 
-							 //Front ECU Input Disable, 1 is not input , 0 is input
+				//Front ECU Input Disable, 1 is not input , 0 is input
 	GPIOA_PIDR != 1 << 15/*Start*/;
 	GPIOB_PIDR != 1 << 2/*ErrorLED*/;
 	GPIOC_PIDR = 0xFFFFFFFF; // no inputs on GPIO C
 
 return;
-
-<<<<<<< HEAD
-=======
-							  //Data Direction, 1 is output, 0 is input
-	GPIOA_PDDR = 2621190168; //all of the Front MCU GPIOA pins added together, Error LED signal is input A2, pin 2
-	GPIOB_PDDR = 1192195064; // Front GPIOB pins, only start, F7, pin 15 is an input
-	GPIOC_PDDR = 0x00;		// no outputs on GPIOC
-
-							  //Input Disable, 1 is output, 0 is input
-	GPIOA_PIDR = 8053063677; //inputs at PTD5 & PTA1
-	GPIOB_PIDR = 6442450175; //inputs on PTH7 & PTF0 & PTF1
-	GPIOC_PIDR = 0xFF; // no inputs on GPIO C
->>>>>>> 409ad39bf6c5a8ee3405e55d5693a725f1db0e7d
 }
+
 
 //TODO @Xavier: finish this definition for the Front ECU
 void PIT_CH0_IRQHandler(void)
 {
 	Start = GPIOB_PDIR & Start_Mask >> 15; //This line threw an error: called object is not a function or function pointer
 #ifdef CAN_Fucked
-	Error_Count = Error_Count + GPIOA_PDIR & Error_Count_Mask >>3
+	Error_Count = Error_Count + GPIOA_PDIR & Error_Count_Mask >>3;
 	if (Count == 19) // CAN Error Display Backup
 	{
 		if     (Error_Count =  0) Error_LED = 0;
@@ -98,33 +76,27 @@ void PIT_CH0_IRQHandler(void)
 	Count++;
 #endif
 	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
+	return;
 }
 #endif
 
 
 #ifdef RearECU
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 409ad39bf6c5a8ee3405e55d5693a725f1db0e7d
 void I2C_init(void)
 {
 
 }
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 409ad39bf6c5a8ee3405e55d5693a725f1db0e7d
 void GPIO_Init(void)
 {
-							  //Rear ECU Data Direction, 1 is output, 0 is not output
+			  //Rear ECU Data Direction, 1 is output, 0 is not output
 	GPIOA_PDDR = 1 << 27/*RTDS*/;
 	GPIOB_PDDR = 1 << 7/*Charge LED*/| 1 << 8/*ThrottleL*/| 1 << 9/*ThrottleR*/;
 	GPIOC_PDDR = 1 << 4/*ErrorLED*/;
 
-							  //Rear ECU Input Disable, 1 is not input, 0 is input
+			  //Rear ECU Input Disable, 1 is not input, 0 is input
 	GPIOA_PIDR != (1 << 29/*WSRL*/| 1 << 26/*C_D*/| 1 << 28/*IMDFault*/| 1 << 30/*BMSFault*/);
 	GPIOB_PIDR != (1 << 31/*WSRR*/| 1 << 19/*GyroI*/| 1 << 18/*GyroData*/| 1 << 17/*Int1*/| 1 << 16/*Int2*/);
 	GPIOC_PIDR != (1 << 6/*APPSL*/| 1 << 5/*APPSR*/);
