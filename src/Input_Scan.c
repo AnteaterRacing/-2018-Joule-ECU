@@ -8,6 +8,7 @@
 #include "derivative.h" /* include peripheral declarations SKEAZ128M4 */
 #include "Input_Scan.h"
 #include "ADC.h"
+#include "main.h"
 
 uint32_t C_D;
 uint8_t Count = 0;
@@ -23,17 +24,16 @@ void init_PIT0 (void)
 	PIT_LDVAL0  = 2500000-1;			// set clock delay based upon 20 sample per second goal
 	PIT_TCTRL0 |= PIT_TCTRL_TIE_MASK;  /* Enable interrupt */
 	PIT_TCTRL0 |= PIT_TCTRL_TEN_MASK;  /* Enable (start) timer */
-
-	return;
 }
 
 
-#ifdef FrontMCU
+#ifdef FrontECU
 
 uint8_t Start; Error_Count; Error_LED;
 
-void GPIO_init(void)
+void GPIO_Init(void)
 {
+<<<<<<< HEAD
 							 //Front MCU Data Direction, 1 is output, 0 is input
 	GPIOA_PDDR = 1 << 26 /*MTempY*/| 1 << 28/*MTempR*/| 1 << 31/*S5A*/| 1 << 18/*S7A*/
 				| 1 << 19/*S1B*/| 1 << 12/*S2B*/| 1 << 13/*S3B*/| 1 << 4/*S4B*/
@@ -51,11 +51,23 @@ void GPIO_init(void)
 	GPIOC_PIDR = 0xFFFFFFFF; // no inputs on GPIO C
 
 return;
+=======
+							  //Data Direction, 1 is output, 0 is input
+	GPIOA_PDDR = 2621190168; //all of the Front MCU GPIOA pins added together, Error LED signal is input A2, pin 2
+	GPIOB_PDDR = 1192195064; // Front GPIOB pins, only start, F7, pin 15 is an input
+	GPIOC_PDDR = 0x00;		// no outputs on GPIOC
+
+							  //Input Disable, 1 is output, 0 is input
+	GPIOA_PIDR = 8053063677; //inputs at PTD5 & PTA1
+	GPIOB_PIDR = 6442450175; //inputs on PTH7 & PTF0 & PTF1
+	GPIOC_PIDR = 0xFF; // no inputs on GPIO C
+>>>>>>> 406ed3400a61d25d180d32d64a9536e50819ffdb
 }
 
+//TODO @Xavier: finish this definition for the Front ECU
 void PIT_CH0_IRQHandler(void)
 {
-	Start = GPIOB_PDIR & Start_Mask >>15
+	//Start = GPIOB_PDIR & Start_Mask >>15 //This line threw an error: called object is not a function or function pointer
 #ifdef CAN_Fucked
 	Error_Count = Error_Count + GPIOA_PDIR & Error_Count_Mask >>3
 	if (Count == 19) // CAN Error Display Backup
@@ -72,19 +84,22 @@ void PIT_CH0_IRQHandler(void)
 	Count++;
 #endif
 	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
-		return;
 }
 #endif
 
 
-#ifdef RearMCU
+#ifdef RearECU
 
+<<<<<<< HEAD
 void I2C_init(void)
 {
 
 }
 
 void GPIO_init(void)
+=======
+void GPIO_Init(void)
+>>>>>>> 406ed3400a61d25d180d32d64a9536e50819ffdb
 {
 							  //Data Direction, 1 is output, 0 is input
 	GPIOA_PDDR = 134217728; //all of the Front MCU GPIOA pins added together, Error LED signal is input A2, pin 2
@@ -147,7 +162,6 @@ void PIT_CH0_IRQHandler(void)
 
 
 #endif
-		return;
 }
 
 
