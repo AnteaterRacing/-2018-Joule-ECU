@@ -49,7 +49,7 @@ uint8_t startSignal(){
 }
 
 
-//#define Test_02_18_18
+#define Test_02_18_18
 #ifdef Test_02_18_18
 int main(void)
 {
@@ -84,17 +84,17 @@ int main(void)
 	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
 
 	int i;
-	uint8 data_tran[5] = {4, 0, 0, 0, 0};
-	uint8 data_rec[5] = {4, 0, 0, 0, 0};
+	uint8 data_tran[9] = {8, 0, 0, 0, 0, 0, 0, 0, 0};
+	uint8 data_rec[9] = {8, 0, 0, 0, 0, 0, 0, 0, 0};
 	uint8 buff_status[2];
 
 	//NODE 1
-	//err_status = Config_CAN_MB(0, 1, RXDF, 2);
-	//err_status = Config_CAN_MB(0, 2, TXDF, 3);
+	err_status = Config_CAN_MB(0, 1, RXDF, 2); //ID82
+	err_status = Config_CAN_MB(0, 2, TXDF, 3); //ID83
 
 	//NODE 2
-	err_status = Config_CAN_MB(0, 1, RXDF, 3);
-	err_status = Config_CAN_MB(0, 2, TXDF, 2);
+	//err_status = Config_CAN_MB(0, 1, RXDF, 3); //ID83
+	//err_status = Config_CAN_MB(0, 2, TXDF, 2); //ID82
 
 	for(;;)
 	{
@@ -120,45 +120,39 @@ int main(void)
 		}
 
 		//NODE 1 below
-		/*
+
 		//LED data verification
-		if(data_rec[2] == 0xFF)
+		if(data_rec[2] == 0xFF) //RX ID82
 		{
 			LED_GRN();
 		}
-		else if(data_rec[2] == 0x00)
-		{
-			LED_OFF();
-		}
+
 
 		//transmit 0000FF00 when receiving 000000FF
-		if(data_rec[4] == 0xFF)
+		if(data_rec[4] == 0xFF) //RX ID82
 		{
-			data_tran[3] == 0xFF;
+			data_tran[3] = 0xFF; //TX ID3
 			LED_YEL();
 		}
-		*/
+
 		//END
 
 		//NODE 2 below
-
+		/*
 		//LED data verification
-		if(data_rec[3] == 0xFF)
+		if(data_rec[3] == 0xFF) //RX ID83
 		{
 			LED_GRN();
 		}
-		else if(data_rec[3] == 0x00)
-		{
-			LED_OFF();
-		}
+
 
 		//transmit 00FF0000 when receiving FF000000
-		if(data_rec[1] == 0xFF)
+		if(data_rec[1] == 0xFF) //RX ID83
 		{
-			data_tran[2] == 0xFF;
+			data_tran[2] = 0xFF; //TX ID82
 			LED_YEL();
 		}
-
+		*/
 		//END
 	}
 
@@ -182,6 +176,7 @@ int main(void)
 	return 0;
 }
 #endif
+
 
 
 #ifdef UserDefineNode1
