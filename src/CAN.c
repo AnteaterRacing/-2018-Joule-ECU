@@ -16,11 +16,14 @@
 #include "msCANdrv.h"
 #include "msCANcfg.h"
 #include "ADC.h"
+#include "main.h"
+#include "CAN.h"
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
 #define PTH1 25          						/* Port PTH1 output to green LED */
 #define PTH6 30									/* Port PTH6 for throttle output PWM*/
 //#include "UART.h" 							/*include UART function definitions */
+
 /*Macro to choose which main to run
  *
  */
@@ -39,17 +42,61 @@ void LED_WHT(void);
 void LED_OFF(void);
 void LED_YEL(void);
 
-//CAN initialization
-void CAN_Init(uint8_t ecu){
+uint8_t err_status;
+
+//CAN initialization for rear ECU
+#ifdef RearECU
+void CAN_Init(){
+	init_CAN_clocks();
+	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
+	Config_CAN_MB(0,1,RXDF,FrontToRearDataMessageIDRef); //messagebuffer to receive the FrontToRearDataMessage
+	Config_CAN_MB(0,2,RXDF,FrontToRearTelemetryMessageIDRef); //messagebuffer to receive the FrontToRearTelemetryMessage
+	Config_CAN_MB(0,3,TXDF,RearToFrontDataMessageIDRef); //messagebuffer to transmit the RearToFrontDataMessage
+
+}
+#endif
+
+//CAN initialization for front ECU
+#ifdef FrontECU
+void CAN_Init() {
+	init_CAN_clocks();
+	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
+	Config_CAN_MB(0,1,TXDF,FrontToRearDataMessageIDRef); //messagebuffer to transmit the FrontToRearDataMessage
+	Config_CAN_MB(0,2,TXDF,FrontToRearTelemetryMessageIDRef); //messagebuffer to transmit the FrontToRearTelemetryMessage
+	Config_CAN_MB(0,3,RXDF,RearToFrontDataMessageIDRef); //messagebuffer to receive the RearToFrontDataMessage
+
+
+}
+#endif
+//transmits CAN message with specified messageID
+void CAN_TransmitData(uint16_t messageID, uint8_t* message) {
 
 }
 
-uint8_t startSignal(){
-	return 0;
+//receives CAN message with specified messageID
+void CAN_ReceiveData(uint16_t messageID, uint8_t* message) {
+
+}
+
+void init_CAN_clocks() {
+	/*FLL Engaged external*/
+	ICS_ConfigType ics_config={0};
+	ics_config.u8ClkMode=ICS_CLK_MODE_FEE;
+	ics_config.bdiv=0;						/* Bdiv=1*/
+	ics_config.oscConfig.bRange=1;			/*Oscillator high range*/
+	ics_config.oscConfig.bIsCryst=1;		/*Oscillator clock source selected*/
+	ics_config.oscConfig.bStopEnable=1;		/* Oscillator enable in stop*/
+	ics_config.oscConfig.u32OscFreq=8000;	/*8 MHz oscillator*/
+	ics_config.oscConfig.bEnable=1;			/*Enable external oscillator*/
+
+	ICS_Init(&ics_config);					/* Initialize Clock */
+
+	SBC_Init();							/* Initialize the System Basis Chip */
+	MSCAN_ModuleEn();
 }
 
 
-#define Test_02_18_18
+//#define Test_02_18_18
 #ifdef Test_02_18_18
 int main(void)
 {
@@ -84,17 +131,17 @@ int main(void)
 	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
 
 	int i;
-	uint8 data_tran[5] = {4, 0, 0, 0, 0};
-	uint8 data_rec[5] = {4, 0, 0, 0, 0};
+	uint8 data_tran[9] = {8, 0, 0, 0, 0, 0, 0, 0, 0};
+	uint8 data_rec[9] = {8, 0, 0, 0, 0, 0, 0, 0, 0};
 	uint8 buff_status[2];
 
 	//NODE 1
-	//err_status = Config_CAN_MB(0, 1, RXDF, 2);
-	//err_status = Config_CAN_MB(0, 2, TXDF, 3);
+	err_status = Config_CAN_MB(0, 1, RXDF, 2); //ID82
+	err_status = Config_CAN_MB(0, 2, TXDF, 3); //ID83
 
 	//NODE 2
-	err_status = Config_CAN_MB(0, 1, RXDF, 3);
-	err_status = Config_CAN_MB(0, 2, TXDF, 2);
+	//err_status = Config_CAN_MB(0, 1, RXDF, 3); //ID83
+	//err_status = Config_CAN_MB(0, 2, TXDF, 2); //ID82
 
 	for(;;)
 	{
@@ -120,45 +167,39 @@ int main(void)
 		}
 
 		//NODE 1 below
-		/*
+
 		//LED data verification
-		if(data_rec[2] == 0xFF)
+		if(data_rec[2] == 0xFF) //RX ID82
 		{
 			LED_GRN();
 		}
-		else if(data_rec[2] == 0x00)
-		{
-			LED_OFF();
-		}
+
 
 		//transmit 0000FF00 when receiving 000000FF
-		if(data_rec[4] == 0xFF)
+		if(data_rec[4] == 0xFF) //RX ID82
 		{
-			data_tran[3] == 0xFF;
+			data_tran[3] = 0xFF; //TX ID3
 			LED_YEL();
 		}
-		*/
+
 		//END
 
 		//NODE 2 below
-
+		/*
 		//LED data verification
-		if(data_rec[3] == 0xFF)
+		if(data_rec[3] == 0xFF) //RX ID83
 		{
 			LED_GRN();
 		}
-		else if(data_rec[3] == 0x00)
-		{
-			LED_OFF();
-		}
+
 
 		//transmit 00FF0000 when receiving FF000000
-		if(data_rec[1] == 0xFF)
+		if(data_rec[1] == 0xFF) //RX ID83
 		{
-			data_tran[2] == 0xFF;
+			data_tran[2] = 0xFF; //TX ID82
 			LED_YEL();
 		}
-
+		*/
 		//END
 	}
 

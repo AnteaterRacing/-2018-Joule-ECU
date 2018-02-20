@@ -4,6 +4,7 @@
  *  Created on: Feb 8, 2018
  *      Author: arnav
  */
+#include "derivative.h"
 
 #ifndef CAN_H_
 #define CAN_H_
@@ -17,6 +18,7 @@
 //size: 6 bytes: Accelerator, BrakeAngle, SteeringAngle, TVEnable, StartButton, FrontFault
 #define FrontToRearDataMessageID 10
 #define FrontToRearDataMessageSize 6
+
 //defining message ID for telemetry signals
 //size: 8 bytes: Wheelspeed L, Wheelspeed R, Tire temps L1,L2,L3,R1,R2,R3
 #define FrontToRearTelemetryMessageID 20

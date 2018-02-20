@@ -35,16 +35,26 @@ uint8_t Error_LED;
 
 void GPIO_Init(void)
 {
+<<<<<<< HEAD
 
 							 //Front ECU Data Direction, 1 is output, 0 is not output
+=======
+ //Front MCU Data Direction, 1 is output, 0 is input
+>>>>>>> 409ad39bf6c5a8ee3405e55d5693a725f1db0e7d
 	GPIOA_PDDR = 1 << 26 /*MTempY*/| 1 << 28/*MTempR*/| 1 << 31/*S5A*/| 1 << 18/*S7A*/
 				| 1 << 19/*S1B*/| 1 << 12/*S2B*/| 1 << 13/*S3B*/| 1 << 4/*S4B*/
 				| 1 << 27/*IMD LED*/| 1 << 20 /*WSFL*/| 1 << 21/*WSFR*/| 1 << 3/*APPS LED*/;
 	GPIOB_PDDR = 1 << 19/*S1A*/| 1 << 18/*S2A*/| 1 << 17/*S3A*/| 1 << 18/*S4A*/
 				| 1 << 25/*S6A*/| 1 << 14/*S5B*/| 1 << 13/*S6B*/| 1 << 12 /*S7B*/
+<<<<<<< HEAD
 				| 1 << 7/*BSPD LED*/| 1 << 26/*BMS LED*/| 1 << 6/*WSRL*/| 1 << 24/*WSRR*/
 				| 1 << 4/*TVRL*/| 1 << 5/*TVRR*/| 1 << 3/*CS1*/| 1 << 30/*CS2*/| 1 << 8/*APPSL*/
 				| 1 << 9/*APPSR*/;
+=======
+				| 1 << 7/*BSPD Fault*/| 1 << 26/*BMS Fault*/| 1 << 6/*WSRL*/| 1 << 24/*WSRR*/
+				| 1 << 4/*TVRL*/| 1 << 5/*TVRR*/| 1 << 3/*CS1*/| 1 << 30/*CS2*/
+				| 1 << 8/*APPSL*/| 1<< 9/*APPSR*/;
+>>>>>>> 409ad39bf6c5a8ee3405e55d5693a725f1db0e7d
 	GPIOC_PDDR = 0x00000000; // no outputs on GPIOC
 
 							 //Front ECU Input Disable, 1 is not input , 0 is input
@@ -54,6 +64,18 @@ void GPIO_Init(void)
 
 return;
 
+<<<<<<< HEAD
+=======
+							  //Data Direction, 1 is output, 0 is input
+	GPIOA_PDDR = 2621190168; //all of the Front MCU GPIOA pins added together, Error LED signal is input A2, pin 2
+	GPIOB_PDDR = 1192195064; // Front GPIOB pins, only start, F7, pin 15 is an input
+	GPIOC_PDDR = 0x00;		// no outputs on GPIOC
+
+							  //Input Disable, 1 is output, 0 is input
+	GPIOA_PIDR = 8053063677; //inputs at PTD5 & PTA1
+	GPIOB_PIDR = 6442450175; //inputs on PTH7 & PTF0 & PTF1
+	GPIOC_PIDR = 0xFF; // no inputs on GPIO C
+>>>>>>> 409ad39bf6c5a8ee3405e55d5693a725f1db0e7d
 }
 
 //TODO @Xavier: finish this definition for the Front ECU
@@ -82,13 +104,19 @@ void PIT_CH0_IRQHandler(void)
 
 #ifdef RearECU
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 409ad39bf6c5a8ee3405e55d5693a725f1db0e7d
 void I2C_init(void)
 {
 
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 409ad39bf6c5a8ee3405e55d5693a725f1db0e7d
 void GPIO_Init(void)
 {
 							  //Rear ECU Data Direction, 1 is output, 0 is not output
