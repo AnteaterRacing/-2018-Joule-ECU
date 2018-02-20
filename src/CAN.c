@@ -49,7 +49,7 @@ uint8_t startSignal(){
 }
 
 
-#define Test_02_18_18
+//#define Test_02_18_18
 #ifdef Test_02_18_18
 int main(void)
 {
