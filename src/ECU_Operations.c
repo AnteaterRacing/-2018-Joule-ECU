@@ -80,8 +80,153 @@ void set_Throttle_Value(uint8_t acceleratorPosition){
 	FTM2_C1V = ((uint16_t)(acceleratorPosition))*4;
 }
 
-//TODO: @Xavier. define this function so it returns 1 if in charge mode or 0 if not.
+
 uint8_t inChargeMode(void) {
-	return 0;
+	if(C_D == 0) return 0; //discharge is 0
+	else return 1;
+}
+#ifdef FrontECU
+void Speed (uint8_t Speed)
+{
+	FGPIOA_PCOR = Speed5A | Speed7A | Speed1B | Speed2B | Speed3B | Speed4B;
+	FGPIOB_PCOR = Speed1A | Speed2A | Speed3A | Speed4A | Speed6A | Speed5B | Speed6B | Speed7B;
+	uint8_t Digit1;
+	uint8_t Digit2;
+	if (Speed < 100)
+	{
+		Digit1 = Speed % 10;
+		Speed /= 10;
+		Digit2 = Speed % 10;
+	}
+	else
+	{
+		//error handler
+	}
+	switch(Digit1)
+	{
+		case 0:
+		{
+			FGPIOA_PSOR = Speed5A;
+			FGPIOB_PSOR = Speed1A | Speed2A | Speed3A | Speed4A | Speed6A;
+			break;
+		}
+		case 1:
+		{
+			FGPIOB_PSOR = Speed2A | Speed3A;
+			break;
+		}
+		case 2:
+		{
+			FGPIOA_PSOR = Speed5A | Speed7A;
+			FGPIOB_PSOR = Speed1A | Speed2A | Speed4A;
+			break;
+		}
+		case 3:
+		{
+			FGPIOA_PSOR = Speed7A;
+			FGPIOB_PSOR = Speed1A | Speed2A | Speed3A | Speed4A;
+			break;
+		}
+		case 4:
+		{
+			FGPIOA_PSOR = Speed7A;
+			FGPIOB_PSOR = Speed2A | Speed3A | Speed6A;
+			break;
+		}
+		case 5:
+		{
+			FGPIOA_PSOR = Speed7A;
+			FGPIOB_PSOR = Speed1A | Speed3A | Speed4A | Speed6A;
+			break;
+		}
+		case 6:
+		{
+			FGPIOA_PSOR = Speed5A | Speed7A;
+			FGPIOB_PSOR = Speed1A | Speed3A | Speed4A | Speed6A;
+			break;
+		}
+		case 7:
+		{
+			FGPIOB_PSOR = Speed1A | Speed2A | Speed3A;
+			break;
+		}
+		case 8:
+		{
+			FGPIOA_PSOR = Speed5A | Speed7A;
+			FGPIOB_PSOR = Speed1A | Speed2A | Speed3A | Speed4A | Speed6A;
+			break;
+		}
+		case 9:
+		{
+			FGPIOA_PSOR = Speed7A;
+			FGPIOB_PSOR = Speed1A | Speed2A | Speed3A | Speed6A;
+			break;
+		}
+	}
+	switch(Digit2)
+	{
+		case 0:
+		{
+			FGPIOA_PSOR = Speed1B | Speed2B | Speed3B | Speed4B;
+			FGPIOB_PSOR = Speed5B | Speed6B;
+			break;
+		}
+		case 1:
+		{
+			FGPIOA_PSOR = Speed2B | Speed3B;
+			break;
+		}
+		case 2:
+		{
+			FGPIOA_PSOR = Speed1B | Speed2B | Speed4B;
+			FGPIOB_PSOR = Speed5B | Speed7B;
+			break;
+		}
+		case 3:
+		{
+			FGPIOA_PSOR = Speed1B | Speed2B | Speed3B | Speed4B;
+			FGPIOB_PSOR = Speed7B;
+			break;
+		}
+		case 4:
+		{
+			FGPIOA_PSOR = Speed2B | Speed3B;
+			FGPIOB_PSOR = Speed7B | Speed6B;
+			break;
+		}
+		case 5:
+		{
+			FGPIOA_PSOR = Speed1B | Speed3B | Speed4B;
+			FGPIOB_PSOR = Speed7B | Speed6B;
+			break;
+		}
+		case 6:
+		{
+			FGPIOA_PSOR = Speed1B | Speed3B | Speed4B;
+			FGPIOB_PSOR = Speed5B | Speed6B | Speed7B;
+			break;
+		}
+		case 7:
+		{
+			FGPIOA_PSOR = Speed1B | Speed2B | Speed3B;
+			break;
+		}
+		case 8:
+		{
+			FGPIOA_PSOR = Speed1B | Speed2B | Speed3B | Speed4B;
+			FGPIOB_PSOR = Speed5B | Speed6B | Speed7B;
+			break;
+		}
+		case 9:
+		{
+			FGPIOA_PSOR = Speed1B | Speed2B | Speed3B;
+			FGPIOB_PSOR = Speed6B | Speed7B;
+			break;
+		}
+	}
+
 }
 
+
+
+#endif

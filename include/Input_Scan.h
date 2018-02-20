@@ -17,17 +17,21 @@ void GPIO_Init(void);
 uint32_t Fault;
 uint32_t Fault_Mask;
 
-<<<<<<< HEAD
-=======
 #ifdef FrontECU
-#define Start_Mask 32768
-#define Error_Count_Mask 8
+#define Start_Mask 1 << 15
+#define Error_Count_Mask 1 << 3
+extern uint8_t Start;
+extern uint32_t C_D;
 #endif
 
 #ifdef RearECU
-#define C_D_Mask 67108864
+
+void I2c_init(void);
+
+#define C_D_Mask 1 << 26
+#define Charge_LED_Mask 1 << 7
 extern uint32_t C_D;
+
 #endif
->>>>>>> 406ed3400a61d25d180d32d64a9536e50819ffdb
 
 #endif /* INPUT_SCAN_H_ */
