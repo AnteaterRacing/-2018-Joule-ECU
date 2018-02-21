@@ -41,6 +41,7 @@ void LED_TEAL(void);
 void LED_WHT(void);
 void LED_OFF(void);
 void LED_YEL(void);
+uint8 ID_to_BUF(uint8);
 
 uint8_t err_status;
 
@@ -49,10 +50,11 @@ uint8_t err_status;
 void CAN_Init(){
 	init_CAN_clocks();
 	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
-	Config_CAN_MB(0,1,RXDF,FrontToRearDataMessageIDRef); //messagebuffer to receive the FrontToRearDataMessage
-	Config_CAN_MB(0,2,RXDF,FrontToRearTelemetryMessageIDRef); //messagebuffer to receive the FrontToRearTelemetryMessage
-	Config_CAN_MB(0,3,TXDF,RearToFrontDataMessageIDRef); //messagebuffer to transmit the RearToFrontDataMessage
-
+	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageIDRef); //messagebuffer to receive the FrontToRearDataMessage
+	Config_CAN_MB(0,2,RXDF, RearToFrontDataMessageIDRef); //messagebuffer to receive the FrontToRearTelemetryMessage
+	Config_CAN_MB(0,3,TXDF, FrontToRearTelemetryMessageIDRef); //messagebuffer to transmit the RearToFrontDataMessage
+	Config_CAN_MB(0,4,RXDF, OrionRX);
+	Config_CAN_MB(0,5,TXDF, OrionTX);
 }
 #endif
 
@@ -61,21 +63,38 @@ void CAN_Init(){
 void CAN_Init() {
 	init_CAN_clocks();
 	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
-	Config_CAN_MB(0,1,TXDF,FrontToRearDataMessageIDRef); //messagebuffer to transmit the FrontToRearDataMessage
-	Config_CAN_MB(0,2,TXDF,FrontToRearTelemetryMessageIDRef); //messagebuffer to transmit the FrontToRearTelemetryMessage
-	Config_CAN_MB(0,3,RXDF,RearToFrontDataMessageIDRef); //messagebuffer to receive the RearToFrontDataMessage
-
+	Config_CAN_MB(0,1,TXDF, FrontToRearDataMessageIDRef); //messagebuffer to transmit the FrontToRearDataMessage
+	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageIDRef); //messagebuffer to transmit the FrontToRearTelemetryMessage
+	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageIDRef); //messagebuffer to receive the RearToFrontDataMessage
+	Config_CAN_MB(0,4,RXDF, OrionRX);
+	Config_CAN_MB(0,5,TXDF, OrionTX);
 
 }
 #endif
+
+uint8 ID_to_BUF(uint8 ID){
+
+	switch(ID){
+	case 10: return 1; //Front to Rear ID 10 to buffer1
+	case 11: return 2; //Rear to Front ID 11 to buffer 2
+	case 20: return 3; //Front to Rear Telemetry ID 20 to buffer 3
+	case 0x7EB: return 4; //Orion RX ID 0x7EB to buffer 4
+	case 0x7E3: return 5; //Orion TX ID 0x7E3 to buffer 5
+	default: break;
+	}
+}
+
 //transmits CAN message with specified messageID
 void CAN_TransmitData(uint16_t messageID, uint8_t* message) {
 
+	Load_CAN_MB(0, ID_to_BUF(messageID), message);
+	Transmit_CAN_MB(0, ID_to_BUF(messageID));
 }
 
 //receives CAN message with specified messageID
 void CAN_ReceiveData(uint16_t messageID, uint8_t* message) {
 
+	Read_CAN_MB_Data(0, ID_to_BUF(messageID), message);
 }
 
 void init_CAN_clocks() {
