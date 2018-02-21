@@ -29,6 +29,9 @@
 
 
 //TODO @Ken Tran: add message ID definitions for BMS
+#define OrionRX 0x7EB
+#define OrionTX 0x7E3 //Used to transmit Data Request
+
 
 
 #define Accelerator 	1
