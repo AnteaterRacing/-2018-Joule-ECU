@@ -35,9 +35,9 @@ uint8_t started = 0;
 
 #ifdef RearECU
 //Buffers to store CAN data packets
-uint8_t data_RX_buffer[FrontToRearDataMessageSize+1] = {FrontToRearDataMessageSize, 0 ,0, 0, 0, 0, 0}; //size 6
-uint8_t telemetry_RX_buffer[FrontToRearTelemetryMessageSize+1] = {FrontToRearTelemetryMessageSize, 0, 0, 0, 0, 0, 0, 0, 0}; //size 8
-uint8_t data_TX_buffer[RearToFrontDataMessageSize+1] = {RearToFrontDataMessageSize, 0, 0, 0, 0, 0, 0, 0}; //size 7
+uint8_t data_RX_buffer[FrontToRearDataMessageSize+1] = {0};
+uint8_t telemetry_RX_buffer[FrontToRearTelemetryMessageSize+1] = {0};
+uint8_t data_TX_buffer[RearToFrontDataMessageSize+1] = {0};
 //REAR ECU CODE MAIN METHOD
 int main(void)
 {
@@ -47,6 +47,8 @@ int main(void)
 
 	//setting message sizes for transmit buffers
 	data_TX_buffer[0] = RearToFrontDataMessageSize;
+	data_RX_buffer[0] = FrontToRearDataMessageSize;
+	telemetry_RX_buffer[0] = FrontToRearTelemetryMessageSize;
 
 	//wait_for_start_seq();						//wait for start sequence to turn on tractive system
 
