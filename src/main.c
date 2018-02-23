@@ -35,9 +35,9 @@ uint8_t started = 0;
 
 #ifdef RearECU
 //Buffers to store CAN data packets
-uint8_t data_RX_buffer[FrontToRearDataMessageSize+1] = {0};
-uint8_t telemetry_RX_buffer[FrontToRearTelemetryMessageSize+1] = {0};
-uint8_t data_TX_buffer[RearToFrontDataMessageSize+1] = {0};
+uint8_t data_RX_buffer[FrontToRearDataMessageSize+1] = {FrontToRearDataMessageSize, 0 ,0, 0, 0, 0, 0}; //size 6
+uint8_t telemetry_RX_buffer[FrontToRearTelemetryMessageSize+1] = {FrontToRearTelemetryMessageSize, 0, 0, 0, 0, 0, 0, 0, 0}; //size 8
+uint8_t data_TX_buffer[RearToFrontDataMessageSize+1] = {RearToFrontDataMessageSize, 0, 0, 0, 0, 0, 0, 0}; //size 7
 //REAR ECU CODE MAIN METHOD
 int main(void)
 {
