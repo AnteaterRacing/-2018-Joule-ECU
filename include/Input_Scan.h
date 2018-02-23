@@ -30,6 +30,13 @@ void I2c_init(void);
 
 #define C_D_Mask 1 << 26
 #define Charge_LED_Mask 7
+#define BSPD_Fault_Mask 1 << 31
+#define BMS_Fault_Mask 1 << 30
+#define IMD_Fault_Mask 1 << 28
+#define ACC_INT2_Mask 1 << 16
+#define ACC_INT1_Mask 1 << 17
+#define Gyro_Data_Mask 1 << 18
+#define Gyro_Int_Mask 1 << 19
 extern uint32_t C_D;
 
 #endif

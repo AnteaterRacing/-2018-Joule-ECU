@@ -97,21 +97,21 @@ void GPIO_Init(void)
 	GPIOC_PDDR = 1 << 4/*ErrorLED*/;
 
 			  //Rear ECU Input Disable, 1 is not input, 0 is input
-	GPIOA_PIDR != (1 << 29/*WSRL*/| 1 << 26/*C_D*/| 1 << 28/*IMDFault*/| 1 << 30/*BMSFault*/);
-	GPIOB_PIDR != (1 << 31/*WSRR*/| 1 << 19/*GyroI*/| 1 << 18/*GyroData*/| 1 << 17/*Int1*/| 1 << 16/*Int2*/);
-	GPIOC_PIDR != (1 << 6/*APPSL*/| 1 << 5/*APPSR*/);
+	GPIOA_PIDR &= ~(1 << 29/*WSRL*/| 1 << 26/*C_D*/| 1 << 28/*IMDFault*/| 1 << 30/*BMSFault*/);
+	GPIOB_PIDR &= ~(1 << 31/*WSRR*/| 1 << 19/*GyroI*/| 1 << 18/*GyroData*/| 1 << 17/*Int1*/| 1 << 16/*Int2*/);
+	GPIOC_PIDR &= ~(1 << 6/*APPSL*/| 1 << 5/*APPSR*/);
 
 	C_D   = GPIOA_PDIR & C_D_Mask >> 26; //Find C_D to pass to ECU init
 
-	if (C_D == 1)
-		return;
-	else
-		GPIOB_PDOR |= 1 << Charge_LED_Mask;
-		//TODO: Send over CAN to send error code;
-		while(1)
-		{
-			;
-		}
+//	if (C_D == 1)
+//		return;
+//	else
+//		GPIOB_PDOR |= 1 << Charge_LED_Mask;
+//		//TODO: Send over CAN to send error code;
+//		while(1)
+//		{
+//			;
+//		}
 
 }
 
@@ -122,8 +122,17 @@ void PIT_CH0_IRQHandler(void)
 	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
 
 
-		Fault = GPIOA_PDIR & Fault_Mask >> 28; 		// faults are read in pin D4 = bit A28 = IMD; pin D6 = bit A30 = BMS; pin D7 = bit A31 = BSPD;
-		C_D   = GPIOA_PDIR & C_D_Mask >> 26;		// charge vs discharge is read in
+	uint8_t IMD_Fault  = GPIOA_PDIR & IMD_Fault_Mask  >> 28; 		// faults are read in pin D4 = bit A28 = IMD; pin D6 = bit A30 = BMS; pin D7 = bit A31 = BSPD;
+	uint8_t BMS_Fault  = GPIOA_PDIR & BMS_Fault_Mask  >> 30;
+	uint8_t BSPD_Fault = GPIOA_PDIR & BSPD_Fault_Mask >> 31;
+
+	uint8_t Gyro_Int  = GPIOB_PDIR & Gyro_Int_Mask  >> 19;
+	uint8_t Gyro_Data = GPIOB_PDIR & Gyro_Data_Mask >> 18;
+	uint8_t ACC_INT1  = GPIOB_PDIR & ACC_INT1_Mask  >> 17;
+	uint8_t ACC_INT2  = GPIOB_PDIR & ACC_INT2_Mask  >> 16;
+
+
+
 
 #ifdef CAN_Fucked
 	if (Fault = 0)	GPIOC_PCOR = 16;
