@@ -62,6 +62,15 @@
 void CAN_Init(void); //front or rear ecu init
 void CAN_TransmitData(uint16_t, uint8_t*); 	//transmits CAN message with specified messageID
 void CAN_ReceiveData(uint16_t, uint8_t*);		//receives CAN message with specified messageID
+void init_CAN_clocks(void);
 void delay(void);
-
+uint16_t ID_to_BUF(uint16_t);
+void err_check(uint8_t);
+void LED_GRN(void);
+void LED_RED(void);
+void LED_BLU(void);
+void LED_TEAL(void);
+void LED_WHT(void);
+void LED_OFF(void);
+void LED_YEL(void);
 #endif /* CAN_H_ */

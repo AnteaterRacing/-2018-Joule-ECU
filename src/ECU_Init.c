@@ -56,7 +56,7 @@ void FTM2_IRQHandler(void){
 //initializes ECU subsystems
 void init_ECU(){
 	init_ADC(); 		//initialize Analog to Digital Converter Module
-	GPIO_Init();
+	//GPIO_Init();
 
 	//LED initialization
 	//PCOR = Port Clear Output Register, PSOR = Port Set Output Register
@@ -66,22 +66,12 @@ void init_ECU(){
 	GPIOB_PIDR &= 1<<PTE7 | 1<< PTH0 | 1<<PTH1;   				/* Disable inputs (default) */
 	GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1; 				/* Turn off all LEDs */
 
-	#ifdef RearECU
-	//CHARGE MODE WAITING LOOP. The car waits in this loop while in charge mode.
-	//Only the Rear ECU needs to run this block of code.
-	while(inChargeMode()){
-		GPIOB_PCOR |= 1<<PTE7;
-		GPIOB_PSOR |= 1<<PTH0 | 1<<PTH1;
-		GPIOB_PDOR &= ~(1<<PTF0); //set output low for left motor
-		GPIOB_PDOR &= ~(1<<PTF1); //set output low for right motor
-	}
-	#endif
 	init_PIT0();     			// Initialize PIT0
-	init_UART(); 				//Initialize UART
+	//init_UART(); 				//Initialize UART
 	CAN_Init();				//initialize CAN bus
 	init_PWM();				      //initialize PWM Module and FTM components
 	init_FTM ();  	              /* Enable bus clock to FTM1,2 prescaled by 128 */
-	init_clks_FEE_40MHz();        /* KEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
+	//init_clks_FEE_40MHz();        /* KEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
 
 }
 

@@ -48,8 +48,8 @@ void GPIO_Init(void)
 	GPIOC_PDDR = 0x00000000; // no outputs on GPIOC
 
 				//Front ECU Input Disable, 1 is not input , 0 is input
-	GPIOA_PIDR != 1 << 15/*Start*/;
-	GPIOB_PIDR != 1 << 2/*ErrorLED*/;
+	GPIOA_PIDR &= ~(1 << 15)/*Start*/;
+	GPIOB_PIDR &= ~(1 << 2)/*ErrorLED*/;
 	GPIOC_PIDR = 0xFFFFFFFF; // no inputs on GPIO C
 
 return;
@@ -106,7 +106,7 @@ void GPIO_Init(void)
 	if (C_D == 1)
 		return;
 	else
-		GPIOB_PDOR |= Charge_LED_Mask;
+		GPIOB_PDOR |= 1 << Charge_LED_Mask;
 		//TODO: Send over CAN to send error code;
 		while(1)
 		{

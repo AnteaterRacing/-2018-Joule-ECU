@@ -33,15 +33,7 @@
 void delay(void); //delay function
 void err_check(uint8_t); //checks for ERR_OK and returns green or red LED flash
 //void sendCANloop(uint8_t *data, uint8_t txBuffer, uint8_t rxBuffer);
-void err_check(uint8_t);
-void LED_GRN(void);
-void LED_RED(void);
-void LED_BLU(void);
-void LED_TEAL(void);
-void LED_WHT(void);
-void LED_OFF(void);
-void LED_YEL(void);
-uint8 ID_to_BUF(uint8);
+
 
 uint8_t err_status;
 
@@ -62,25 +54,25 @@ void CAN_Init(){
 #ifdef FrontECU
 void CAN_Init() {
 	init_CAN_clocks();
-	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
+	err_status = Init_CAN(0, FAST); //initialize CAN0 to FAST mode
 	Config_CAN_MB(0,1,TXDF, FrontToRearDataMessageIDRef); //messagebuffer to transmit the FrontToRearDataMessage
-	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageIDRef); //messagebuffer to transmit the FrontToRearTelemetryMessage
-	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageIDRef); //messagebuffer to receive the RearToFrontDataMessage
-	Config_CAN_MB(0,4,RXDF, OrionRX);
-	Config_CAN_MB(0,5,TXDF, OrionTX);
+//	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageIDRef); //messagebuffer to transmit the FrontToRearTelemetryMessage
+//	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageIDRef); //messagebuffer to receive the RearToFrontDataMessage
+//	Config_CAN_MB(0,4,RXDF, OrionRX);
+//	Config_CAN_MB(0,5,TXDF, OrionTX);
 
 }
 #endif
 
-uint8 ID_to_BUF(uint8 ID){
+uint16_t ID_to_BUF(uint16_t ID){
 
 	switch(ID){
 	case 10: return 1; //Front to Rear ID 10 to buffer1
 	case 11: return 2; //Rear to Front ID 11 to buffer 2
 	case 20: return 3; //Front to Rear Telemetry ID 20 to buffer 3
-	case 0x7EB: return 4; //Orion RX ID 0x7EB to buffer 4
-	case 0x7E3: return 5; //Orion TX ID 0x7E3 to buffer 5
-	default: break;
+	case OrionRX: return 4; //Orion RX ID 0x7EB to buffer 4
+	case OrionTX: return 5; //Orion TX ID 0x7E3 to buffer 5
+	default: return 0;
 	}
 }
 

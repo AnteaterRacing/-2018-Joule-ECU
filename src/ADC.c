@@ -12,7 +12,7 @@
 #include "UART.h"
 #include "SKEAZ1284.h"
 #include "Error.h"
-
+int flag = 1;
 uint8_t currentChan = 0; 	//stores the current channel that is being converted
 
 void init_ADC(void)  {
@@ -46,8 +46,8 @@ void init_ADC(void)  {
 
 void ADC0_IRQHandler(void)
 {
+	flag = 0;
 	ADC_buf[currentChan] = read_adc_chx();
-
 	currentChan++;
 	if(currentChan > 9){
 		currentChan = 0;
@@ -100,9 +100,21 @@ uint8_t adc_complete(void)  {
   return ((ADC_SC1 & ADC_SC1_COCO_MASK)>>ADC_SC1_COCO_SHIFT);	 /* Return value of Conversion Complete flag */
 }
 
-uint16_t read_adc_chx(void)  {
-  adcResult = ADC_R;                            /* Read ADC conversion result (clears COCO flag) */
-  return  (uint16_t) ((5000*adcResult)/0x3FF);  /* Convert result to mv for 0-5V range */
+uint8_t read_adc_chx(void)  {
+  adcResult =ADC_R;                            /* Read ADC conversion result (clears COCO flag) */
+  return  (uint8_t) adcResult;//(uint16_t) ((5000*adcResult)/0x3FF);  /* Convert result to mv for 0-5V range */
+}
+
+uint8_t convert_to_uint8(uint16_t val){
+	if(val >4000){
+		return 200;
+	}
+	else if(val >1000){
+		return 100;
+	}
+	else {
+		return 0;
+	}
 }
 
 

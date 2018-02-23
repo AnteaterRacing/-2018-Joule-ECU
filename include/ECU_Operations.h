@@ -13,13 +13,13 @@
 
 
 //returns 1 if fault, 0 if no fault. (checks acc pedal transfer functions)
-int APPS_Fault(uint16_t,uint16_t);
+int APPS_Fault(uint8_t,uint8_t);
 
 //returns 1 if BSE fault, 0 if no fault (checks that acc is not depressed when brake is depressed >10%)
-int BSE_Fault(uint16_t,uint16_t,uint16_t);
+int BSE_Fault(uint8_t,uint8_t,uint8_t);
 
 //returns 1 if fault has not been resolved, 0 if it has.
-int Fault_Not_Resolved(uint16_t,uint16_t);
+int Fault_Not_Resolved(uint8_t,uint8_t);
 
 //sets the throttle output value to the current value of acc1 whenever called (Torque Vectoring added later)
 void set_Throttle_Value(uint8_t);

@@ -23,7 +23,7 @@ uint16_t Throttle_L = 0;
 uint16_t Throttle_R = 0;
 
 //returns 1 if fault, 0 if no fault. (checks acc pedal transfer functions)
-int APPS_Fault(uint16_t acc1, uint16_t acc2){
+int APPS_Fault(uint8_t acc1, uint8_t acc2){
 
 	//500 is 10% of 5000mV which is the max value for ADC inputs
 	//if apps flag has been already triggered but fault is still occurring, do nothing
@@ -44,7 +44,7 @@ int APPS_Fault(uint16_t acc1, uint16_t acc2){
 }
 
 //returns 1 if APBS fault, 0 if no fault (checks that acc is not depressed when brake is depressed >20%)
-int BSE_Fault(uint16_t brakeAngle, uint16_t acc1, uint16_t acc2){
+int BSE_Fault(uint8_t brakeAngle, uint8_t acc1, uint8_t acc2){
 	if((BSE_flag) || ((acc1 > 0 || acc2 > 0) && brakeAngle > 1000)) { //1000 is 20% of 5000mV
 		BSE_flag = 1;
 		BSE_faultcount++;
@@ -56,7 +56,7 @@ int BSE_Fault(uint16_t brakeAngle, uint16_t acc1, uint16_t acc2){
 }
 
 //returns 0 if the fault exit condition has been satisfied. returns 1 if not.
-int Fault_Not_Resolved(uint16_t acc1, uint16_t acc2){
+int Fault_Not_Resolved(uint8_t acc1, uint8_t acc2){
 	if(BSE_flag){
 		if(acc1==0 && acc2==0){ //if acc1 and acc2 show accelerator is released, clear BSE fault
 			BSE_flag = 0;
@@ -78,10 +78,8 @@ int Fault_Not_Resolved(uint16_t acc1, uint16_t acc2){
 //this is done by setting the compare match value on the PWM output pin. (0-1020)
 //TODO: add torque vectoring functionality
 void set_Throttle_Value(uint8_t acceleratorPosition){
-	Throttle_L = ((uint16_t)(acceleratorPosition))*4;
-	Throttle_R = ((uint16_t)(acceleratorPosition))*4;
-
-	TorqV_LED(Throttle_L, Throttle_R); //sets LEDs based upon which value is larger
+	Throttle_L = (acceleratorPosition);
+	Throttle_R = (acceleratorPosition);
 
 	FTM2_C0V = Throttle_L;
 	FTM2_C1V = Throttle_R;

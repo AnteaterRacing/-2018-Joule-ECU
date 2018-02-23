@@ -11,11 +11,11 @@ void init_ADC(void);
 void ADC_Handler(void);
 void ADC_Converter(void);
 void ADC0_IRQHandler(void);
-uint16_t read_adc_chx(void);
+uint8_t read_adc_chx(void);
 void convertAdcChan(uint16_t adcChan);
 uint8_t adc_complete(void);
 
-uint16_t ADC_buf[10];
+uint8_t ADC_buf[10];
 
 #define ADC_SC1_ADCH0_MASK 0x00
 #define ADC_SC1_ADCH1_MASK 0x01
