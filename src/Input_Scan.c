@@ -12,6 +12,10 @@
 
 uint32_t C_D;
 uint8_t Count = 0;
+uint8_t IMD_Fault = 0;
+uint8_t BMS_Fault = 0;
+uint8_t BSPD_Fault= 0;
+
 
 void init_PIT0 (void)
 {
@@ -122,16 +126,9 @@ void PIT_CH0_IRQHandler(void)
 	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
 
 
-	uint8_t IMD_Fault  = GPIOA_PDIR & IMD_Fault_Mask  >> 28; 		// faults are read in pin D4 = bit A28 = IMD; pin D6 = bit A30 = BMS; pin D7 = bit A31 = BSPD;
-	uint8_t BMS_Fault  = GPIOA_PDIR & BMS_Fault_Mask  >> 30;
-	uint8_t BSPD_Fault = GPIOA_PDIR & BSPD_Fault_Mask >> 31;
-
-	uint8_t Gyro_Int  = GPIOB_PDIR & Gyro_Int_Mask  >> 19;
-	uint8_t Gyro_Data = GPIOB_PDIR & Gyro_Data_Mask >> 18;
-	uint8_t ACC_INT1  = GPIOB_PDIR & ACC_INT1_Mask  >> 17;
-	uint8_t ACC_INT2  = GPIOB_PDIR & ACC_INT2_Mask  >> 16;
-
-
+	IMD_Fault  = GPIOA_PDIR & IMD_Fault_Mask  >> 28; 		// faults are read in pin D4 = bit A28 = IMD; pin D6 = bit A30 = BMS; pin D7 = bit A31 = BSPD;
+	BMS_Fault  = GPIOA_PDIR & BMS_Fault_Mask  >> 30;
+	BSPD_Fault = GPIOA_PDIR & BSPD_Fault_Mask >> 31;
 
 
 #ifdef CAN_Fucked
@@ -162,8 +159,21 @@ void PIT_CH0_IRQHandler(void)
 
 
 #endif
+
+
+	uint8_t DOF_Int = ((GPIOB_PDIR & 1 << Gyro_Int)  >> 16) | (GPIOB_PDIR & (1 << Gyro_Data) >> 16) | ((GPIOB_PDIR & 1 << ACC_INT1)  >> 16) | ((GPIOB_PDIR & 1 << ACC_INT2) >> 16);
+
+	//DOF_Int = (GPIOB_PDIR & Gyro_Int_Mask  >> 16) | (GPIOB_PDIR & Gyro_Data_Mask >> 16) | (GPIOB_PDIR & ACC_INT1_Mask  >> 16) | (GPIOB_PDIR & ACC_INT2_Mask  >> 16);
+	if(DOF_Int > 0 && DOF_Int < 16)
+		//pass DOF_INT to I2C handler. Gyro int = 8; Gyro_Data = 4, ACC_Int1 = 2; ACC_INT2 = 1;
+		;
+	else
+			return;
+
+
+	return;
+
+
+
 }
-
-
 #endif
-
