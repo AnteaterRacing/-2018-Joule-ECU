@@ -11,10 +11,7 @@
 #include "main.h"
 
 uint32_t C_D;
-uint8_t Count = 0;
-uint8_t IMD_Fault = 0;
-uint8_t BMS_Fault = 0;
-uint8_t BSPD_Fault= 0;
+
 
 
 void init_PIT0 (void)
@@ -36,6 +33,7 @@ void init_PIT0 (void)
 uint8_t Start;
 uint8_t Error_Count;
 uint8_t Error_LED;
+uint8_t Count = 0;
 
 void GPIO_Init(void)
 {
@@ -87,9 +85,11 @@ void PIT_CH0_IRQHandler(void)
 
 #ifdef RearECU
 
+uint8_t Count = 0;
+
 void I2C_init(void)
 {
-
+	return;
 }
 
 
@@ -121,9 +121,9 @@ void GPIO_Init(void)
 
 void PIT_CH0_IRQHandler(void)
 {
-
-
-	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
+	uint8_t IMD_Fault;
+	uint8_t BMS_Fault;
+	uint8_t BSPD_Fault;
 
 
 	IMD_Fault  = GPIOA_PDIR & IMD_Fault_Mask  >> 28; 		// faults are read in pin D4 = bit A28 = IMD; pin D6 = bit A30 = BMS; pin D7 = bit A31 = BSPD;
@@ -132,27 +132,28 @@ void PIT_CH0_IRQHandler(void)
 
 
 #ifdef CAN_Fucked
-	if (Fault = 0)	GPIOC_PCOR = 16;
-	else if (Fault = 1)
+	if (IMD_Fault == 0 && BMS_Fault == 0 && BSPD_Fault == 0)
+		GPIOC_PCOR = 16;
+	else if (IMD_Fault == 1 && BMS_Fault == 0 && BSPD_Fault == 0)
 	{
-		if (Count >= 0 && Count < 5) GPIO_PSOR = 16;
-		if (Count >= 5) GPIO_PCOR = 16;
+		if (Count >= 0 && Count < 5) GPIOC_PSOR = 16;
+		if (Count >= 5) GPIOC_PCOR = 16;
 	}
 
-	else if (Fault = 4)
+	else if (IMD_Fault == 0 && BMS_Fault == 1 && BSPD_Fault == 0)
 	{
-		if (Count >= 0 && Count < 10) GPIO_PSOR = 16;
-		if (Count >= 10) GPIO_PCOR = 16;
+		if (Count >= 0 && Count < 10) GPIOC_PSOR = 16;
+		if (Count >= 10) GPIOC_PCOR = 16;
 	}
-	else if (Fault = 8)
+	else if (IMD_Fault == 0 && BMS_Fault == 0 && BSPD_Fault == 1)
 	{
-		if (Count >= 0 && Count < 15) GPIO_PSOR = 16;
-		if (Count >= 15) GPIO_PCOR = 16;
+		if (Count >= 0 && Count < 15) GPIOC_PSOR = 16;
+		if (Count >= 15) GPIOC_PCOR = 16;
 	}
-	else if (Fault = 5 || Fault = 9 || Fault = 12)
+	else
 	{
-		if (Count >= 0 && Count <20) GPIO_PSOR = 16;
-		if (Count = 20) GPIO_PCOR = 16;
+		if (Count >= 0 && Count <20) GPIOC_PSOR = 16;
+		if (Count == 20) GPIOC_PCOR = 16;
 	}
 	if (Count <20 ) Count ++;
 	else Count = 0;
@@ -165,7 +166,7 @@ void PIT_CH0_IRQHandler(void)
 
 	//DOF_Int = (GPIOB_PDIR & Gyro_Int_Mask  >> 16) | (GPIOB_PDIR & Gyro_Data_Mask >> 16) | (GPIOB_PDIR & ACC_INT1_Mask  >> 16) | (GPIOB_PDIR & ACC_INT2_Mask  >> 16);
 	if(DOF_Int > 0 && DOF_Int < 16)
-		//pass DOF_INT to I2C handler. Gyro int = 8; Gyro_Data = 4, ACC_Int1 = 2; ACC_INT2 = 1;
+		//pass DOF_INT to I2C handler. Gyro_int = 8; Gyro_Data = 4, ACC_Int1 = 2; ACC_INT2 = 1;
 		;
 	else
 			return;
@@ -174,6 +175,6 @@ void PIT_CH0_IRQHandler(void)
 	return;
 
 
-
+	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
 }
 #endif

@@ -13,6 +13,7 @@
 #include "PWT.h"
 #include "ECU_Init.h"
 #include "Input_Scan.h"
+#include "Input_Scan.c"
 #include "CAN.h"
 #include "main.h"
 #define PTE7  7          						/* Port PTE7 output to blue LED */
@@ -56,7 +57,7 @@ void FTM2_IRQHandler(void){
 //initializes ECU subsystems
 void init_ECU(){
 	init_ADC(); 		//initialize Analog to Digital Converter Module
-	//GPIO_Init();
+	GPIO_Init();
 
 	//LED initialization
 	//PCOR = Port Clear Output Register, PSOR = Port Set Output Register
@@ -71,7 +72,7 @@ void init_ECU(){
 	CAN_Init();				//initialize CAN bus
 	init_PWM();				      //initialize PWM Module and FTM components
 	init_FTM ();  	              /* Enable bus clock to FTM1,2 prescaled by 128 */
-	//init_clks_FEE_40MHz();        /* KEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
+	init_clks_FEE_40MHz();        /* KEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
 
 }
 

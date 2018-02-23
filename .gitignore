@@ -16,3 +16,12 @@ Debug/makefile
 *.mk
 *.xml
 *.xml
+.settings/language.settings.xml
+*.xml
+*.xml
+*.args
+*.map
+Debug/makefile
+*.args
+*.args
+*.args
