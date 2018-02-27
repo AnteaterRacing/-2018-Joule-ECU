@@ -44,6 +44,15 @@ int main(void)
 	init_UART();
 
 	init_ECU(); 				//initialize Rear ECU settings
+	
+	//CAN_Init();
+	init_CAN_clocks();
+	Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
+	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageID); //messagebuffer to receive the FrontToRearDataMessage
+	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageID); //messagebuffer to receive the FrontToRearTelemetryMessage
+	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageID); //messagebuffer to transmit the RearToFrontDataMessage
+	Config_CAN_MB(0,4,RXDF, OrionRX);
+	Config_CAN_MB(0,5,TXDF, OrionTX);
 
 	//setting message sizes for transmit buffers
 	data_TX_buffer[0] = RearToFrontDataMessageSize;
@@ -54,12 +63,13 @@ int main(void)
 
 	//this runs continuously once the initialization has completed
 	while(1){
-//		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
-//		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
-//		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
+		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
+		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
+		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
 		//set_Throttle_Value(ADC_buf[1]);//data_RX_buffer[Accelerator]);
 
 		//testing PWM output
+		/*
 		transmit_string("buf");
 		transmit_char('1');
 		transmit_char(':');
@@ -68,7 +78,7 @@ int main(void)
 		transmit_char('0'+ADC_buf[1]%10);
 		transmit_char(',');
 		transmit_string("\n\r");
-
+		*/
 	}
 }
 #endif
@@ -91,6 +101,15 @@ int main(void){
 	//setting message sizes for transmit buffers
 	data_TX_buffer[0] = FrontToRearDataMessageSize;
 	telemetry_TX_buffer[0] = FrontToRearTelemetryMessageSize;
+	data_RX_buffer[0] = RearToFrontDataMessageSize;
+	
+	init_CAN_clocks();
+	err_status = Init_CAN(0, FAST); //initialize CAN0 to FAST mode
+	Config_CAN_MB(0,1,TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
+	Config_CAN_MB(0,2,RXDF, RearToFrontDataMessageID); //messagebuffer to transmit the FrontToRearTelemetryMessage
+	Config_CAN_MB(0,3,TXDF, FrontToRearTelemetryMessageID); //messagebuffer to receive the RearToFrontDataMessage
+	Config_CAN_MB(0,4,RXDF, OrionRX);
+	Config_CAN_MB(0,5,TXDF, OrionTX);
 
 	while(1) {
 
@@ -108,7 +127,9 @@ int main(void){
 		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
 		data_TX_buffer[TVEnable] = 0x00;					//TODO: set up torque vectoring toggle somewhere on DASH & connect
 		data_TX_buffer[StartButton] = 0xFF;
-		//CAN_TransmitData(FrontToRearDataMessageID,data_TX_buffer);
+		
+		CAN_TransmitData(FrontToRearDataMessageID,data_TX_buffer);
+		CAN_ReceiveData(RearToFrontDataMessageID,data_RX_buffer);
 
 		//for debugging
 		for(i=0;i<7;i++){
