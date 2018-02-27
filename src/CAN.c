@@ -47,8 +47,8 @@ void CAN_Init(){
 	//Config_CAN_MB(0,2,RXDF, RearToFrontDataMessageIDRef); //messagebuffer to receive the FrontToRearTelemetryMessage
 	//Config_CAN_MB(0,3,TXDF, FrontToRearTelemetryMessageIDRef); //messagebuffer to transmit the RearToFrontDataMessage
 	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageID); //messagebuffer to receive the FrontToRearDataMessage
-	Config_CAN_MB(0,2,RXDF, RearToFrontDataMessageID); //messagebuffer to receive the FrontToRearTelemetryMessage
-	Config_CAN_MB(0,3,TXDF, FrontToRearTelemetryMessageID); //messagebuffer to transmit the RearToFrontDataMessage
+	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageID); //messagebuffer to receive the FrontToRearTelemetryMessage
+	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageID); //messagebuffer to transmit the RearToFrontDataMessage
 	Config_CAN_MB(0,4,RXDF, OrionRX);
 	Config_CAN_MB(0,5,TXDF, OrionTX);
 }
