@@ -11,6 +11,7 @@
 #include "main.h"
 
 uint32_t C_D;
+uint8_t Count = 0;
 
 
 
@@ -33,7 +34,6 @@ void init_PIT0 (void)
 uint8_t Start;
 uint8_t Error_Count;
 uint8_t Error_LED;
-uint8_t Count = 0;
 
 void GPIO_Init(void)
 {
@@ -85,12 +85,6 @@ void PIT_CH0_IRQHandler(void)
 
 #ifdef RearECU
 
-uint8_t Count = 0;
-
-void I2C_init(void)
-{
-	return;
-}
 
 
 void GPIO_Init(void)
@@ -165,16 +159,17 @@ void PIT_CH0_IRQHandler(void)
 	uint8_t DOF_Int = ((GPIOB_PDIR & 1 << Gyro_Int)  >> 16) | (GPIOB_PDIR & (1 << Gyro_Data) >> 16) | ((GPIOB_PDIR & 1 << ACC_INT1)  >> 16) | ((GPIOB_PDIR & 1 << ACC_INT2) >> 16);
 
 	//DOF_Int = (GPIOB_PDIR & Gyro_Int_Mask  >> 16) | (GPIOB_PDIR & Gyro_Data_Mask >> 16) | (GPIOB_PDIR & ACC_INT1_Mask  >> 16) | (GPIOB_PDIR & ACC_INT2_Mask  >> 16);
-	if(DOF_Int > 0 && DOF_Int < 16)
+	if(DOF_Int > 0 && DOF_Int < 16){
 		//pass DOF_INT to I2C handler. Gyro_int = 8; Gyro_Data = 4, ACC_Int1 = 2; ACC_INT2 = 1;
-		;
-	else
+	}
+	else{
 			return;
+	}
 
+	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
 
 	return;
 
 
-	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
 }
 #endif

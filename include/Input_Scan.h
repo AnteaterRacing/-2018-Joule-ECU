@@ -22,7 +22,7 @@ extern uint32_t C_D;
 
 #ifdef RearECU
 
-void I2c_init(void);
+void I2C_init(void);
 
 #define C_D_Mask 1 << 26
 #define Charge_LED_Mask 7

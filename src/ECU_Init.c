@@ -13,7 +13,6 @@
 #include "PWT.h"
 #include "ECU_Init.h"
 #include "Input_Scan.h"
-#include "Input_Scan.c"
 #include "CAN.h"
 #include "main.h"
 #define PTE7  7          						/* Port PTE7 output to blue LED */
