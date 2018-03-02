@@ -81,8 +81,8 @@ void set_Throttle_Value(uint8_t acceleratorPosition){
 	Throttle_L = (acceleratorPosition);
 	Throttle_R = (acceleratorPosition);
 
-	FTM2_C0V = Throttle_L;
-	FTM2_C1V = Throttle_R;
+	FTM2_C0V = Throttle_L+1;
+	FTM2_C1V = Throttle_R+1;
 }
 
 

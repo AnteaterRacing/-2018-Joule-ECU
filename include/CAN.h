@@ -10,9 +10,9 @@
 #define CAN_H_
 
 //defining Message ID for front to rear ECU message transmit
-//size: 6 bytes: Accelerator, BrakeAngle, SteeringAngle, TVEnable, StartButton, FrontFault
+//size: 7 bytes: AcceleratorL, AcceleratorR, BrakeAngle, SteeringAngle, TVEnable, StartButton, FrontFault
 #define FrontToRearDataMessageID 10
-#define FrontToRearDataMessageSize 6
+#define FrontToRearDataMessageSize 8
 #define FrontToRearDataMessageIDRef 1
 
 //defining message ID for telemetry signals
@@ -24,7 +24,7 @@
 //defining Message ID for rear to front ECU message transmit
 //size: 7 bytes: IMDFault,BMSFault,BSPDFault, Speedometer, TractionLED, TV_LED, MotorTempLED
 #define RearToFrontDataMessageID 11
-#define RearToFrontDataMessageSize 7
+#define RearToFrontDataMessageSize 8
 #define RearToFrontDataMessageIDRef 3
 
 
@@ -33,14 +33,17 @@
 #define OrionTX 0x7E3 //Used to transmit Data Request
 
 
+//FrontToRearDataMessage
+#define AcceleratorL 	1
+#define AcceleratorR	2
+#define BrakeAngle  	3
+#define SteeringAngle	4
+#define TVEnable		5
+#define	StartButton		6
+#define FrontFault		7
+#define Heartbeat		8
 
-#define Accelerator 	1
-#define BrakeAngle  	2
-#define SteeringAngle	3
-#define TVEnable		4
-#define	StartButton		5
-#define FrontFault		6
-
+//FrontToRearTelemetryMessage
 #define WheelSpeed_L	1
 #define WheelSpeed_R	2
 #define TireTemp_L1		3
@@ -50,6 +53,7 @@
 #define TireTemp_R2		7
 #define TireTemp_R3		8
 
+//RearToFrontDataMessage
 #define IMDFault		1
 #define BMSFault		2
 #define BSPDFault		3

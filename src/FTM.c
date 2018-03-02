@@ -18,14 +18,18 @@ SIM_SCGC |= SIM_SCGC_FTM2_MASK; 	/* Sys Clk Gate Ctrl: enable bus clock to FTM2 
   FTM2_COMBINE = 0x0;
   FTM2_SC |= FTM_SC_PS(7);  		/* PS (Prescaler factor) = 7. Prescaler = 2**7 = 128 */
   FTM2_SC |= FTM_SC_TOIE_MASK; 		//timer overflow interrupt enable
-  FTM2_MOD = 255; 					/*mod value to trigger OVF interrupt. set to 1020 because 255*4 = 1020*/
+  FTM2_MOD = 257; 					/*mod value to trigger OVF interrupt.*/
 
   FTM2_C0SC |= FTM_CnSC_MSB_MASK; 	//edge aligned pwm
   FTM2_C0SC |= FTM_CnSC_ELSB_MASK;	//high true pulses
   FTM2_C0SC &= ~FTM_CnSC_ELSA_MASK; //high true pulses
   FTM2_C0SC |= FTM_CnSC_CHIE_MASK; 	//channel interrupt enable
-  FTM2_C0V = 1; 		    		//Compare match value
-  FTM2_C1V = 1;						//
+  FTM2_C1SC |= FTM_CnSC_MSB_MASK; 	//edge aligned pwm
+  FTM2_C1SC |= FTM_CnSC_ELSB_MASK;	//high true pulses
+  FTM2_C1SC &= ~FTM_CnSC_ELSA_MASK; //high true pulses
+  FTM2_C1SC |= FTM_CnSC_CHIE_MASK; 	//channel interrupt enable
+  FTM2_C0V = 125; 		    		//Compare match value
+  FTM2_C1V = 125;
   FTM2_SC |= FTM_SC_CLKS(1);  		/* Start FTM2 ctr with clk source TIMER_CLK (20 MHz)*/
 }
 

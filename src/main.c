@@ -34,6 +34,8 @@ uint16_t TT_RR_3;
 uint8_t started = 0;
 
 #ifdef RearECU
+
+uint8_t missedMessages = 0;
 //Buffers to store CAN data packets
 uint8_t data_RX_buffer[FrontToRearDataMessageSize+1] = {0};
 uint8_t telemetry_RX_buffer[FrontToRearTelemetryMessageSize+1] = {0};
@@ -41,7 +43,6 @@ uint8_t data_TX_buffer[RearToFrontDataMessageSize+1] = {0};
 //REAR ECU CODE MAIN METHOD
 int main(void)
 {
-	init_UART();
 
 	init_ECU(); 				//initialize Rear ECU settings
 	
@@ -63,22 +64,23 @@ int main(void)
 
 	//this runs continuously once the initialization has completed
 	while(1){
+
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
 		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
-		//set_Throttle_Value(ADC_buf[1]);//data_RX_buffer[Accelerator]);
+		//check for missed CAN messages before continuing. //
+
+		set_Throttle_Value(data_RX_buffer[1]);//data_RX_buffer[Accelerator]);
 
 		//testing PWM output
-		/*
-		transmit_string("buf");
-		transmit_char('1');
-		transmit_char(':');
-		transmit_char('0'+(ADC_buf[1]/100));
-		transmit_char('0'+(ADC_buf[1]%100)/10);
-		transmit_char('0'+ADC_buf[1]%10);
-		transmit_char(',');
-		transmit_string("\n\r");
-		*/
+//		transmit_string("buf");
+//		transmit_char('1');
+//		transmit_char(':');
+//		transmit_char('0'+(ADC_buf[1]/100));
+//		transmit_char('0'+(ADC_buf[1]%100)/10);
+//		transmit_char('0'+ADC_buf[1]%10);
+//		transmit_char(',');
+//		transmit_string("\n\r");
 	}
 }
 #endif
@@ -104,7 +106,7 @@ int main(void){
 	data_RX_buffer[0] = RearToFrontDataMessageSize;
 	
 	init_CAN_clocks();
-	err_status = Init_CAN(0, FAST); //initialize CAN0 to FAST mode
+	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
 	Config_CAN_MB(0,1,TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
 	Config_CAN_MB(0,2,RXDF, RearToFrontDataMessageID); //messagebuffer to transmit the FrontToRearTelemetryMessage
 	Config_CAN_MB(0,3,TXDF, FrontToRearTelemetryMessageID); //messagebuffer to receive the RearToFrontDataMessage
@@ -120,28 +122,26 @@ int main(void){
 //			//TODO: trigger APPS or BSE fault LED
 //		}
 //		else {
-			data_TX_buffer[Accelerator] = ADC_buf[1];		//set the throttle value to the value read from ADC0 (APPS)
-			data_TX_buffer[FrontFault] = 0x00;
-//		}
-		data_TX_buffer[SteeringAngle] = ADC_buf[2];			//set steering angle to value read from ADC2 (steering pot)
-		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
-		data_TX_buffer[TVEnable] = 0x00;					//TODO: set up torque vectoring toggle somewhere on DASH & connect
-		data_TX_buffer[StartButton] = 0xFF;
-		
+			data_TX_buffer[AcceleratorL] = ADC_buf[1];		//set the throttle value to the value read from ADC0 (APPS)
+//			data_TX_buffer[FrontFault] = 0x00;
+////		}
+//		data_TX_buffer[SteeringAngle] = ADC_buf[2];			//set steering angle to value read from ADC2 (steering pot)
+//		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
+//		data_TX_buffer[TVEnable] = 0x00;					//TODO: set up torque vectoring toggle somewhere on DASH & connect
+//		data_TX_buffer[StartButton] = 0xFF;
 		CAN_TransmitData(FrontToRearDataMessageID,data_TX_buffer);
 		CAN_ReceiveData(RearToFrontDataMessageID,data_RX_buffer);
-
 		//for debugging
-		for(i=0;i<7;i++){
-			transmit_string("buf");
-			transmit_char('0'+i);
-			transmit_char(':');
-			transmit_char('0'+(data_TX_buffer[i]/100));
-			transmit_char('0'+(data_TX_buffer[i]%100)/10);
-			transmit_char('0'+data_TX_buffer[i]%10);
-			transmit_char(',');
-		}
-		transmit_string("\n\r");
+//		for(i=0;i<7;i++){
+//			transmit_string("buf");
+//			transmit_char('0'+i);
+//			transmit_char(':');
+//			transmit_char('0'+(data_TX_buffer[i]/100));
+//			transmit_char('0'+(data_TX_buffer[i]%100)/10);
+//			transmit_char('0'+data_TX_buffer[i]%10);
+//			transmit_char(',');
+//		}
+//		transmit_string("\n\r");
 
 		//TODO: set LED values/Speedometer based on received data from rear
 		//CAN_ReceiveData(RearToFrontDataMessageID,data_RX_buffer);
