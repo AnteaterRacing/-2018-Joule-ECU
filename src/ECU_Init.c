@@ -35,8 +35,19 @@ void init_PWM(void){
 void FTM2_IRQHandler(void){
 	//if overflow flag on ch0, set output high for left/right motor
 	if(FTM2_SC >> FTM_SC_TOF_SHIFT) {
-		GPIOB_PDOR |= (1<<PTF0); //set output high for left motor
-		GPIOB_PDOR |= (1<<PTF1); //set output high for right motor
+
+		if(FTM2_C0V == 0 || FTM2_C1V == 0) { //if compare match value set to 0, do not set output high
+			if(FTM2_C0V == 0) {
+				GPIOB_PDOR &= ~(1<<PTF0); //set output low for left motor
+			}
+			else {
+				GPIOB_PDOR &= (~1<<PTF1); //set output low for right motor
+			}
+		}
+		else {
+			GPIOB_PDOR |= (1<<PTF0); //set output high for left motor
+			GPIOB_PDOR |= (1<<PTF1); //set output high for right motor
+		}
 		FTM2_SC &= ~FTM_SC_TOF_MASK; //clear overflow flag
 	}
 	else{

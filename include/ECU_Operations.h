@@ -22,7 +22,7 @@ int BSE_Fault(uint8_t,uint8_t,uint8_t);
 int Fault_Not_Resolved(uint8_t,uint8_t);
 
 //sets the throttle output value to the current value of acc1 whenever called (Torque Vectoring added later)
-void set_Throttle_Value(uint8_t);
+void set_Throttle_Value(uint8_t,uint8_t);
 
 // sets the speed or error code for the front ecu
 void Speed(uint8_t);

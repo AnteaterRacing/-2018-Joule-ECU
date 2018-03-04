@@ -76,14 +76,15 @@ int Fault_Not_Resolved(uint8_t acc1, uint8_t acc2){
 
 //sets the throttle value based on the value of acc1 (0-255)
 //this is done by setting the compare match value on the PWM output pin. (0-1020)
-//TODO: add torque vectoring functionality
-void set_Throttle_Value(uint8_t acceleratorPosition){
-	Throttle_L = (acceleratorPosition);
-	Throttle_R = (acceleratorPosition);
+void set_Throttle_Value(uint8_t leftpos, uint8_t rightpos){
+	Throttle_L = (leftpos);
+	Throttle_R = (rightpos);
 
-	FTM2_C0V = Throttle_L+1;
-	FTM2_C1V = Throttle_R+1;
+	FTM2_C0V = Throttle_L;
+	FTM2_C1V = Throttle_R;
 }
+
+
 
 
 #ifdef FrontECU

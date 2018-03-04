@@ -35,7 +35,6 @@ uint8_t started = 0;
 
 #ifdef RearECU
 
-uint8_t missedMessages = 0;
 //Buffers to store CAN data packets
 uint8_t data_RX_buffer[FrontToRearDataMessageSize+1] = {0};
 uint8_t telemetry_RX_buffer[FrontToRearTelemetryMessageSize+1] = {0};
@@ -59,18 +58,18 @@ int main(void)
 	data_TX_buffer[0] = RearToFrontDataMessageSize;
 	data_RX_buffer[0] = FrontToRearDataMessageSize;
 	telemetry_RX_buffer[0] = FrontToRearTelemetryMessageSize;
-
+	int counter = 0;
 	//wait_for_start_seq();						//wait for start sequence to turn on tractive system
 
 	//this runs continuously once the initialization has completed
 	while(1){
-
+		GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1;//clear LED
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
 		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
 		//check for missed CAN messages before continuing. //
 
-		set_Throttle_Value(data_RX_buffer[1]);//data_RX_buffer[Accelerator]);
+		set_Throttle_Value(data_RX_buffer[AcceleratorL],data_RX_buffer[AcceleratorR]);
 
 		//testing PWM output
 //		transmit_string("buf");
@@ -95,6 +94,8 @@ uint8_t data_RX_buffer[RearToFrontDataMessageSize+1] = {0};
 uint8_t data_TX_buffer[FrontToRearDataMessageSize+1] = {0};
 uint8_t data[6] = {5, 1, 2, 3, 4, 5};
 uint8_t err_status = 0;
+uint8_t accval;
+uint8_t steeringval;
 int i = 0;
 char s[3];
 int main(void){
@@ -122,10 +123,22 @@ int main(void){
 //			//TODO: trigger APPS or BSE fault LED
 //		}
 //		else {
-			data_TX_buffer[AcceleratorL] = ADC_buf[1];		//set the throttle value to the value read from ADC0 (APPS)
+			accval = ADC_buf[1];
+			steeringval = ADC_buf[2];
+
+			//TORQUE VECTORING BASIC ALGORITHM
+			if(steeringval < 128){ //left turn
+				data_TX_buffer[AcceleratorL] = accval*((0.3/127)*steeringval + 0.7);
+				data_TX_buffer[AcceleratorR] = accval;
+
+			}
+			else { 				//right turn
+				data_TX_buffer[AcceleratorL] = accval;
+				data_TX_buffer[AcceleratorR] = accval*((-0.3/128)*(steeringval-128) + 1);
+
+			}
 //			data_TX_buffer[FrontFault] = 0x00;
 ////		}
-//		data_TX_buffer[SteeringAngle] = ADC_buf[2];			//set steering angle to value read from ADC2 (steering pot)
 //		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
 //		data_TX_buffer[TVEnable] = 0x00;					//TODO: set up torque vectoring toggle somewhere on DASH & connect
 //		data_TX_buffer[StartButton] = 0xFF;
@@ -164,7 +177,7 @@ int main(void){
 //waiting for the start sequence to be pressed before starting the vehicle
 void wait_for_start_seq(){
 	//waiting for start button press and brake to be depressed.
-	set_Throttle_Value(0);//zeroing out throttle value (precautionary).
+	set_Throttle_Value(0,0);//zeroing out throttle value (precautionary).
 	while(data_RX_buffer[StartButton]!=0xFF && ADC_buf[3] < 1000){
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 	}
