@@ -106,6 +106,9 @@ int main(void)
 uint8_t telemetry_TX_buffer[FrontToRearTelemetryMessageSize+1] = {0};
 uint8_t data_RX_buffer[RearToFrontDataMessageSize+1] = {0};
 uint8_t data_TX_buffer[FrontToRearDataMessageSize+1] = {0};
+uint8_t OrionL5_RX_buffer[OrionL5_Size+1] = {0};
+uint8_t OrionL7_RX_buffer[OrionL7_Size+1] = {0};
+uint8_t OrionL8_RX_buffer[OrionL8_Size+1] = {0};
 uint8_t data[6] = {5, 1, 2, 3, 4, 5};
 uint8_t err_status = 0;
 uint8_t accval;
@@ -119,14 +122,20 @@ int main(void){
 	data_TX_buffer[0] = FrontToRearDataMessageSize;
 	telemetry_TX_buffer[0] = FrontToRearTelemetryMessageSize;
 	data_RX_buffer[0] = RearToFrontDataMessageSize;
+	OrionL5_RX_buffer[0] = OrionL5_Size;
+	OrionL7_RX_buffer[0] = OrionL7_Size;
+	OrionL8_RX_buffer[0] = OrionL8_Size;
 	
 	init_CAN_clocks();
 	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
 	Config_CAN_MB(0,1,TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
 	Config_CAN_MB(0,2,RXDF, RearToFrontDataMessageID); //messagebuffer to transmit the FrontToRearTelemetryMessage
 	Config_CAN_MB(0,3,TXDF, FrontToRearTelemetryMessageID); //messagebuffer to receive the RearToFrontDataMessage
-	Config_CAN_MB(0,4,RXDF, OrionRX);
-	Config_CAN_MB(0,5,TXDF, OrionTX);
+	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
+	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC
+	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
+
+		
 
 	while(1) {
 
