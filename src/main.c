@@ -39,6 +39,10 @@ uint8_t started = 0;
 uint8_t data_RX_buffer[FrontToRearDataMessageSize+1] = {0};
 uint8_t telemetry_RX_buffer[FrontToRearTelemetryMessageSize+1] = {0};
 uint8_t data_TX_buffer[RearToFrontDataMessageSize+1] = {0};
+uint8_t OrionL5_RX_buffer[OrionL5_Size+1] = {0};
+uint8_t OrionL7_RX_buffer[OrionL7_Size+1] = {0};
+uint8_t OrionL8_RX_buffer[OrionL8_Size+1] = {0};
+
 //REAR ECU CODE MAIN METHOD
 int main(void)
 {
@@ -51,13 +55,19 @@ int main(void)
 	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageID); //messagebuffer to receive the FrontToRearDataMessage
 	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageID); //messagebuffer to receive the FrontToRearTelemetryMessage
 	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageID); //messagebuffer to transmit the RearToFrontDataMessage
-	Config_CAN_MB(0,4,RXDF, OrionRX);
-	Config_CAN_MB(0,5,TXDF, OrionTX);
+	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
+	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC
+	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
+
 
 	//setting message sizes for transmit buffers
 	data_TX_buffer[0] = RearToFrontDataMessageSize;
 	data_RX_buffer[0] = FrontToRearDataMessageSize;
 	telemetry_RX_buffer[0] = FrontToRearTelemetryMessageSize;
+	OrionL5_RX_buffer[0] = OrionL5_Size;
+	OrionL7_RX_buffer[0] = OrionL7_Size;
+	OrionL8_RX_buffer[0] = OrionL8_Size;
+	
 	int counter = 0;
 	//wait_for_start_seq();						//wait for start sequence to turn on tractive system
 
@@ -67,6 +77,10 @@ int main(void)
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
 		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
+		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
+		CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
+		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
+		
 		//check for missed CAN messages before continuing. //
 
 		set_Throttle_Value(data_RX_buffer[AcceleratorL],data_RX_buffer[AcceleratorR]);
