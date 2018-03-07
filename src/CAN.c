@@ -48,8 +48,10 @@ void CAN_Init(){
 	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageID); //messagebuffer to receive the FrontToRearDataMessage
 	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageID); //messagebuffer to receive the FrontToRearTelemetryMessage
 	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageID); //messagebuffer to transmit the RearToFrontDataMessage
-	Config_CAN_MB(0,4,RXDF, OrionRX);
-	Config_CAN_MB(0,5,TXDF, OrionTX);
+	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
+	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC, high temp, low temp, crc checksum}
+	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
+
 }
 #endif
 
@@ -57,12 +59,14 @@ void CAN_Init(){
 #ifdef FrontECU
 void CAN_Init() {
 	init_CAN_clocks();
-	err_status = Init_CAN(0, FAST); //initialize CAN0 to FAST mode
+	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
 	Config_CAN_MB(0,1,TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
 	Config_CAN_MB(0,2,RXDF, RearToFrontDataMessageID); //messagebuffer to transmit the FrontToRearTelemetryMessage
 	Config_CAN_MB(0,3,TXDF, FrontToRearTelemetryMessageID); //messagebuffer to receive the RearToFrontDataMessage
-	Config_CAN_MB(0,4,RXDF, OrionRX);
-	Config_CAN_MB(0,5,TXDF, OrionTX);
+	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
+	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC, high temp, low temp, crc checksum}
+	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
+
 
 }
 #endif
@@ -73,8 +77,9 @@ uint16_t ID_to_BUF(uint16_t ID){
 	case 10: return 1; //Front to Rear ID 10 to buffer1
 	case 11: return 2; //Rear to Front ID 11 to buffer 2
 	case 20: return 3; //Front to Rear Telemetry ID 20 to buffer 3
-	case OrionRX: return 4; //Orion RX ID 0x7EB to buffer 4
-	case OrionTX: return 5; //Orion TX ID 0x7E3 to buffer 5
+	case OrionL5_ID: return OrionL5_buffVal; 
+	case OrionL7_ID: return OrionL7_buffVal;
+	case OrionL8_ID: return OrionL8_buffVal;
 	default: return 0;
 	}
 }
