@@ -55,9 +55,9 @@ int main(void)
 	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageID); //messagebuffer to receive the FrontToRearDataMessage
 	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageID); //messagebuffer to receive the FrontToRearTelemetryMessage
 	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageID); //messagebuffer to transmit the RearToFrontDataMessage
-	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
-	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC
-	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
+//	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
+//	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC
+//	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
 
 
 	//setting message sizes for transmit buffers
@@ -76,10 +76,10 @@ int main(void)
 		GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1;//clear LED
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
-		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
-		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
-		CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
-		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
+		//CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
+//		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
+//		CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
+//		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
 		
 		//check for missed CAN messages before continuing. //
 
@@ -131,9 +131,9 @@ int main(void){
 	Config_CAN_MB(0,1,TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
 	Config_CAN_MB(0,2,RXDF, RearToFrontDataMessageID); //messagebuffer to transmit the FrontToRearTelemetryMessage
 	Config_CAN_MB(0,3,TXDF, FrontToRearTelemetryMessageID); //messagebuffer to receive the RearToFrontDataMessage
-	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
-	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC
-	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
+//	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
+//	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC
+//	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
 
 		
 
@@ -148,17 +148,21 @@ int main(void){
 //		else {
 			accval = ADC_buf[1];
 			steeringval = ADC_buf[2];
-
+			steeringval = steeringval + 7;
 			//TORQUE VECTORING BASIC ALGORITHM
-			if(steeringval < 128){ //left turn
-				data_TX_buffer[AcceleratorL] = accval*((0.3/127)*steeringval + 0.7);
-				data_TX_buffer[AcceleratorR] = accval;
+			if(steeringval < 108){ //left turn
+				data_TX_buffer[AcceleratorR] = accval*((0.3/107)*steeringval + 0.7);
+				data_TX_buffer[AcceleratorL] = accval;
 
 			}
-			else { 				//right turn
-				data_TX_buffer[AcceleratorL] = accval;
-				data_TX_buffer[AcceleratorR] = accval*((-0.3/128)*(steeringval-128) + 1);
+			else if(steeringval > 148) { 				//right turn
+				data_TX_buffer[AcceleratorR] = accval;
+				data_TX_buffer[AcceleratorL] = accval*((-0.3/107)*(steeringval-148) + 1);
 
+			}
+			else { //on center steering
+				data_TX_buffer[AcceleratorR] = accval;
+				data_TX_buffer[AcceleratorL] = accval;
 			}
 //			data_TX_buffer[FrontFault] = 0x00;
 ////		}

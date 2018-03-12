@@ -61,7 +61,7 @@ return;
 //TODO @Xavier: finish this definition for the Front ECU
 void PIT_CH0_IRQHandler(void)
 {
-	Start = GPIOB_PDIR & Start_Mask >> 15; //This line threw an error: called object is not a function or function pointer
+	//Start = GPIOB_PDIR & Start_Mask >> 15; //This line threw an error: called object is not a function or function pointer
 #ifdef CAN_Fucked
 	Error_Count = Error_Count + GPIOA_PDIR & Error_Count_Mask >>3;
 	if (Count == 19) // CAN Error Display Backup
