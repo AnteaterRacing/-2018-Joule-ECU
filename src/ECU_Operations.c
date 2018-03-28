@@ -21,6 +21,8 @@ int APPS_faultcount = 0; 	//number of times APPS faults have occurred
 int BSE_faultcount = 0; 	//number of times BSE faults have occurred
 uint16_t Throttle_L = 0;
 uint16_t Throttle_R = 0;
+uint16_t Throttle_L_buffer[5] = {0};
+uint16_t Throttle_R_buffer[5] = {0};
 
 //returns 1 if fault, 0 if no fault. (checks acc pedal transfer functions)
 int APPS_Fault(uint8_t acc1, uint8_t acc2){
@@ -74,14 +76,30 @@ int Fault_Not_Resolved(uint8_t acc1, uint8_t acc2){
 	return 1;
 }
 
-//sets the throttle value based on the value of acc1 (0-255)
-//this is done by setting the compare match value on the PWM output pin. (0-1020)
+//sets the throttle value based on the value of received from the front ECU for each wheel.
+//This also performs averaging by computing the average of the past 5 samples in order to get a smoother response.
+//this is done by setting the compare match value on the PWM output pin. (0-255)
 void set_Throttle_Value(uint8_t leftpos, uint8_t rightpos){
-	Throttle_L = (leftpos);
-	Throttle_R = (rightpos);
 
-	FTM2_C0V = Throttle_L;
-	FTM2_C1V = Throttle_R;
+	Throttle_L = 0;
+	Throttle_R = 0;
+	int i = 0;
+	//rotating the current buffer of throttle samples
+	for(; i < 4; i++) {
+		Throttle_L_buffer[i] = Throttle_L_buffer[i+1];
+		Throttle_R_buffer[i] = Throttle_R_buffer[i+1];
+	}
+	//updating with new sample
+	Throttle_L_buffer[4] = leftpos;
+	Throttle_R_buffer[4] = rightpos;
+	i = 0;
+	//computing the average
+	for(; i < 5; i++) {
+		Throttle_L += Throttle_L_buffer[i];
+		Throttle_R += Throttle_R_buffer[i];
+	}
+	FTM2_C0V = Throttle_L/5;
+	FTM2_C1V = Throttle_R/5;
 }
 
 

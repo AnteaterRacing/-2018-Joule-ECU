@@ -12,10 +12,6 @@
 //TODO
 void log_data(char * data);
 
-//retrieves the status from Display.h and logs it to the output.
-//TODO
-void log_status();
-
 //initialize output file mechanism for data logging.
 //TODO
 void Data_Logging_Init();
