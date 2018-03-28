@@ -28,17 +28,17 @@
 #define RearToFrontDataMessageIDRef 3
 
 ////length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}; message speed: 8 ms
-#define OrionL5_ID 0x03B
+#define OrionL5_ID 28
 #define OrionL5_Size 5
 #define OrionL5_buffVal 4
 
 //length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC, high temperature, low temperature, crc checksum}; message speed: 104 ms
-#define OrionL7_ID 0x3CB
+#define OrionL7_ID 29
 #define OrionL7_Size 7
 #define OrionL7_buffVal 5
 
 //length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}; message speed: 104 ms
-#define OrionL8_ID 0x6B2
+#define OrionL8_ID 30
 #define OrionL8_Size 8
 #define OrionL8_buffVal 6
 
