@@ -28,8 +28,8 @@ uint8_t started = 0;
 
 //converts linear function accelerator input to exponential function output
 uint8_t addCurve(uint8_t acc) {
-	double scaled = pow(2, acc) - 1;
 	//scaling using 2^x function (more exponential)
+	double scaled = pow(2, acc) - 1;
 	uint8_t output = (uint8_t)(scaled/6.2);
 
 	//scaling using 1.5^x function (less exponential)
@@ -94,7 +94,7 @@ int main(void)
 		GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1;//clear LED
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
-//		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer); //TODO do something with data
+		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer); //TODO do something with data
 //		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
 //		CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
 //		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
@@ -185,27 +185,26 @@ int main(void){
 				data_TX_buffer[AcceleratorR] = accval;
 				data_TX_buffer[AcceleratorL] = accval;
 			}
-//			data_TX_buffer[FrontFault] = 0x00;
+			data_TX_buffer[FrontFault] = 0x00;
 //		}
-//		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
+		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
 //		data_TX_buffer[TVEnable] = 0x00;					//TODO: set up torque vectoring toggle somewhere on DASH & connect
 //		data_TX_buffer[StartButton] = 0xFF;
 		CAN_TransmitData(FrontToRearDataMessageID,data_TX_buffer);
 		CAN_ReceiveData(RearToFrontDataMessageID,data_RX_buffer);
 
 		//TODO: set LED values/Speedometer based on received data from rear
-		//CAN_ReceiveData(RearToFrontDataMessageID,data_RX_buffer);
 
-		//TODO: convert/transmit wheelspeed data
-//		telemetry_TX_buffer[WheelSpeed_L] = 0x00;
-//		telemetry_TX_buffer[WheelSpeed_R] = 0x00;
-//		telemetry_TX_buffer[TireTemp_L1] = ADC_buf[4];
-//		telemetry_TX_buffer[TireTemp_L2] = ADC_buf[5];
-//		telemetry_TX_buffer[TireTemp_L3] = ADC_buf[6];
-//		telemetry_TX_buffer[TireTemp_R1] = ADC_buf[7];
-//		telemetry_TX_buffer[TireTemp_R2] = ADC_buf[8];
-//		telemetry_TX_buffer[TireTemp_R3] = ADC_buf[9];
-//		CAN_TransmitData(FrontToRearTelemetryMessageID,telemetry_TX_buffer);
+		//transmitting telemetry data to rear ECU
+		telemetry_TX_buffer[WheelSpeed_L] = WheelSpeed[leftWheel];
+		telemetry_TX_buffer[WheelSpeed_R] = WheelSpeed[rightWheel];
+		telemetry_TX_buffer[TireTemp_L1] = ADC_buf[4];
+		telemetry_TX_buffer[TireTemp_L2] = ADC_buf[5];
+		telemetry_TX_buffer[TireTemp_L3] = ADC_buf[6];
+		telemetry_TX_buffer[TireTemp_R1] = ADC_buf[7];
+		telemetry_TX_buffer[TireTemp_R2] = ADC_buf[8];
+		telemetry_TX_buffer[TireTemp_R3] = ADC_buf[9];
+		CAN_TransmitData(FrontToRearTelemetryMessageID,telemetry_TX_buffer);
 	}
 }
 #endif
