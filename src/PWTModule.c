@@ -17,6 +17,10 @@ void init_PWTModule(void)  {
 
   //TODO: Implement/Enable Interrupt
 
+  NVIC_ClearPendingIRQ(PWT_IRQn);
+  NVIC_EnableIRQ(PWT_IRQn);			//enable interrupt for PWT_IRQn
+  NVIC_SetPriority(PWT_IRQn,0);  	//set priority for PWT_IRQn
+
   SIM_SCGC |= SIM_SCGC_PWT_MASK; /* Enable Clock to PWT */
   PWT_R1 = 0x00001780;  /* Initialize PWT for measuring falling edges */
                         /* PCLKS (PWT Clock Source Select) = 0 (default, BUS_CLK) */
