@@ -1,53 +1,207 @@
-/* PWT.c              (c) 2015 Freescale Semiconductor, Inc.
- * Descriptions: PWT example code
- * 28 Sept 2015 Kushal Shah: Initial version
+/******************************************************************************
+*
+* Freescale Semiconductor Inc.
+* (c) Copyright 2013 Freescale Semiconductor, Inc.
+* ALL RIGHTS RESERVED.
+*
+***************************************************************************
+*
+* THIS SOFTWARE IS PROVIDED BY FREESCALE "AS IS" AND ANY EXPRESSED OR
+* IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+* IN NO EVENT SHALL FREESCALE OR ITS CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+* INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+* SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+* HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+* STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+* IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+* THE POSSIBILITY OF SUCH DAMAGE.
+*
+***************************************************************************//*!
+*
+* @file     pwt.c
+*
+* @author   Freescale
+*
+* @version  0.0.1
+*
+* @date     Jun 25, 2013
+*
+* @brief    Pulse Width Timer (PWT) source code. 
+*
+******************************************************************************/
+#include "common.h"
+#include "pwt.h"
+#include "derivative.h"
+/******************************************************************************
+* Global variables
+******************************************************************************/
+
+/******************************************************************************
+* Constants and macros
+******************************************************************************/
+
+/******************************************************************************
+* Local types
+******************************************************************************/
+
+/******************************************************************************
+* Local function prototypes
+******************************************************************************/
+
+/******************************************************************************
+* Local variables
+******************************************************************************/
+/*!
+ * @brief global variable to store PWT callbacks.
+ *
  */
+PWT_CallbackType PWT_Callback[1] = {(PWT_CallbackType)NULL}; /*!< PWT initial callback */
 
+/******************************************************************************
+* Local functions
+******************************************************************************/
+void PWT_Isr(void);
 
-#include "derivative.h" /* include peripheral declarations SKEAZ128M4 */
-#include "PWT.h"
-#include "WheelSpeed.h"
+/******************************************************************************
+* Global functions
+******************************************************************************/
 
-uint16_t PulseWidth = 0;
+/******************************************************************************
+* define PWT APIs
+*
+*//*! @addtogroup pwt_api_list
+* @{
+*******************************************************************************/
 
-void init_PWT(void)  {
+/*****************************************************************************//*!
+*
+* @brief initialize pwt module.
+*        
+* @param[in]   u8Channel_No channel number
+* @param[in]   pConfig point to configuration  
+*
+* @return none
+*
+* @ Pass/ Fail criteria: none
+*****************************************************************************/
+void PWT_Init(PWT_ConfigType *pConfig)
+{  
+    uint32_t u32PWTR1Value;
+    u32PWTR1Value = 0;
+    SIM->SCGC |= SIM_SCGC_PWT_MASK;     /*!< enable clock to PWT */
+      
+    if(PWT_GetOverflowFlag())
+    {
+        PWT_ClrOverflowFlag(); 
+    }
+    
+    if(PWT_GetReadyFlag())
+    {
+        PWT_ClrReadyFlag(); 
+    }
 
-  PWT_buffer[0] = 0;//initializing buffer
-  PWT_buffer[1] = 0;//initializing buffer
+    if (pConfig->bPWTIntEn)            
+    {                                     
+        NVIC_EnableIRQ(PWT_IRQn); 
+        u32PWTR1Value |= PWT_R1_PWTIE_MASK;
+    }                   
+    else                                     
+    {                     
+        NVIC_DisableIRQ(PWT_IRQn);       
+    }
+ 
+    if (pConfig->bOverflowIntEn)            
+    {                                        
+        u32PWTR1Value |= PWT_R1_POVIE_MASK;
+    }
 
-  //TODO: Implement/Enable Interrupt
-
-  SIM_SCGC |= SIM_SCGC_PWT_MASK; /* Enable Clock to PWT */
-  PWT_R1 = 0x00001780;  /* Initialize PWT for measuring falling edges */
-                        /* PCLKS (PWT Clock Source Select) = 0 (default, BUS_CLK) */
-                        /* PINSEL (PWT Pulse Input Selection) = 0 (default, PWTIN[0]) */
-                        /* EDGE (PWT Input Edge sensitivity) = 2: */
-	                           /* 1st falling edge starts PW measurement. */
-	                           /* PW captured on all subsequent falling edges. */
-                        /* PRE (PWT clk prescaler) = 7 (Prescale by 2**7 = 128) */
-	                    /*     Count frequency = 20 MHz/128 = 156.25 KHz */
-	                    /* PWTEN (PWT enable) = 1 (PWT module enabled) */
-                        /* PWTIE (PWT interrupt enable) = 0 (default) */
-                        /* PRDYIE (PWT pulse width data ready interrupt ena)= 0 (default)*/
-                        /* POVIE (PWT Counter overflow interrupt ena) = 0 (default) */
-                        /* PWTSR (PWT Soft Reset) = 0 (default)*/
-                        /* PWTDRY (PWT Pulse Width valid = 0 (default) */
-                        /* PWTOV (PWT Counter OVerflow) = 0 (default, no overflow) */
-  SIM_PINSEL1 &= ~SIM_PINSEL1_PWTIN0PS_MASK; /* Map PWT to pin PTD5 (default) */
+    if (pConfig->bReadyIntEn)            
+    {                                        
+        u32PWTR1Value |= PWT_R1_PRDYIE_MASK;
+    } 
+    
+    u32PWTR1Value |= PWT_R1_PRE(pConfig->bClockPrescaler); 
+    u32PWTR1Value |= PWT_R1_EDGE(pConfig->bEdgeSensitivity);     
+    u32PWTR1Value |= PWT_R1_PINSEL(pConfig->bPinSelect);     
+            
+    if (pConfig->bClockSource)            
+    {                                        
+        u32PWTR1Value |= PWT_R1_PCLKS_MASK;
+    } 
+    
+    if (pConfig->bPWTEn)            
+    {                                        
+        u32PWTR1Value |= PWT_R1_PWTEN_MASK;  
+    } 
+  
+    PWT->R1 = u32PWTR1Value; 
 }
 
-//conversion using polling. move this to the interrupt handler
-void pulse_width_timer_PWT (void) {
-  if (1==((PWT_R1 & PWT_R1_PWTRDY_MASK)>>PWT_R1_PWTRDY_SHIFT)) { /* If pulse with ready */
-    PWT_R1 &= ~PWT_R1_PWTRDY_MASK;       /* Clear flag: read reg then write 0 to PWTRDY */
-    PulseWidth = (PWT_R2 & PWT_R2_NPW_MASK) >> PWT_R2_NPW_SHIFT; /* Read pulse width */
-           /* Pulse Width will be 19531 if connected to FTM2_ch1 */
-  }
+
+/*****************************************************************************//*!
+*
+* @brief pwt module set call back.
+*        
+* @param[in] u8Channel_No channel number.   
+* @param[in] pfnCallback point to call back.   
+*
+* @return none
+*
+* @ Pass/ Fail criteria: none
+*****************************************************************************/
+void PWT_SetCallback(PWT_CallbackType pfnCallback)
+{
+  PWT_Callback[0] = pfnCallback;
 }
 
 
-//Interrupt handler for PWT. This is called when PWT interrupts are triggered.
-void PWT_IRQHandler(void) {
-	//first put the retrieved value into the correct spot in the buffer
-	//then call calculateWheelSpeed to calculate the actual speed
+/*****************************************************************************//*!
+*
+* @brief pwt module de-initialize, reset pwt register
+*        
+* @param none  
+*
+* @return none 
+*
+* @ Pass/ Fail criteria: none
+*****************************************************************************/
+void PWT_DeInit(void)
+{
+    NVIC_DisableIRQ(PWT_IRQn);
+    PWT_DisableInt();
+    PWT_DisableReadyInt();
+    PWT_DisableOverFlowInt();
+    PWT_SetClockPresacler(0);        
+    PWT_SetEdgeSensitivity(0 ); 
+    PWT_SetSoftReset();
+    PWT_Disable();    
+    
+    while((PWT->R1 & PWT_R1_PWTEN_MASK));
+    SIM->SCGC &= ~SIM_SCGC_PWT_MASK;
 }
+/*! @} End of pwt_api_list                                                   */
+
+
+/*****************************************************************************//*!
+*
+* @brief pwt module isr.
+*        
+* @param none
+*
+* @return none 
+*
+* @ Pass/ Fail criteria: none
+*****************************************************************************/
+void PWT_Isr(void) 
+{   
+
+    if (PWT_Callback[0])
+    {    
+        PWT_Callback[0]();     
+    }
+}
+    
+
+

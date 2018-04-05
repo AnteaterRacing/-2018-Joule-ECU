@@ -52,7 +52,7 @@ typedef unsigned short  word;
 /* 
  * Include the generic CPU header file 
  */
-#include "arm_cm0.h"
+//#include "arm_cm0.h"
 
 /* 
  * Include the platform specific header file 
@@ -64,7 +64,7 @@ typedef unsigned short  word;
 #elif (defined(TRK_KEA128))
  #include  "kea128_config.h"
 #else
-  #error "No valid board defined"
+ // #error "No valid board defined"
 #endif
 
 /* 
@@ -77,7 +77,7 @@ typedef unsigned short  word;
 #elif (defined(CPU_KEA128))
  #include "SKEAZ1284.h"
 #else
-  #error "No valid CPU defined"
+ // #error "No valid CPU defined"
 #endif
 
 
@@ -106,8 +106,8 @@ typedef unsigned short  word;
  * Include common utilities
  */
 #include "assert.h"
-#include "io.h"
-#include "startup.h"
+//#include "io.h"
+//#include "startup.h"
 #include "stdlib.h"
 
 #if (defined(IAR))
