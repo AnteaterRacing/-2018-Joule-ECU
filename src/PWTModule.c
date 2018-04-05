@@ -36,18 +36,15 @@ void init_PWTModule(void)  {
   SIM_PINSEL1 &= ~SIM_PINSEL1_PWTIN0PS_MASK; /* Map PWT to pin PTD5 (default) */
 }
 
-//conversion using polling. move this to the interrupt handler
-void pulse_width_timer_PWT (void) {
-  if (1==((PWT_R1 & PWT_R1_PWTRDY_MASK)>>PWT_R1_PWTRDY_SHIFT)) { /* If pulse with ready */
-    PWT_R1 &= ~PWT_R1_PWTRDY_MASK;       /* Clear flag: read reg then write 0 to PWTRDY */
-    PulseWidth = (PWT_R2 & PWT_R2_NPW_MASK) >> PWT_R2_NPW_SHIFT; /* Read pulse width */
-           /* Pulse Width will be 19531 if connected to FTM2_ch1 */
-  }
-}
-
-
 //Interrupt handler for PWT. This is called when PWT interrupts are triggered.
 void PWT_IRQHandler(void) {
 	//first put the retrieved value into the correct spot in the buffer
 	//then call calculateWheelSpeed to calculate the actual speed
+	if (1==((PWT_R1 & PWT_R1_PWTRDY_MASK)>>PWT_R1_PWTRDY_SHIFT)) { /* If pulse with ready */
+		PWT_R1 &= ~PWT_R1_PWTRDY_MASK; /* Clear flag: read reg then write 0 to PWTRDY */
+		PulseWidth = (PWT_R2 & PWT_R2_NPW_MASK) >> PWT_R2_NPW_SHIFT; /* Read pulse width */
+		/* Pulse Width will be 19531 if connected to FTM2_ch1 */
+		PWT_buffer[2] = (PWT_R2 & PWT_R2_PWTC_MASK) >> PWT_R2_PWTC_SHIFT; /* Read Number of Clocks that Sensors Detects*/
+		calculateWheelSpeed(); /* Calculate the current wheel speed */
+	}
 }
