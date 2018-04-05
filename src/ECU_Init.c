@@ -10,11 +10,13 @@
 #include "ADC.h"
 #include "stdio.h"
 #include "FTM.h"
-#include "PWT.h"
+#include "WheelSpeed.h"
 #include "ECU_Init.h"
 #include "Input_Scan.h"
 #include "CAN.h"
 #include "main.h"
+#include "I2C.h"
+
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
 #define PTH1 25          						/* Port PTH1 output to green LED */
@@ -38,6 +40,7 @@ void init_ECU(){
 	//CAN_Init();					//initialize CAN bus TODO: uncomment when CAN initialization fixed
 	init_PWM();				      	//initialize PWM Module and FTM components
 	init_FTM ();  	              	/* Initialize FTM module*/
+	init_WheelSpeed();
 	init_clks_FEE_40MHz();        	/* KEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
 
 }

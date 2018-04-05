@@ -19,6 +19,7 @@
 #include "msCANdrv.h"
 #include "msCANcfg.h"
 #include <math.h>
+#include "WheelSpeed.h"
 
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
