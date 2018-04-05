@@ -4,6 +4,7 @@
  *  Created on: Oct 26, 2017
  *      Author: arnav
  */
+#include <LSM9DS0.h>
 #include "UART.h"
 #include "derivative.h" /* include peripheral declarations SKEAZ128M4 */
 #include "clocks.h"
@@ -15,7 +16,6 @@
 #include "Input_Scan.h"
 #include "CAN.h"
 #include "main.h"
-#include "I2C.h"
 
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
