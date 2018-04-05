@@ -18,8 +18,8 @@ void init_UART(void)  {
 									 /* UARTSWAI (UART stops in wait mode)=0 (default, no stop)*/
 									 /* WAKE (Recvr Wakeup Method) = 0 */
 									 /*      (default, idle-line wakeup) */
-	UART2_C2 |= 1<<UART_C2_TIE_SHIFT | 1<<UART_C2_TE_SHIFT | 1<<UART_C2_RE_SHIFT;/* Enable Tx, Rx. transmit interrupt enabled */
-	//UART2_C2 = 0x0C;
+	//UART2_C2 |= 1<<UART_C2_TIE_SHIFT | 1<<UART_C2_TE_SHIFT | 1<<UART_C2_RE_SHIFT;/* Enable Tx, Rx. transmit interrupt enabled */
+	UART2_C2 = 0x0C;
 	SIM_PINSEL1 &= ~SIM_PINSEL1_UART2PS_MASK; /* UART2PS=0 (default); */
 											/* UART2 Pin Selection Tx PTD7,Rx PTD6 */
 
@@ -29,10 +29,10 @@ void init_UART(void)  {
 }
 
 void UART0_IRQHandler(void) {
-	//if transmit data register empty
-	if(UART2_S1 >> UART_S1_TDRE_SHIFT){
-
-	}
+//	//if transmit data register empty
+//	if(UART2_S1 >> UART_S1_TDRE_SHIFT){
+//
+//	}
 }
 
 /* Function to Transmit single Char */
