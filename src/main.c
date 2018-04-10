@@ -74,17 +74,17 @@ int main(void)
 	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageID);//messagebuffer to receive the FrontToRearDataMessage
 	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageID);//messagebuffer to receive the FrontToRearTelemetryMessage
 	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageID);//messagebuffer to transmit the RearToFrontDataMessage
-//	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
-//	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC
-//	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
+	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
+	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC
+	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
 
 	//setting message sizes for transmit buffers
 	data_TX_buffer[0] = RearToFrontDataMessageSize;
 	data_RX_buffer[0] = FrontToRearDataMessageSize;
 	telemetry_RX_buffer[0] = FrontToRearTelemetryMessageSize;
-	OrionL5_RX_buffer[0] = OrionL5_Size;
-	OrionL7_RX_buffer[0] = OrionL7_Size;
-	OrionL8_RX_buffer[0] = OrionL8_Size;
+//	OrionL5_RX_buffer[0] = OrionL5_Size;
+//	OrionL7_RX_buffer[0] = OrionL7_Size;
+//	OrionL8_RX_buffer[0] = OrionL8_Size;
 
 	//wait_for_start_seq();						//wait for start sequence to turn on tractive system
 
@@ -94,9 +94,9 @@ int main(void)
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
 		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer); //TODO do something with data
-//		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
-//		CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
-//		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
+		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
+		CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
+		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
 
 		//TODO: check for missed CAN messages before continuing. //
 
@@ -141,18 +141,18 @@ int main(void) {
 	data_TX_buffer[0] = FrontToRearDataMessageSize;
 	telemetry_TX_buffer[0] = FrontToRearTelemetryMessageSize;
 	data_RX_buffer[0] = RearToFrontDataMessageSize;
-	OrionL5_RX_buffer[0] = OrionL5_Size;
-	OrionL7_RX_buffer[0] = OrionL7_Size;
-	OrionL8_RX_buffer[0] = OrionL8_Size;
+//	OrionL5_RX_buffer[0] = OrionL5_Size;
+//	OrionL7_RX_buffer[0] = OrionL7_Size;
+//	OrionL8_RX_buffer[0] = OrionL8_Size;
 
 	init_CAN_clocks();
 	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
 	Config_CAN_MB(0, 1, TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
 	Config_CAN_MB(0, 2, RXDF, RearToFrontDataMessageID); //messagebuffer to transmit the FrontToRearTelemetryMessage
 	Config_CAN_MB(0, 3, TXDF, FrontToRearTelemetryMessageID); //messagebuffer to receive the RearToFrontDataMessage
-//	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
-//	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC
-//	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
+	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
+	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC
+	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
 
 	while (1) {
 
@@ -189,6 +189,9 @@ int main(void) {
 //		data_TX_buffer[StartButton] = 0xFF;
 		CAN_TransmitData(FrontToRearDataMessageID, data_TX_buffer);
 		CAN_ReceiveData(RearToFrontDataMessageID, data_RX_buffer);
+		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
+		CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
+		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
 
 		//TODO: set LED values/Speedometer based on received data from rear
 		//CAN_ReceiveData(RearToFrontDataMessageID,data_RX_buffer);
