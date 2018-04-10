@@ -30,7 +30,7 @@
  ******************************************************************************/
  
 /* Number of Message Objects,255 maximum, All_Identifier store all Message Objects */
-  #define no_of_ID_CAN0         (16)
+  #define no_of_ID_CAN0         (128)
   #define no_of_ID_CAN1         (16)
   #define no_of_ID_CAN2         (16)
   #define no_of_ID_CAN3         (16)
@@ -183,15 +183,15 @@
 
 /* Message Object 28 */
 #define MO28_ID_TYPE_CAN0     CAN_STANDARD
-#define MO28_ID_CAN0          0x123
+#define MO28_ID_CAN0          0x28
 
 /* Message Object 29 */
 #define MO29_ID_TYPE_CAN0     CAN_STANDARD
-#define MO29_ID_CAN0          0x123
+#define MO29_ID_CAN0          0x29
 
 /* Message Object 30 */
 #define MO30_ID_TYPE_CAN0     CAN_STANDARD
-#define MO30_ID_CAN0          0x123
+#define MO30_ID_CAN0          0x30
 
 /* Message Object 31 */
 #define MO31_ID_TYPE_CAN0     CAN_STANDARD
