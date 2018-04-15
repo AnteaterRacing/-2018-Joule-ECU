@@ -12,10 +12,8 @@ uint16_t PulseWidth = 0;
 
 void init_PWTModule(void)  {
 
-  PWT_buffer[0] = 0;//initializing buffer
-  PWT_buffer[1] = 0;//initializing buffer
-
-  //TODO: Implement/Enable Interrupt
+  PWT_buffer[leftWheel] = 0;//initializing buffer
+  PWT_buffer[rightWheel] = 0;//initializing buffer
 
   NVIC_ClearPendingIRQ(PWT_IRQn);
   NVIC_EnableIRQ(PWT_IRQn);			//enable interrupt for PWT_IRQn
@@ -48,7 +46,14 @@ void PWT_IRQHandler(void) {
 		PWT_R1 &= ~PWT_R1_PWTRDY_MASK; /* Clear flag: read reg then write 0 to PWTRDY */
 		PulseWidth = (PWT_R2 & PWT_R2_NPW_MASK) >> PWT_R2_NPW_SHIFT; /* Read pulse width */
 		/* Pulse Width will be 19531 if connected to FTM2_ch1 */
-		PWT_buffer[2] = (PWT_R2 & PWT_R2_PWTC_MASK) >> PWT_R2_PWTC_SHIFT; /* Read Number of Clocks that Sensors Detects*/
+		PWT_buffer[leftWheel] += PulseWidth; /* Read Number of Clocks that Sensors Detects for left wheel*/
+		PWT_buffer[rightWheel] += PulseWidth; /* Read Number of Clocks that Sensors Detects for left wheel*/
 		calculateWheelSpeed(); /* Calculate the current wheel speed */
+
+		if (1 == ()) 						/* If the left Wheel Speed Sensor doesn't detect a magnet, reset the left wheel*/
+			PWT_buffer[leftWheel] = 0;		/* PWT_buffer */
+
+		if (1 == ()) 						/* If the right sWheel Speed Sensor doesn't detect a magnet, reset the right wheel */
+			PWT_buffer[rightWheel] = 0;		/* PWT_buffer */
 	}
 }
