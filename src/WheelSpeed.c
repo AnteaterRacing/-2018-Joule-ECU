@@ -11,7 +11,7 @@
 #include "math.h"
 
 // Defines the ratio to get from inches per nanosecond to miles per hour
-#define conversionRatio (60 * 60 * pow(10, 9)) / (63360)
+#define conversionRatio (60 * 60 * pow(10, 9)) / (63360) // The ratio that converts from inches per nanoseconds to miles per hour
 
 void init_WheelSpeed(void) {
 	WheelSpeed[leftWheel] = 0;	//initializing buffer
@@ -27,16 +27,16 @@ void calculateWheelSpeed(void) {
 	int rightWheelSpeed = 0;
 
 	if (1 == ((PWT_R1 & PWT_R1_PWTOV_MASK) >> PWT_R1_PWTOV_SHIFT)){
-		WheelSpeed[leftWheel] = 0;
+		WheelSpeed[leftWheel] = 0;			// If the car is moving slower than 1.5 miles per hour, then we set the speeds to zero.
 		WheelSpeed[rightWheel] = 0;
 	}
 	else{
-		leftWheelSpeed = (magnetDectectionDistance / PWT_buffer[leftWheel]) * conversionRatio;
+		leftWheelSpeed = (magnetDectectionDistance / PWT_buffer[leftWheel]) * conversionRatio;	  // Calculating Wheel Speed for each wheel
 		rightWheelSpeed = (magnetDectectionDistance / PWT_buffer[rightWheel]) * conversionRatio;
 
-		if (leftWheelSpeed >= 3)
-			WheelSpeed[leftWheel] = leftWheelSpeed;
-		else
+		if (leftWheelSpeed >= 3)								// If the wheel speeds are faster than or equal to our lowest threshold of
+			WheelSpeed[leftWheel] = leftWheelSpeed;				// 3 miles per hour, we will set the buffers to the calculated wheel speed.
+		else													// Otherwise, we will set them to 0.
 			WheelSpeed[leftWheel] = 0;
 
 		if (rightWheelSpeed >= 3)

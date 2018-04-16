@@ -8,6 +8,11 @@
 #include "derivative.h" /* include peripheral declarations SKEAZ128M4 */
 #include "WheelSpeed.h"
 
+#define LEFT_WHEEL_MASK 0x20000000
+#define LEFT_WHEEL_SHIFT 29
+#define RIGHT_WHEEL_MASK 0x80000000
+#define RIGHT_WHEEL_SHIFT 31
+
 uint16_t PulseWidth = 0;
 
 void init_PWTModule(void)  {
@@ -50,10 +55,10 @@ void PWT_IRQHandler(void) {
 		PWT_buffer[rightWheel] += PulseWidth; /* Read Number of Clocks that Sensors Detects for left wheel*/
 		calculateWheelSpeed(); /* Calculate the current wheel speed */
 
-		if (1 == ()) 						/* If the left Wheel Speed Sensor doesn't detect a magnet, reset the left wheel*/
-			PWT_buffer[leftWheel] = 0;		/* PWT_buffer */
+		if (1 == ((GPIOA_PDOR & LEFT_WHEEL_MASK) >> LEFT_WHEEL_SHIFT)) /* If the left Wheel Speed Sensor doesn't detect a magnet, reset the left wheel*/
+			PWT_buffer[leftWheel] = 0;					  /* PWT_buffer */
 
-		if (1 == ()) 						/* If the right sWheel Speed Sensor doesn't detect a magnet, reset the right wheel */
+		if (1 == ((GPIOB_PDOR & RIGHT_WHEEL_MASK) >> RIGHT_WHEEL_SHIFT))  /* If the right Wheel Speed Sensor doesn't detect a magnet, reset the right wheel */
 			PWT_buffer[rightWheel] = 0;		/* PWT_buffer */
 	}
 }

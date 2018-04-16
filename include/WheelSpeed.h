@@ -16,7 +16,7 @@ void init_WheelSpeed(void);
 #define rightWheel 1
 
 // Defines the distance the wheel travels when magnet is detected in inches.
-#define magnetDectectionDistance 0.2635
+#define magnetDectectionDistance 0.946
 
 uint16_t WheelSpeed[2]; //stores calculated wheel speed values
 
