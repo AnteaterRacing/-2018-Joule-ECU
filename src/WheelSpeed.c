@@ -34,7 +34,9 @@ void calculateWheelSpeed(void) {
 	 */
 	//transmit_string("calculating");
 	if (0 == (PWT_R1 & PWT_R1_PINSEL_MASK) >> PWT_R1_PINSEL_SHIFT){ // If the PWT was hooked up to the left wheel sensor
-		WheelSpeed[leftWheel] = (MAGNET_DETECTION_DISTANCE / (PWT_buffer[leftWheel] / FREQUENCY)) * CONVERSION_RATIO; // Calculate left wheel speed
+		if(PWT_buffer[leftWheel] > 0){
+			WheelSpeed[leftWheel] = (MAGNET_DETECTION_DISTANCE / (PWT_buffer[leftWheel] / FREQUENCY)) * CONVERSION_RATIO; // Calculate left wheel speed
+		}
 			//transmit_uint8(WheelSpeed[leftWheel]);
 		transmit_char('0' + (WheelSpeed[leftWheel] / 1000) % 100);
 		transmit_char('0' + (WheelSpeed[leftWheel] / 100));
@@ -42,8 +44,11 @@ void calculateWheelSpeed(void) {
 		transmit_char('0' + WheelSpeed[leftWheel] % 10);
 		transmit_string("\n\r");
 	}
-	else
-		WheelSpeed[rightWheel] = (MAGNET_DETECTION_DISTANCE / (PWT_buffer[rightWheel] / FREQUENCY)) * CONVERSION_RATIO; // Calculate right wheel speed
+	else{
+		if(PWT_buffer[rightWheel] > 0){
+			WheelSpeed[rightWheel] = (MAGNET_DETECTION_DISTANCE / (PWT_buffer[rightWheel] / FREQUENCY)) * CONVERSION_RATIO; // Calculate right wheel speed
+		}
+	}
 	//transmit_string("calculate");
 
 }
