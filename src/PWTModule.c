@@ -53,7 +53,7 @@ void init_PWTModule(void)  {
   PWT_R1 |= PWT_R1_PRDYIE_MASK;			// Setting PRDYIE to "1"
   PWT_R1 |= PWT_R1_POVIE_MASK; 			// Setting POVIE to "1"
   PWT_R1 &= ~PWT_R1_PWTSR_MASK;			// Setting PWTSR to "0"
-  transmit_string("done with PWTModule");
+  //transmit_string("done with PWTModule");
 }
 
 // Interrupt handler for PWT. This is called when the counter overflows or if the pulse is registered and ready to be read.
@@ -66,8 +66,8 @@ void PWT_IRQHandler(void) {
 	 * being used currently.
 	 */
 	if (1 == (PWT_R1 & PWT_R1_PWTOV_MASK) >> PWT_R1_PWTOV_SHIFT){ 		// Checks for PWT Counter overflow.
-		transmit_string("here1");
-		transmit_string("\n\r");
+//		transmit_string("here1");
+//		transmit_string("\n\r");
 		if (0 == (PWT_R1 & PWT_R1_PINSEL_MASK) >> PWT_R1_PINSEL_SHIFT) 	// Check if the PWT is connect to the left or right wheel sensor
 			WheelSpeed[leftWheel] = 0;									// If the left wheel is moving slower than about 3 miles per hour, then we set the speeds to zero.
 		else
@@ -76,8 +76,8 @@ void PWT_IRQHandler(void) {
 	}
 
 	else if (1== ((PWT_R1 & PWT_R1_PWTRDY_MASK) >> PWT_R1_PWTRDY_SHIFT)) { /* Checks if the pulse width is ready to be read */
-		transmit_string("here2");
-		transmit_string("\n\r");
+//		transmit_string("here2");
+//		transmit_string("\n\r");
 		/*
 		 * This section holds the value of the pulse width for the appropriate wheel and calls calculateWheelSpeed in order to calculate the actual wheel speed for the appropriate
 		 * wheel.

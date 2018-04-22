@@ -162,9 +162,9 @@ int main(void) {
 //			//TODO: trigger APPS or BSE fault LED
 //		}
 //		else {
-		accval = addCurve(ADC_buf[1]);
+		accval = addCurve(ADC_buf[1]); //applying throttle input curve
 		steeringval = ADC_buf[2];
-		steeringval = steeringval + 7; //offset to compensate for sensor placement error
+		steeringval = steeringval + 7; //offset to compensate for sensor placement TODO: readjust this based on new potentiometer
 		//TORQUE VECTORING BASIC ALGORITHM
 		if (steeringval < 108) { //left turn
 			data_TX_buffer[AcceleratorR] = accval

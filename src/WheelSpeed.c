@@ -37,12 +37,12 @@ void calculateWheelSpeed(void) {
 		if(PWT_buffer[leftWheel] > 0){
 			WheelSpeed[leftWheel] = (MAGNET_DETECTION_DISTANCE / (PWT_buffer[leftWheel] / FREQUENCY)) * CONVERSION_RATIO; // Calculate left wheel speed
 		}
-			//transmit_uint8(WheelSpeed[leftWheel]);
-		transmit_char('0' + (WheelSpeed[leftWheel] / 1000) % 100);
-		transmit_char('0' + (WheelSpeed[leftWheel] / 100));
-		transmit_char('0' + (WheelSpeed[leftWheel] / 100) % 10);
-		transmit_char('0' + WheelSpeed[leftWheel] % 10);
-		transmit_string("\n\r");
+//			//transmit_uint8(WheelSpeed[leftWheel]);
+//		transmit_char('0' + (WheelSpeed[leftWheel] / 1000) % 100);
+//		transmit_char('0' + (WheelSpeed[leftWheel] / 100));
+//		transmit_char('0' + (WheelSpeed[leftWheel] / 100) % 10);
+//		transmit_char('0' + WheelSpeed[leftWheel] % 10);
+//		transmit_string("\n\r");
 	}
 	else{
 		if(PWT_buffer[rightWheel] > 0){
