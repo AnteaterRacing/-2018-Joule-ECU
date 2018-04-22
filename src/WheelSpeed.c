@@ -9,41 +9,41 @@
 #include "WheelSpeed.h"
 #include "main.h"
 #include "math.h"
+#include "UART.h"
 
-// Defines the ratio to get from inches per nanosecond to miles per hour
-#define conversionRatio (60 * 60 * pow(10, 9)) / (63360) // The ratio that converts from inches per nanoseconds to miles per hour
+
+#define CONVERSION_RATIO ((60 * 60 * 0.001) / (63360)) // The ratio that converts from inches per millisecond to miles per hour
+#define FREQUENCY (20 / 128) 	// The frequency used for the PWT, which is equal to 156.25 KHz
+							// Dividing by kHz (kilohertz) returns ms (milliseconds) .
 
 void init_WheelSpeed(void) {
+	/*
+	 * This function initializes the WheelSpeed buffers and the PWT Module.
+	 */
 	WheelSpeed[leftWheel] = 0;	//initializing buffer
 	WheelSpeed[rightWheel] = 0;	//initializing buffer
 	init_PWTModule(); 			//initialize PWT module
+	//transmit_string("initialized 1");
+
 }
 
 //calculate wheel speed based on PWT buffer values
 void calculateWheelSpeed(void) {
-	//calculate actual speed based on pwt buffer value
-	//then put value into WheelSpeed buffer.
-	int leftWheelSpeed = 0;
-	int rightWheelSpeed = 0;
-
-	if (1 == ((PWT_R1 & PWT_R1_PWTOV_MASK) >> PWT_R1_PWTOV_SHIFT)){
-		WheelSpeed[leftWheel] = 0;			// If the car is moving slower than 1.5 miles per hour, then we set the speeds to zero.
-		WheelSpeed[rightWheel] = 0;
+	/*
+	 * This function calculates the actual speed based on PWT_buffer value of the appropriate wheel and then stores the value in the correct WheelSpeed buffer.
+	 */
+	//transmit_string("calculating");
+	if (0 == (PWT_R1 & PWT_R1_PINSEL_MASK) >> PWT_R1_PINSEL_SHIFT){ // If the PWT was hooked up to the left wheel sensor
+		WheelSpeed[leftWheel] = (MAGNET_DETECTION_DISTANCE / (PWT_buffer[leftWheel] / FREQUENCY)) * CONVERSION_RATIO; // Calculate left wheel speed
+			//transmit_uint8(WheelSpeed[leftWheel]);
+		transmit_char('0' + (WheelSpeed[leftWheel] / 1000) % 100);
+		transmit_char('0' + (WheelSpeed[leftWheel] / 100));
+		transmit_char('0' + (WheelSpeed[leftWheel] / 100) % 10);
+		transmit_char('0' + WheelSpeed[leftWheel] % 10);
+		transmit_string("\n\r");
 	}
-	else{
-		leftWheelSpeed = (magnetDectectionDistance / PWT_buffer[leftWheel]) * conversionRatio;	  // Calculating Wheel Speed for each wheel
-		rightWheelSpeed = (magnetDectectionDistance / PWT_buffer[rightWheel]) * conversionRatio;
-
-		if (leftWheelSpeed >= 3)								// If the wheel speeds are faster than or equal to our lowest threshold of
-			WheelSpeed[leftWheel] = leftWheelSpeed;				// 3 miles per hour, we will set the buffers to the calculated wheel speed.
-		else													// Otherwise, we will set them to 0.
-			WheelSpeed[leftWheel] = 0;
-
-		if (rightWheelSpeed >= 3)
-			WheelSpeed[rightWheel] = rightWheelSpeed;
-		else
-			WheelSpeed[rightWheel] = 0;
-	}
-
+	else
+		WheelSpeed[rightWheel] = (MAGNET_DETECTION_DISTANCE / (PWT_buffer[rightWheel] / FREQUENCY)) * CONVERSION_RATIO; // Calculate right wheel speed
+	//transmit_string("calculate");
 
 }

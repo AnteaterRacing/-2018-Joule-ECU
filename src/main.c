@@ -135,7 +135,6 @@ uint8_t steeringval;
 int i = 0;
 char s[3];
 int main(void) {
-
 	init_ECU();	//initialize front ECU settings
 	//setting message sizes for transmit buffers
 	data_TX_buffer[0] = FrontToRearDataMessageSize;
@@ -144,7 +143,6 @@ int main(void) {
 //	OrionL5_RX_buffer[0] = OrionL5_Size;
 //	OrionL7_RX_buffer[0] = OrionL7_Size;
 //	OrionL8_RX_buffer[0] = OrionL8_Size;
-
 	init_CAN_clocks();
 	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
 	Config_CAN_MB(0, 1, TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage

@@ -16,7 +16,6 @@
 #include "Input_Scan.h"
 #include "CAN.h"
 #include "main.h"
-
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
 #define PTH1 25          						/* Port PTH1 output to green LED */
