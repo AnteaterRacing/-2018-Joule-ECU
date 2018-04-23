@@ -11,10 +11,10 @@
 #include "math.h"
 #include "UART.h"
 
-
-#define CONVERSION_RATIO ((60 * 60 * 0.001) / (63360)) // The ratio that converts from inches per millisecond to miles per hour
-#define FREQUENCY (20 / 128) 	// The frequency used for the PWT, which is equal to 156.25 KHz
-							// Dividing by kHz (kilohertz) returns ms (milliseconds) .
+const static double MAGNET_DETECTION_DISTANCE = 0.98;
+const static double CONVERSION_RATIO = ((60 * 60 * 1000) / (12 * 5280)); // The ratio that converts from inches per millisecond to miles per hour
+const static double FREQUENCY = 156.25; 	// The frequency used for the PWT, which is equal to 156.25 KHz
+												// The frequency kHz (kilohertz) returns the period in ms (milliseconds) when 1 is divided by it.
 
 void init_WheelSpeed(void) {
 	/*
@@ -34,21 +34,15 @@ void calculateWheelSpeed(void) {
 	 */
 	//transmit_string("calculating");
 	if (0 == (PWT_R1 & PWT_R1_PINSEL_MASK) >> PWT_R1_PINSEL_SHIFT){ // If the PWT was hooked up to the left wheel sensor
-		if(PWT_buffer[leftWheel] > 0){
-			WheelSpeed[leftWheel] = (MAGNET_DETECTION_DISTANCE / (PWT_buffer[leftWheel] / FREQUENCY)) * CONVERSION_RATIO; // Calculate left wheel speed
+		if (PWT_buffer[leftWheel] > 0){
+			WheelSpeed[leftWheel] = round((MAGNET_DETECTION_DISTANCE / (PWT_buffer[leftWheel] / FREQUENCY)) * CONVERSION_RATIO); // Calculate left wheel speed
 		}
-//			//transmit_uint8(WheelSpeed[leftWheel]);
-//		transmit_char('0' + (WheelSpeed[leftWheel] / 1000) % 100);
-//		transmit_char('0' + (WheelSpeed[leftWheel] / 100));
-//		transmit_char('0' + (WheelSpeed[leftWheel] / 100) % 10);
-//		transmit_char('0' + WheelSpeed[leftWheel] % 10);
-//		transmit_string("\n\r");
 	}
+
 	else{
-		if(PWT_buffer[rightWheel] > 0){
+		if (WheelSpeed[rightWheel] > 0)
 			WheelSpeed[rightWheel] = (MAGNET_DETECTION_DISTANCE / (PWT_buffer[rightWheel] / FREQUENCY)) * CONVERSION_RATIO; // Calculate right wheel speed
-		}
-	}
 	//transmit_string("calculate");
+	}
 
 }

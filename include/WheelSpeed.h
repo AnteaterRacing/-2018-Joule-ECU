@@ -16,8 +16,7 @@ void init_WheelSpeed(void);
 #define rightWheel 1
 
 // Defines the distance the wheel travels when magnet is detected in inches.
-// add if for front and rear ecus
-#define MAGNET_DETECTION_DISTANCE 0.98
+// add if for front and rear ECUs.
 
 uint16_t WheelSpeed[2]; //stores calculated wheel speed values
 

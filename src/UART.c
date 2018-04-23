@@ -53,7 +53,6 @@ void UART2_IRQHandler(void) {
 }
 #endif
 
-
 //TESTING MODE
 #ifdef testingMode
 void init_UART(void)  {
@@ -76,6 +75,7 @@ void transmit_char(char send) {
   (void)UART2_S1;                    /* Read UART2_S1 register to clear TDRE */
   UART2_D=send;                      /* Send data */
 }
+
 /* Function to Transmit single int */
 void transmit_uint8(uint8_t send) {
 	while((UART2_S1 & UART_S1_TDRE_MASK)==0); /* Wait for transmit buffer to be empty */
@@ -108,4 +108,5 @@ void recieve_and_echo_char(void)  {
   transmit_char('\n');               /* New line */
   transmit_char('\r');               /* Return */
 }
+
 #endif

@@ -5,7 +5,6 @@
 
 #include "derivative.h"
 #include "main.h"
-
 #ifndef UART_H_
 #define UART_H_
 
@@ -14,6 +13,7 @@ void transmit_char(char);
 void transmit_string(char* data_string);
 char recieve_char(void);
 void recieve_and_echo_char(void);
+
 
 //CHANGE DEFINITION TO CHOOSE UART FUNCTIONALITY
 //#define runningMode 		//used for running car

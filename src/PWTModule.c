@@ -46,6 +46,7 @@ void init_PWTModule(void)  {
   // Re-setting the PWT Register to get the proper values needed (Values needed listed above)
   PWT_R1 &= ~PWT_R1_PCLKS_MASK;			// Setting PCLKS to "0"
   PWT_R1 &= ~PWT_R1_PINSEL_MASK;		// Setting PINSEL to "0" (Selects the left wheel sensor input)
+  PWT_R1 &= ~PWT_R1_EDGE_MASK;
   PWT_R1 |= 1 << (PWT_R1_EDGE_SHIFT + 1);		// Setting EDGE to "10" *2 = "10" in binary
   PWT_R1 |= PWT_R1_PRE_MASK;			// Setting PRE to "111"
   PWT_R1 |= PWT_R1_PWTEN_MASK;			// Setting PWTEN to "1"
@@ -53,7 +54,6 @@ void init_PWTModule(void)  {
   PWT_R1 |= PWT_R1_PRDYIE_MASK;			// Setting PRDYIE to "1"
   PWT_R1 |= PWT_R1_POVIE_MASK; 			// Setting POVIE to "1"
   PWT_R1 &= ~PWT_R1_PWTSR_MASK;			// Setting PWTSR to "0"
-  //transmit_string("done with PWTModule");
 }
 
 // Interrupt handler for PWT. This is called when the counter overflows or if the pulse is registered and ready to be read.
@@ -66,8 +66,6 @@ void PWT_IRQHandler(void) {
 	 * being used currently.
 	 */
 	if (1 == (PWT_R1 & PWT_R1_PWTOV_MASK) >> PWT_R1_PWTOV_SHIFT){ 		// Checks for PWT Counter overflow.
-//		transmit_string("here1");
-//		transmit_string("\n\r");
 		if (0 == (PWT_R1 & PWT_R1_PINSEL_MASK) >> PWT_R1_PINSEL_SHIFT) 	// Check if the PWT is connect to the left or right wheel sensor
 			WheelSpeed[leftWheel] = 0;									// If the left wheel is moving slower than about 3 miles per hour, then we set the speeds to zero.
 		else
@@ -76,8 +74,6 @@ void PWT_IRQHandler(void) {
 	}
 
 	else if (1== ((PWT_R1 & PWT_R1_PWTRDY_MASK) >> PWT_R1_PWTRDY_SHIFT)) { /* Checks if the pulse width is ready to be read */
-//		transmit_string("here2");
-//		transmit_string("\n\r");
 		/*
 		 * This section holds the value of the pulse width for the appropriate wheel and calls calculateWheelSpeed in order to calculate the actual wheel speed for the appropriate
 		 * wheel.
@@ -91,22 +87,20 @@ void PWT_IRQHandler(void) {
 			PWT_buffer[rightWheel] = PulseWidth; /* Read Number of clock cycles that sensors detects for right wheel*/
 
 		calculateWheelSpeed(); /* Calculate the current wheel speed */
+		PWT_R1 &= ~PWT_R1_PWTRDY_MASK; /* Clear flag: read reg then write 0 to PWTRDY */
 	}
 
-	PWT_R1 &= ~PWT_R1_PWTRDY_MASK; /* Clear flag: read reg then write 0 to PWTRDY */
 	/*
 	 * This section switches the input for the PWTModule; if it was set to the left wheel sensors, it switches to the right wheel
 	 * sensors and vice versa.
 	 */
 
-	/*if (0 == (PWT_R1 & PWT_R1_PINSEL_MASK) >> PWT_R1_PINSEL_SHIFT){ // Checks if the PWT is connected to the left wheel sensor
-		transmit_string("on");
+	if (0 == (PWT_R1 & PWT_R1_PINSEL_MASK) >> PWT_R1_PINSEL_SHIFT){ // Checks if the PWT is connected to the left wheel sensor
 		PWT_R1 |= 1 << PWT_R1_PINSEL_SHIFT;	// Switches to the right wheel sensor
 	}
 
-	else{
-		transmit_string("off"); // If it is connected to the right wheel sensor.
+	else{ // If it is connected to the right wheel sensor.
 		PWT_R1 &= ~PWT_R1_PINSEL_MASK; // Switches to the left wheel sensor.
-	}*/
+	}
 }
 
