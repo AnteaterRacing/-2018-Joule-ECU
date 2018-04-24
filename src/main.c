@@ -162,19 +162,24 @@ int main(void) {
 //			//TODO: trigger APPS or BSE fault LED
 //		}
 //		else {
-		accval = addCurve(ADC_buf[1]);  //applying throttle input curve
+
+		/*TorqueVectoringBias params*/
+		float B = TorqueVectoringBias/10;
+		float A = 1 - B;
+		/*float C = -A;*/
+		accval = addCurve(ADC_buf[1]);
 		steeringval = ADC_buf[2];
-		steeringval = steeringval + 7; //offset to compensate for sensor placement TODO: readjust this based on new potentiometer
+		steeringval = steeringval + 7; //offset to compensate for sensor placement error
 		//TORQUE VECTORING BASIC ALGORITHM
 		if (steeringval < 108) { //left turn
 			data_TX_buffer[AcceleratorR] = accval
-					* ((0.3 / 107) * steeringval + 0.7);
+					* ((A / 107) * steeringval + B); //A and B added
 			data_TX_buffer[AcceleratorL] = accval;
 
 		} else if (steeringval > 148) { 				//right turn
 			data_TX_buffer[AcceleratorR] = accval;
 			data_TX_buffer[AcceleratorL] = accval
-					* ((-0.3 / 107) * (steeringval - 148) + 1);
+					* ((-A / 107) * (steeringval - 148) + 1);  //-A added, 1 is always 1
 
 		} else { //on center steering. deadzone between 108 and 148
 			data_TX_buffer[AcceleratorR] = accval;
