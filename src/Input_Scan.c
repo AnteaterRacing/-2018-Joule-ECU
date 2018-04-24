@@ -67,7 +67,7 @@ void PIT_CH0_IRQHandler(void)
 	uint8_t valuePlus 	= (GPIOB_PDIR & (1 << 1)) >> 1;	//still needs correct mask - Reza
 	uint8_t valueMinus	= (GPIOB_PDIR & (2 << 2)) >> 1; //questionable
 
-	if (valuePlus == 1 || valueMinus == 1 && valuePlus != valueMinus)
+	if ((valuePlus == 1 || valueMinus == 1) && (valuePlus != valueMinus))
 	{
 		if(valuePlus == 1 && TorqueVectoringBias <= 70)//if we want to increment, not more than 70
 		{
