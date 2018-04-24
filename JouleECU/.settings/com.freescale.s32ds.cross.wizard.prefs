@@ -1,0 +1,16 @@
+core=SKEAZ128M4_M0plus_1
+coreType=SKEAZ128M4_M0plus
+eclipse.preferences.version=1
+flashSize=0x20000
+flashStart=0
+fpu=None
+io=
+language=c
+library=ewl_c9x
+pinSet=
+processor=SKEAZ128M4
+productVersion=v2018.R1 b180124 
+ramSize=0x4000
+ramStart=
+toolchainVersion=
+wizardVersion=1.0.0.201801242123

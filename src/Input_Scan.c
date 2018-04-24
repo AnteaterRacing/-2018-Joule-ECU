@@ -45,7 +45,8 @@ void GPIO_Init(void)
 				| 1 << 25/*S6A*/| 1 << 14/*S5B*/| 1 << 13/*S6B*/| 1 << 12 /*S7B*/
 				| 1 << 7/*BSPD Fault*/| 1 << 26/*BMS Fault*/| 1 << 6/*WSRL*/| 1 << 24/*WSRR*/
 				| 1 << 4/*TVRL*/| 1 << 5/*TVRR*/| 1 << 3/*CS1*/| 1 << 30/*CS2*/
-				| 1 << 8/*APPSL*/| 1<< 9/*APPSR*/;
+				| 1 << 8/*APPSL*/| 1<< 9/*APPSR*/ | 0 << 2 /*torqueTorque-*/
+				| 0 << 1 /*toggleTorque+*/;
 
 	GPIOC_PDDR = 0x00000000; // no outputs on GPIOC
 
@@ -54,6 +55,7 @@ void GPIO_Init(void)
 	GPIOB_PIDR &= ~(1 << 2)/*ErrorLED*/;
 	GPIOC_PIDR = 0xFFFFFFFF; // no inputs on GPIO C
 
+	TorqueVectoringBias = 70;
 return;
 }
 
@@ -61,6 +63,23 @@ return;
 //TODO @Xavier: finish this definition for the Front ECU
 void PIT_CH0_IRQHandler(void)
 {
+
+	uint8_t valuePlus 	= (GPIOB_PDIR & (1 << 1)) >> 1;	//still needs correct mask - Reza
+	uint8_t valueMinus	= (GPIOB_PDIR & (2 << 2)) >> 1; //questionable
+
+	if (valuePlus == 1 || valueMinus == 1 && valuePlus != valueMinus)
+	{
+		if(valuePlus == 1 && TorqueVectoringBias <= 70)//if we want to increment, not more than 70
+		{
+			TorqueVectoringBias++;
+		}
+
+		else if(valueMinus == 1 && TorqueVectoringBias >= 30)//if we want to decrement, not less than 30
+		{
+			TorqueVectoringBias--;
+		}
+	}
+
 	//Start = GPIOB_PDIR & Start_Mask >> 15; //This line threw an error: called object is not a function or function pointer
 #ifdef CAN_Fucked
 	Error_Count = Error_Count + GPIOA_PDIR & Error_Count_Mask >>3;
@@ -123,6 +142,7 @@ void PIT_CH0_IRQHandler(void)
 	IMD_Fault  = GPIOA_PDIR & IMD_Fault_Mask  >> 28; 		// faults are read in pin D4 = bit A28 = IMD; pin D6 = bit A30 = BMS; pin D7 = bit A31 = BSPD;
 	BMS_Fault  = GPIOA_PDIR & BMS_Fault_Mask  >> 30;
 	BSPD_Fault = GPIOA_PDIR & BSPD_Fault_Mask >> 31;
+
 
 
 #ifdef CAN_Fucked
