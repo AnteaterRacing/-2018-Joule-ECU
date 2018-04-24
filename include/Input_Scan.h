@@ -18,7 +18,6 @@ void GPIO_Init(void);
 #define Error_Count_Mask 1 << 3
 extern uint8_t Start;
 extern uint32_t C_D;
-uint8_t TorqueVectoringBias;
 #endif
 
 #ifdef RearECU
