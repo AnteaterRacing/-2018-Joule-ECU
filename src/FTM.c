@@ -5,9 +5,8 @@
 
 #include "derivative.h" /* include peripheral declarations SKEAZ128M4 */
 #include "FTM.h"
-#define PTF0 8									/*Throttle signal output to left motor */
-#define PTF1 9									/*Throttle signal output to right motor */
-
+#define PTH1 25		/*Throttle signal output to left motor */
+#define PTB5 13		/*Throttle signal output to right motor */
 uint16_t CurrentCaptureVal = 0;
 uint16_t PriorCaptureVal = 0;
 uint16_t DeltaCapture = 0;
@@ -37,9 +36,12 @@ SIM_SCGC |= SIM_SCGC_FTM2_MASK; 	/* Sys Clk Gate Ctrl: enable bus clock to FTM2 
 
 //initializing PWM pins, timers, and interrupts
 void init_PWM(void){
-	GPIOB_PDDR |= 1<<PTF0 | 1<<PTF1; //set data direction to output
-	GPIOB_PIDR &= ~(1<<PTF0 | 1<<PTF1); //disable inputs
-	GPIOB_PDOR &= ~(1<<PTF0 | 1<<PTF1); //setting initial value to 0.
+	GPIOB_PDDR |= 1<<PTH1; //set data direction to output
+	GPIOA_PDDR |= 1<<PTB5;
+	GPIOB_PIDR &= ~(1<<PTH1); //disable inputs
+	GPIOA_PIDR &= ~(1<<PTB5);
+	GPIOB_PDOR &= ~(1<<PTH1); //setting initial value to 0.
+	GPIOA_PDOR &= ~(1<<PTB5);
 	NVIC_ClearPendingIRQ(FTM2_IRQn);
 	NVIC_EnableIRQ(FTM2_IRQn);			//enable interrupt for FlexTimer2
 	NVIC_SetPriority(FTM2_IRQn,0);    	/* Set Priority for FTM2 */
@@ -52,28 +54,28 @@ void FTM2_IRQHandler(void){
 
 		if(FTM2_C0V == 0 || FTM2_C1V == 0) { //if compare match value set to 0, do not set output high
 			if(FTM2_C0V == 0) {
-				GPIOB_PDOR &= ~(1<<PTF0); //set output low for left motor
+				GPIOB_PDOR &= ~(1<<PTH1); //set output low for left motor
 			}
 			else {
-				GPIOB_PDOR &= (~1<<PTF1); //set output low for right motor
+				GPIOA_PDOR &= (~1<<PTB5); //set output low for right motor
 			}
 		}
 		else {
-			GPIOB_PDOR |= (1<<PTF0); //set output high for left motor
-			GPIOB_PDOR |= (1<<PTF1); //set output high for right motor
+			GPIOB_PDOR |= (1<<PTH1); //set output high for left motor
+			GPIOA_PDOR |= (1<<PTB5); //set output high for right motor
 		}
 		FTM2_SC &= ~FTM_SC_TOF_MASK; //clear overflow flag
 	}
 	else{
 		//if compare match ch0, set output low for left motor
 		if(FTM2_C0SC>>FTM_CnSC_CHF_SHIFT) {
-		GPIOB_PDOR &= ~(1<<PTF0); //set output low for left motor
+		GPIOB_PDOR &= ~(1<<PTH1); //set output low for left motor
 		FTM2_C0SC &= ~FTM_CnSC_CHF_MASK; //clear CH0 flag
 		}
 
 		//if compare match ch1, set output low for right motor
 		if(FTM2_C1SC>>FTM_CnSC_CHF_SHIFT) {
-			GPIOB_PDOR &= ~(1<<PTF1); //set output low for right motor
+			GPIOA_PDOR &= ~(1<<PTB5); //set output low for right motor
 			FTM2_C1SC &= ~FTM_CnSC_CHF_MASK; //clear CH1 flag
 		}
 	}

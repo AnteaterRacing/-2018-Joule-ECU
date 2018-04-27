@@ -118,7 +118,7 @@ void GPIO_Init(void)
 	GPIOB_PIDR &= ~(1 << 31/*WSRR*/| 1 << 19/*GyroI*/| 1 << 18/*GyroData*/| 1 << 17/*Int1*/| 1 << 16/*Int2*/);
 	GPIOC_PIDR &= ~(1 << 6/*APPSL*/| 1 << 5/*APPSR*/);
 
-	C_D   = GPIOA_PDIR & C_D_Mask >> 26; //Find C_D to pass to ECU init
+//	C_D   = GPIOA_PDIR & C_D_Mask >> 26; //Find C_D to pass to ECU init
 
 //	if (C_D == 1)
 //		return;
@@ -139,9 +139,9 @@ void PIT_CH0_IRQHandler(void)
 	uint8_t BSPD_Fault;
 
 
-	IMD_Fault  = GPIOA_PDIR & IMD_Fault_Mask  >> 28; 		// faults are read in pin D4 = bit A28 = IMD; pin D6 = bit A30 = BMS; pin D7 = bit A31 = BSPD;
-	BMS_Fault  = GPIOA_PDIR & BMS_Fault_Mask  >> 30;
-	BSPD_Fault = GPIOA_PDIR & BSPD_Fault_Mask >> 31;
+//	IMD_Fault  = GPIOA_PDIR & IMD_Fault_Mask  >> 28; 		// faults are read in pin D4 = bit A28 = IMD; pin D6 = bit A30 = BMS; pin D7 = bit A31 = BSPD;
+//	BMS_Fault  = GPIOA_PDIR & BMS_Fault_Mask  >> 30;
+//	BSPD_Fault = GPIOA_PDIR & BSPD_Fault_Mask >> 31;
 
 
 
@@ -176,19 +176,19 @@ void PIT_CH0_IRQHandler(void)
 #endif
 
 
-	uint8_t DOF_Int = ((GPIOB_PDIR & 1 << Gyro_Int)  >> 16) | (GPIOB_PDIR & (1 << Gyro_Data) >> 16) | ((GPIOB_PDIR & 1 << ACC_INT1)  >> 16) | ((GPIOB_PDIR & 1 << ACC_INT2) >> 16);
+//	uint8_t DOF_Int = ((GPIOB_PDIR & 1 << Gyro_Int)  >> 16) | (GPIOB_PDIR & (1 << Gyro_Data) >> 16) | ((GPIOB_PDIR & 1 << ACC_INT1)  >> 16) | ((GPIOB_PDIR & 1 << ACC_INT2) >> 16);
 
 	//DOF_Int = (GPIOB_PDIR & Gyro_Int_Mask  >> 16) | (GPIOB_PDIR & Gyro_Data_Mask >> 16) | (GPIOB_PDIR & ACC_INT1_Mask  >> 16) | (GPIOB_PDIR & ACC_INT2_Mask  >> 16);
-	if(DOF_Int > 0 && DOF_Int < 16){
-		//pass DOF_INT to I2C handler. Gyro_int = 8; Gyro_Data = 4, ACC_Int1 = 2; ACC_INT2 = 1;
-	}
-	else{
-			return;
-	}
-
-	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
-
-	return;
+//	if(DOF_Int > 0 && DOF_Int < 16){
+//		//pass DOF_INT to I2C handler. Gyro_int = 8; Gyro_Data = 4, ACC_Int1 = 2; ACC_INT2 = 1;
+//	}
+//	else{
+//			return;
+//	}
+//
+//	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
+//
+//	return;
 
 
 }
