@@ -82,9 +82,6 @@ int main(void)
 	data_TX_buffer[0] = RearToFrontDataMessageSize;
 	data_RX_buffer[0] = FrontToRearDataMessageSize;
 	telemetry_RX_buffer[0] = FrontToRearTelemetryMessageSize;
-//	OrionL5_RX_buffer[0] = OrionL5_Size;
-//	OrionL7_RX_buffer[0] = OrionL7_Size;
-//	OrionL8_RX_buffer[0] = OrionL8_Size;
 
 	//wait_for_start_seq();						//wait for start sequence to turn on tractive system
 
@@ -92,11 +89,18 @@ int main(void)
 	while(1) {
 		GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1; //clear LED
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
-		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
-		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer); //TODO do something with data
+		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer); //TODO put received data in UART transmit buffer
 		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
 		CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
 		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
+		data_TX_buffer[IMDFault] = IMD_Fault;
+		data_TX_buffer[BMSFault] = BMS_Fault;
+		data_TX_buffer[BSPDFault] = BSPD_Fault;
+		data_TX_buffer[Speedometer] = 0;
+		data_TX_buffer[TractionLED] = 0;
+		data_TX_buffer[TV_LED] = 0;
+		data_TX_buffer[MotorTempLED] = 0;
+		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
 
 		//TODO: check for missed CAN messages before continuing. //
 
@@ -105,16 +109,18 @@ int main(void)
 }
 
 //waiting for the start sequence to be pressed before starting the vehicle
+//start button press and brake press = start condition.
 void wait_for_start_seq() {
-	//waiting for start button press and brake to be depressed.
+
 	set_Throttle_Value(0,0);//zeroing out throttle value (precautionary).
-	while(data_RX_buffer[StartButton]!=0xFF && ADC_buf[3] < 1000) {
+
+	while(!data_RX_buffer[StartButton] && ADC_buf[3] < 1000) {
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 	}
 
-	GPIOB_PCOR |= RTDS_MASK; //RTDS is bit 15 of GPIOB. set RTDS on.
+	GPIOB_PCOR |= RTDS_MASK; 	//RTDS is bit 15 of GPIOB. set RTDS on.
 	delay();//leave RTDS on for 1 sec
-	GPIOB_PCOR &= ~RTDS_MASK;//set RTDS off.
+	GPIOB_PSOR |= RTDS_MASK;	//set RTDS off.
 }
 
 #endif
@@ -140,9 +146,6 @@ int main(void) {
 	data_TX_buffer[0] = FrontToRearDataMessageSize;
 	telemetry_TX_buffer[0] = FrontToRearTelemetryMessageSize;
 	data_RX_buffer[0] = RearToFrontDataMessageSize;
-//	OrionL5_RX_buffer[0] = OrionL5_Size;
-//	OrionL7_RX_buffer[0] = OrionL7_Size;
-//	OrionL8_RX_buffer[0] = OrionL8_Size;
 	init_CAN_clocks();
 	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
 	Config_CAN_MB(0, 1, TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
@@ -156,40 +159,40 @@ int main(void) {
 
 		//TODO: implement fault checking on vehicle
 		//if an APPS or BSE fault occurs, set the accelerator signal to 0 to prevent throttle output.
-//		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
-//			data_TX_buffer[Accelerator] = 0;
-//			data_TX_buffer[FrontFault] = 0xFF;
-//			//TODO: trigger APPS or BSE fault LED
-//		}
-//		else {
+		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
+			data_TX_buffer[AcceleratorL] = 0;
+			data_TX_buffer[AcceleratorR] = 0;
+			data_TX_buffer[FrontFault] = 0xFF;
+			//TODO: trigger APPS or BSE fault LED
+		}
+		else {
 
 		/*TorqueVectoringBias params*/
 		float B = TorqueVectoringBias/10;
 		float A = 1 - B;
 		/*float C = -A;*/
 		accval = addCurve(ADC_buf[1]);
-		steeringval = ADC_buf[2];
+		steeringval = ADC_buf[2]; //steering potentiometer value
 		steeringval = steeringval + 7; //offset to compensate for sensor placement error
 		//TORQUE VECTORING BASIC ALGORITHM
 		if (steeringval < 108) { //left turn
-			data_TX_buffer[AcceleratorR] = accval
-					* ((A / 107) * steeringval + B); //A and B added
+			data_TX_buffer[AcceleratorR] = accval * ((A / 107) * steeringval + B); //A and B added
 			data_TX_buffer[AcceleratorL] = accval;
 
 		} else if (steeringval > 148) { 				//right turn
 			data_TX_buffer[AcceleratorR] = accval;
-			data_TX_buffer[AcceleratorL] = accval
-					* ((-A / 107) * (steeringval - 148) + 1);  //-A added, 1 is always 1
+			data_TX_buffer[AcceleratorL] = accval * ((-A / 107) * (steeringval - 148) + 1);  //-A added, 1 is always 1
 
 		} else { //on center steering. deadzone between 108 and 148
 			data_TX_buffer[AcceleratorR] = accval;
 			data_TX_buffer[AcceleratorL] = accval;
 		}
-//			data_TX_buffer[FrontFault] = 0x00;
-//		}
+			data_TX_buffer[FrontFault] = 0x00;
+		}
+		data_TX_buffer[SteeringAngle] = ADC_buf[2];
 		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
-		data_TX_buffer[TVEnable] = 0x00;					//TODO: set up torque vectoring toggle somewhere on DASH & connect
-//		data_TX_buffer[StartButton] = 0xFF;
+		data_TX_buffer[TVBias] = TorqueVectoringBias;
+		data_TX_buffer[StartButton] = Start;
 		CAN_TransmitData(FrontToRearDataMessageID, data_TX_buffer);
 		CAN_ReceiveData(RearToFrontDataMessageID, data_RX_buffer);
 		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
@@ -197,11 +200,11 @@ int main(void) {
 		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
 
 		//TODO: set LED values/Speedometer based on received data from rear
-		//CAN_ReceiveData(RearToFrontDataMessageID,data_RX_buffer);
+		CAN_ReceiveData(RearToFrontDataMessageID,data_RX_buffer);
 
 		//transmitting telemetry data to rear ECU
-		telemetry_TX_buffer[WheelSpeed_L] = 0x00;
-		telemetry_TX_buffer[WheelSpeed_R] = 0x00;
+		telemetry_TX_buffer[WheelSpeed_L] = WheelSpeed[leftWheel];
+		telemetry_TX_buffer[WheelSpeed_R] = WheelSpeed[rightWheel];
 		telemetry_TX_buffer[TireTemp_L1] = ADC_buf[4];
 		telemetry_TX_buffer[TireTemp_L2] = ADC_buf[5];
 		telemetry_TX_buffer[TireTemp_L3] = ADC_buf[6];

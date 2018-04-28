@@ -49,7 +49,7 @@
 #define AcceleratorR	2
 #define BrakeAngle  	3
 #define SteeringAngle	4
-#define TVEnable		5
+#define TVBias			5
 #define	StartButton		6
 #define FrontFault		7
 #define Heartbeat		8
@@ -73,6 +73,30 @@
 #define	TV_LED			6
 #define MotorTempLED	7
 
+//Orion_L5
+#define PackCurrent 	1
+#define IN_USE1			2
+#define Pk_Inst_Voltage 3
+#define IN_USE2			4
+#define CRC_CHECKSUM	5
+
+//Orion_L7
+#define Pack_DCL		1
+#define Pack_CCL		2
+#define Blank			3
+#define Simulated_SOC	4
+#define High_Temp		5
+#define Low_Temp		6
+
+//Orion_L8
+#define relay_state		1
+#define pack_soc		2
+#define pack_resistance	3
+#define in_use3			4
+#define pk_open_voltage	5
+#define in_use4			6
+#define pack_amphours	7
+#define crc_checksum2	8
 
 void CAN_Init(void); //front or rear ecu init
 void CAN_TransmitData(uint16_t, uint8_t*); 	//transmits CAN message with specified messageID

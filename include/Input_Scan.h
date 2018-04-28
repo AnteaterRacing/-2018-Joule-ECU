@@ -14,9 +14,8 @@ void GPIO_Init(void);
 
 
 #ifdef FrontECU
-#define Start_Mask 1 << 15
 #define Error_Count_Mask 1 << 3
-extern uint8_t Start;
+uint8_t Start;
 extern uint32_t C_D;
 uint8_t TorqueVectoringBias;
 #endif
@@ -35,6 +34,9 @@ void I2C_init(void);
 #define ACC_INT1  17
 #define Gyro_Data 18
 #define Gyro_Int  19
+uint8_t IMD_Fault;
+uint8_t BMS_Fault;
+uint8_t BSPD_Fault;
 
 //#define ACC_INT2_Mask 1 << 16
 //#define ACC_INT1_Mask 1 << 17
