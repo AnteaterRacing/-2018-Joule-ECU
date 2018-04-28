@@ -113,6 +113,52 @@ int main(void)
 		set_Throttle_Value(data_RX_buffer[AcceleratorL],data_RX_buffer[AcceleratorR]);
 		data_TX_buffer[MotorTempLED] = 0;	//turn off motor temp led
 		}
+
+		/*** transmitting telemetry data to xBee via UART_buffer ***/
+			//Tire Temperature Sensor Data
+				//Rear
+				UART_buffer[0] = ADC_buf[5];					//TTBR1 (TireTemp_R1)
+				UART_buffer[1] = ADC_buf[6];					//TTBR2 (TireTemp_R2)
+				UART_buffer[2] = ADC_buf[7];					//TTBR3 (TireTemp_R3)
+
+				UART_buffer[3] = ADC_buf[2];					//TTBR1 (TireTemp_L1)
+				UART_buffer[4] = ADC_buf[3];					//TTBR2 (TireTemp_L2)
+				UART_buffer[5] = ADC_buf[4];					//TTBR3 (TireTemp_L3)
+
+				//Front
+				UART_buffer[6] = telemetry_RX_buffer[TireTemp_R1];				//TTFR1 (TireTemp_R1)
+				UART_buffer[7] = telemetry_RX_buffer[TireTemp_R2];				//TTFR2 (TireTemp_R2)
+				UART_buffer[8] = telemetry_RX_buffer[TireTemp_R3];				//TTFR3 (TireTemp_R3)
+
+				UART_buffer[9]  = telemetry_RX_buffer[TireTemp_L1];				//TTFL1 (TireTemp_L1)
+				UART_buffer[10] = telemetry_RX_buffer[TireTemp_L2];				//TTFL2 (TireTemp_L2)
+				UART_buffer[11] = telemetry_RX_buffer[TireTemp_L3];				//TTFL3 (TireTemp_L3)
+
+			//Motor Temperature Sensor Data
+				UART_buffer[12] = ADC_buf[0];									//MT1 (L)
+				UART_buffer[13] = ADC_buf[1];									//MT2 (R)
+
+			//Wheel Speed Sensor Data
+				UART_buffer[14] = WheelSpeed[rightWheel];						//WSBR
+				UART_buffer[15] = WheelSpeed[leftWheel];						//WSBL
+				UART_buffer[16] = telemetry_RX_buffer[WheelSpeed_R];			//WSFR
+				UART_buffer[17] = telemetry_RX_buffer[WheelSpeed_L];			//WSFL
+
+			//Throttle Position Sensor Data
+				UART_buffer[18] = data_RX_buffer[AcceleratorR]					//throttleR
+				UART_buffer[19] = data_RX_buffer[AcceleratorL]					//throttleL
+
+			//Battery Pack Voltage, Current, and Temperature Sensor Data
+				UART_buffer[20] = OrionL5_RX_buffer[Pk_Inst_Voltage];			//packVoltage
+				UART_buffer[21] = OrionL5_RX_buffer[PackCurrent];				//packCurrent
+				UART_buffer[22] = OrionL7_RX_buffer[High_Temp];					//packTemperature
+
+			//Steering Angle Sensor Data
+				UART_buffer[23] = data_RX_buffer[SteeringAngle];				//steeringAngle
+
+			//Accelerator and Brake Angle
+				UART_buffer[24] = data_RX_buffer[AcceleratorL];					//accelAngle (L)
+				UART_buffer[25] = data_RX_buffer[BrakeAngle];					//brakeAngle
 	}
 }
 
