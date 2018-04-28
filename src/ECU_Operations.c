@@ -21,8 +21,8 @@ int APPS_faultcount = 0; 	//number of times APPS faults have occurred
 int BSE_faultcount = 0; 	//number of times BSE faults have occurred
 uint16_t Throttle_L = 0;
 uint16_t Throttle_R = 0;
-uint16_t Throttle_L_buffer[10] = {0};
-uint16_t Throttle_R_buffer[10] = {0};
+uint8_t Throttle_L_buffer[20] = {0};
+uint8_t Throttle_R_buffer[20] = {0};
 
 //returns 1 if fault, 0 if no fault. (checks acc pedal transfer functions)
 int APPS_Fault(uint8_t acc1, uint8_t acc2){
@@ -83,23 +83,24 @@ void set_Throttle_Value(uint8_t leftpos, uint8_t rightpos){
 
 	Throttle_L = 0;
 	Throttle_R = 0;
+
 	int i = 0;
 	//rotating the current buffer of throttle samples
-	for(; i < 9; i++) {
+	for(; i < 19; i++) {
 		Throttle_L_buffer[i] = Throttle_L_buffer[i+1];
 		Throttle_R_buffer[i] = Throttle_R_buffer[i+1];
 	}
 	//updating with new sample
-	Throttle_L_buffer[9] = leftpos;
-	Throttle_R_buffer[9] = rightpos;
+	Throttle_L_buffer[19] = leftpos;
+	Throttle_R_buffer[19] = rightpos;
 	i = 0;
 	//computing the average
-	for(; i < 10; i++) {
+	for(; i < 20; i++) {
 		Throttle_L += Throttle_L_buffer[i];
 		Throttle_R += Throttle_R_buffer[i];
 	}
-	FTM2_C0V = Throttle_L/10;
-	FTM2_C1V = Throttle_R/10;
+	FTM2_C0V = 4*Throttle_L/20;
+	FTM2_C1V = 4*Throttle_R/20;
 }
 
 

@@ -17,7 +17,7 @@
 
 //defining message ID for telemetry signals
 //size: 8 bytes: Wheelspeed L, Wheelspeed R, Tire temps L1,L2,L3,R1,R2,R3
-#define FrontToRearTelemetryMessageID 20
+#define FrontToRearTelemetryMessageID 12
 #define FrontToRearTelemetryMessageSize 8
 #define FrontToRearTelemetryMessageIDRef 2
 

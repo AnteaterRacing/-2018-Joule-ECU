@@ -24,17 +24,18 @@
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
 #define PTH1 25          						/* Port PTH1 output to green LED */
+#define Temp_Threshold 153						/*threshold to cut power to motors 3V = 100C */
 uint8_t started = 0;
 
 //converts linear function accelerator input to exponential function output
 uint8_t addCurve(uint8_t acc) {
-	//scaling using 2^x function (more exponential)
-	double scaled = pow(2, acc) - 1;
-	uint8_t output = (uint8_t) (scaled / 6.2);
+	//scaling using 1.01^x function (less exponential)
+	double scaled = 21.85 * pow(1.01, acc) - 21.85;
+	uint8_t output = (uint8_t) (scaled);
 
-	//scaling using 1.5^x function (less exponential)
-	//double scaled = pow(1.5, acc) - 1;
-	//uint8_t output = (uint8_t)(scaled/1.32);
+	//scaling using 1.02^x function (more exponential)
+//	double scaled = 1.64 * pow(1.02, acc) - 1.64;
+//	uint8_t output = (uint8_t) (scaled);
 
 	return output;
 }
@@ -67,7 +68,6 @@ int main(void)
 {
 
 	init_ECU(); 				//initialize Rear ECU settings
-
 	//CAN_Init();
 	init_CAN_clocks();
 	Init_CAN(0, CMPTX);//initialize CAN0 to FAST mode
@@ -87,7 +87,6 @@ int main(void)
 
 	//this runs continuously once the initialization has completed
 	while(1) {
-		GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1; //clear LED
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer); //TODO put received data in UART transmit buffer
 		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
@@ -96,15 +95,24 @@ int main(void)
 		data_TX_buffer[IMDFault] = IMD_Fault;
 		data_TX_buffer[BMSFault] = BMS_Fault;
 		data_TX_buffer[BSPDFault] = BSPD_Fault;
-		data_TX_buffer[Speedometer] = 0;
+		data_TX_buffer[Speedometer] = (uint8_t)((WheelSpeed[leftWheel]+WheelSpeed[rightWheel])/2);
 		data_TX_buffer[TractionLED] = 0;
 		data_TX_buffer[TV_LED] = 0;
-		data_TX_buffer[MotorTempLED] = 0;
+
 		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
 
 		//TODO: check for missed CAN messages before continuing. //
-
+		if (IMD_Fault || BMS_Fault || BSPD_Fault || data_RX_buffer[FrontFault]) {
+			set_Throttle_Value(0,0);
+		}
+		else if (ADC_buf[0] > Temp_Threshold || ADC_buf[1] > Temp_Threshold) {
+			data_TX_buffer[MotorTempLED] = 0xFF;	//Turn on motor temp LED on dashboard
+			set_Throttle_Value(data_RX_buffer[AcceleratorL]*0.5,data_RX_buffer[AcceleratorR]*0.5); //reduce max throttle by 50%
+		}
+		else {
 		set_Throttle_Value(data_RX_buffer[AcceleratorL],data_RX_buffer[AcceleratorR]);
+		data_TX_buffer[MotorTempLED] = 0;	//turn off motor temp led
+		}
 	}
 }
 
@@ -159,36 +167,38 @@ int main(void) {
 
 		//TODO: implement fault checking on vehicle
 		//if an APPS or BSE fault occurs, set the accelerator signal to 0 to prevent throttle output.
-		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
-			data_TX_buffer[AcceleratorL] = 0;
-			data_TX_buffer[AcceleratorR] = 0;
-			data_TX_buffer[FrontFault] = 0xFF;
-			//TODO: trigger APPS or BSE fault LED
-		}
-		else {
+//		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
+//			data_TX_buffer[AcceleratorL] = 0;
+//			data_TX_buffer[AcceleratorR] = 0;
+//			data_TX_buffer[FrontFault] = 0xFF;
+//			//TODO: trigger APPS or BSE fault LED
+//		}
+//		else {
 
 		/*TorqueVectoringBias params*/
-		float B = TorqueVectoringBias/10;
-		float A = 1 - B;
+//		float B = TorqueVectoringBias/10;
+//		float A = 1 - B;
 		/*float C = -A;*/
 		accval = addCurve(ADC_buf[1]);
 		steeringval = ADC_buf[2]; //steering potentiometer value
 		steeringval = steeringval + 7; //offset to compensate for sensor placement error
 		//TORQUE VECTORING BASIC ALGORITHM
-		if (steeringval < 108) { //left turn
-			data_TX_buffer[AcceleratorR] = accval * ((A / 107) * steeringval + B); //A and B added
-			data_TX_buffer[AcceleratorL] = accval;
-
-		} else if (steeringval > 148) { 				//right turn
-			data_TX_buffer[AcceleratorR] = accval;
-			data_TX_buffer[AcceleratorL] = accval * ((-A / 107) * (steeringval - 148) + 1);  //-A added, 1 is always 1
-
-		} else { //on center steering. deadzone between 108 and 148
-			data_TX_buffer[AcceleratorR] = accval;
-			data_TX_buffer[AcceleratorL] = accval;
-		}
+//		if (steeringval < 108) { //left turn
+//			data_TX_buffer[AcceleratorR] = accval * ((A / 107) * steeringval + B); //A and B added
+//			data_TX_buffer[AcceleratorL] = accval;
+//
+//		} else if (steeringval > 148) { 				//right turn
+//			data_TX_buffer[AcceleratorR] = accval;
+//			data_TX_buffer[AcceleratorL] = accval * ((-A / 107) * (steeringval - 148) + 1);  //-A added, 1 is always 1
+//
+//		} else { //on center steering. deadzone between 108 and 148
+//			data_TX_buffer[AcceleratorR] = accval;
+//			data_TX_buffer[AcceleratorL] = accval;
+//		}
+		data_TX_buffer[AcceleratorR] = accval;
+		data_TX_buffer[AcceleratorL] = accval;
 			data_TX_buffer[FrontFault] = 0x00;
-		}
+//		}
 		data_TX_buffer[SteeringAngle] = ADC_buf[2];
 		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
 		data_TX_buffer[TVBias] = TorqueVectoringBias;

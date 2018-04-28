@@ -18,6 +18,7 @@
 #include "ADC.h"
 #include "main.h"
 #include "CAN.h"
+#include "UART.h"
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
 #define PTH1 25          						/* Port PTH1 output to green LED */
@@ -76,7 +77,7 @@ uint16_t ID_to_BUF(uint16_t ID){
 	switch(ID){
 	case 10: return 1; //Front to Rear ID 10 to buffer1
 	case 11: return 2; //Rear to Front ID 11 to buffer 2
-	case 20: return 3; //Front to Rear Telemetry ID 20 to buffer 3
+	case 12: return 3; //Front to Rear Telemetry ID 20 to buffer 3
 	case OrionL5_ID: return OrionL5_buffVal; 
 	case OrionL7_ID: return OrionL7_buffVal;
 	case OrionL8_ID: return OrionL8_buffVal;
