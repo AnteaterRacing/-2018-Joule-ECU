@@ -129,9 +129,9 @@ void PIT_CH0_IRQHandler(void)
 {
 
 	//checking for fault signals from LV system
-//	IMD_Fault  = (GPIOA_PDIR & IMD_Fault_Mask)  >> 28; 		//pin D4 = bit A28 = IMD
-//	BMS_Fault  = (GPIOA_PDIR & BMS_Fault_Mask)  >> 30;		//pin D6 = bit A30 = BMS
-//	BSPD_Fault = (GPIOA_PDIR & BSPD_Fault_Mask) >> 31;		//pin D7 = bit A31 = BSPD
+	IMD_Fault  = (GPIOA_PDIR & IMD_Fault_Mask)  >> 28; 		//pin D4 = bit A28 = IMD
+	BMS_Fault  = (GPIOA_PDIR & BMS_Fault_Mask)  >> 30;		//pin D6 = bit A30 = BMS
+	BSPD_Fault = (GPIOA_PDIR & BSPD_Fault_Mask) >> 31;		//pin D7 = bit A31 = BSPD
 
 #ifdef CAN_Fucked
 	if (IMD_Fault == 0 && BMS_Fault == 0 && BSPD_Fault == 0)

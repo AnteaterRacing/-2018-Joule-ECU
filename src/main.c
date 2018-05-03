@@ -98,27 +98,27 @@ int main(void)
 		//TODO: check for missed CAN messages before continuing. //
 
 		//checking for IMD, BMS, & BSPD Faults:
-//		if(IMD_Fault) {
-//			data_TX_buffer[IMDFault] = 0xFF;
-//		} else {
-//			data_TX_buffer[IMDFault] = 0x00;
-//		}
-//		if(BMS_Fault) {
-//			data_TX_buffer[BMSFault] = 0xFF;
-//		} else {
-//			data_TX_buffer[BMSFault] = 0x00;
-//		}
-//		if(BSPD_Fault) {
-//			data_TX_buffer[BSPDFault] = 0xFF;
-//		} else {
-//			data_TX_buffer[BSPDFault] = 0x00;
-//		}
-//		if (IMD_Fault || BMS_Fault || BSPD_Fault || data_RX_buffer[FrontFault]) {
-//			set_Throttle_Value(0,0);
-//		}
-
+		if(IMD_Fault) {
+			data_TX_buffer[IMDFault] = 0xFF;
+		} else {
+			data_TX_buffer[IMDFault] = 0x00;
+		}
+		if(BMS_Fault) {
+			data_TX_buffer[BMSFault] = 0xFF;
+		} else {
+			data_TX_buffer[BMSFault] = 0x00;
+		}
+		if(BSPD_Fault) {
+			data_TX_buffer[BSPDFault] = 0xFF;
+		} else {
+			data_TX_buffer[BSPDFault] = 0x00;
+		}
+		//if any fault is triggered set throttle to 0
+		if (IMD_Fault || BMS_Fault || BSPD_Fault || data_RX_buffer[FrontFault]) {
+			set_Throttle_Value(0,0);
+		}
 		//checking if motor temperature or accumulator temperature is above our specified unsafe threshold
-		if (ADC_buf[0] > Temp_Threshold || ADC_buf[1] > Temp_Threshold) {
+		else if (ADC_buf[0] > Temp_Threshold || ADC_buf[1] > Temp_Threshold) {
 			data_TX_buffer[MotorTempLED] = 0xFF;	//Turn on motor temp LED on dashboard
 			set_Throttle_Value(data_RX_buffer[AcceleratorL]*0.5,data_RX_buffer[AcceleratorR]*0.5); //reduce max throttle by 50%
 		}
@@ -248,7 +248,8 @@ int main(void) {
 #endif
 
 #ifdef RearECU
-void transmit_telemetry_data() {
+#ifdef runningMode
+void transmit_telemetry_data(void) {
 	/** transmitting telemetry data to xBee via UART_buffer **/
 				//Tire Temperature Sensor Data
 					//Rear
@@ -295,4 +296,5 @@ void transmit_telemetry_data() {
 					UART_buffer[24] = data_RX_buffer[AcceleratorL];					//accelAngle (L)
 					UART_buffer[25] = data_RX_buffer[BrakeAngle];					//brakeAngle
 }
+#endif
 #endif
