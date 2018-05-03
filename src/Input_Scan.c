@@ -58,7 +58,7 @@ void PIT_CH0_IRQHandler(void)
 
 	uint8_t valuePlus 	= (GPIOB_PDIR & (1 << 1)) >> 1;	//retrieve value from plus button
 	uint8_t valueMinus	= (GPIOB_PDIR & (1 << 2)) >> 2; //retrieve value from minus button
-
+	//TODO: @Reza test button
 	//checking if plus or minus button was pressed
 	if ((valuePlus == 1 || valueMinus == 1) && (valuePlus != valueMinus))
 	{
@@ -100,38 +100,38 @@ void PIT_CH0_IRQHandler(void)
 void GPIO_Init(void)
 {
 			  //Rear ECU Data Direction, 1 is output, 0 is not output
-	GPIOA_PDDR = 1 << 27/*RTDS*/;
-	GPIOB_PDDR = 1 << 7/*Charge LED*/| 1 << 8/*ThrottleL*/| 1 << 9/*ThrottleR*/;
-	GPIOC_PDDR = 1 << 4/*ErrorLED*/;
+//	GPIOA_PDDR = 1 << 27/*RTDS*/ ;
+//	GPIOB_PDDR = 1 << 7/*Charge LED*/;
+//	GPIOC_PDDR = 1 << 4/*ErrorLED*/;
 
 			  //Rear ECU Input Disable, 1 is not input, 0 is input
-	GPIOA_PIDR &= ~(1 << 29/*WSRL*/| 1 << 26/*C_D*/| 1 << 28/*IMDFault*/| 1 << 30/*BMSFault*/);
-	GPIOB_PIDR &= ~(1 << 31/*WSRR*/| 1 << 19/*GyroI*/| 1 << 18/*GyroData*/| 1 << 17/*Int1*/| 1 << 16/*Int2*/);
-	GPIOC_PIDR &= ~(1 << 6/*APPSL*/| 1 << 5/*APPSR*/);
+	GPIOA_PIDR &= ~(1 << 26/*C_D*/| 1 << 28/*IMDFault*/| 1 << 30/*BMSFault*/ | 1<< 31 /*BSPDFault*/);
+	//GPIOB_PIDR &= ~(1 << 31/*WSRR*/| 1 << 19/*GyroI*/| 1 << 18/*GyroData*/| 1 << 17/*Int1*/| 1 << 16/*Int2*/);
+	//GPIOC_PIDR &= ~(1 << 6/*APPSL*/| 1 << 5/*APPSR*/);
 
-	C_D = (GPIOA_PDIR & C_D_Mask) >> 26; //Find C_D to pass to ECU init
+//	C_D = (GPIOA_PDIR & C_D_Mask) >> 26; //Find C_D to pass to ECU init
 
-	if (C_D == 1){
-		GPIOB_PSOR |= 1<< Charge_LED_Mask;
-		return;
-	}
-	else {
-		GPIOB_PCOR |= 1 << Charge_LED_Mask;
-
-	while(1);
-	}
 	IMD_Fault = 0;
 	BMS_Fault = 0;
 	BSPD_Fault = 0;
+
+//	if (C_D){
+//		GPIOB_PSOR |= 1<< Charge_LED_Mask;
+//	}
+//	else {
+//		GPIOB_PCOR |= 1 << Charge_LED_Mask;
+//		while(1);
+//	}
+
 }
 
 void PIT_CH0_IRQHandler(void)
 {
 
 	//checking for fault signals from LV system
-	IMD_Fault  = (GPIOA_PDIR & IMD_Fault_Mask)  >> 28; 		//pin D4 = bit A28 = IMD
-	BMS_Fault  = (GPIOA_PDIR & BMS_Fault_Mask)  >> 30;		//pin D6 = bit A30 = BMS
-	BSPD_Fault = (GPIOA_PDIR & BSPD_Fault_Mask) >> 31;		//pin D7 = bit A31 = BSPD
+//	IMD_Fault  = (GPIOA_PDIR & IMD_Fault_Mask)  >> 28; 		//pin D4 = bit A28 = IMD
+//	BMS_Fault  = (GPIOA_PDIR & BMS_Fault_Mask)  >> 30;		//pin D6 = bit A30 = BMS
+//	BSPD_Fault = (GPIOA_PDIR & BSPD_Fault_Mask) >> 31;		//pin D7 = bit A31 = BSPD
 
 #ifdef CAN_Fucked
 	if (IMD_Fault == 0 && BMS_Fault == 0 && BSPD_Fault == 0)

@@ -20,8 +20,10 @@ void recieve_and_echo_char(void);
 #define testingMode		//used for testing other modules and general testing
 
 #ifdef runningMode
-uint16_t UART_buffer[26]; //stores captured values to send to xBee
 int UARTcount;
+uint16_t UART_buffer[26]; //stores captured values to send to xBee
 #endif
+
+
 
 #endif /* UART_H_ */

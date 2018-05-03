@@ -24,7 +24,7 @@
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
 #define PTH1 25          						/* Port PTH1 output to green LED */
-#define Temp_Threshold 153						/*threshold to cut power to motors 3V = 100C */
+#define Temp_Threshold 153						/* high temperature threshold to reduce power to motors 153 = 3V = 100 Celsius */
 uint8_t started = 0;
 
 //converts linear function accelerator input to exponential function output
@@ -68,7 +68,6 @@ int main(void)
 {
 
 	init_ECU(); 				//initialize Rear ECU settings
-	//CAN_Init();
 	init_CAN_clocks();
 	Init_CAN(0, CMPTX);//initialize CAN0 to FAST mode
 	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageID);//messagebuffer to receive the FrontToRearDataMessage
@@ -83,85 +82,59 @@ int main(void)
 	data_RX_buffer[0] = FrontToRearDataMessageSize;
 	telemetry_RX_buffer[0] = FrontToRearTelemetryMessageSize;
 
-	//wait_for_start_seq();						//wait for start sequence to turn on tractive system
+	//wait_for_start_seq();						//wait for start sequence to turn on tractive system. TODO: test start
 
 	//this runs continuously once the initialization has completed
 	while(1) {
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
-		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer); //TODO put received data in UART transmit buffer
+		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
 		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
 		CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
 		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
-		data_TX_buffer[IMDFault] = IMD_Fault;
-		data_TX_buffer[BMSFault] = BMS_Fault;
-		data_TX_buffer[BSPDFault] = BSPD_Fault;
 		data_TX_buffer[Speedometer] = (uint8_t)((WheelSpeed[leftWheel]+WheelSpeed[rightWheel])/2);
-		data_TX_buffer[TractionLED] = 0;
-		data_TX_buffer[TV_LED] = 0;
+		data_TX_buffer[TractionLED] = 0; //TODO: program traction LED
 
 		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
-
 		//TODO: check for missed CAN messages before continuing. //
-		if (IMD_Fault || BMS_Fault || BSPD_Fault || data_RX_buffer[FrontFault]) {
-			set_Throttle_Value(0,0);
-		}
-		else if (ADC_buf[0] > Temp_Threshold || ADC_buf[1] > Temp_Threshold) {
+
+		//checking for IMD, BMS, & BSPD Faults:
+//		if(IMD_Fault) {
+//			data_TX_buffer[IMDFault] = 0xFF;
+//		} else {
+//			data_TX_buffer[IMDFault] = 0x00;
+//		}
+//		if(BMS_Fault) {
+//			data_TX_buffer[BMSFault] = 0xFF;
+//		} else {
+//			data_TX_buffer[BMSFault] = 0x00;
+//		}
+//		if(BSPD_Fault) {
+//			data_TX_buffer[BSPDFault] = 0xFF;
+//		} else {
+//			data_TX_buffer[BSPDFault] = 0x00;
+//		}
+//		if (IMD_Fault || BMS_Fault || BSPD_Fault || data_RX_buffer[FrontFault]) {
+//			set_Throttle_Value(0,0);
+//		}
+
+		//checking if motor temperature or accumulator temperature is above our specified unsafe threshold
+		if (ADC_buf[0] > Temp_Threshold || ADC_buf[1] > Temp_Threshold) {
 			data_TX_buffer[MotorTempLED] = 0xFF;	//Turn on motor temp LED on dashboard
 			set_Throttle_Value(data_RX_buffer[AcceleratorL]*0.5,data_RX_buffer[AcceleratorR]*0.5); //reduce max throttle by 50%
 		}
 		else {
-		set_Throttle_Value(data_RX_buffer[AcceleratorL],data_RX_buffer[AcceleratorR]);
-		data_TX_buffer[MotorTempLED] = 0;	//turn off motor temp led
+		set_Throttle_Value(data_RX_buffer[AcceleratorL],data_RX_buffer[AcceleratorR]);//set throttle value for motor controllers
+		data_TX_buffer[MotorTempLED] = 0;	//turn off motor temp LED on dashboard
 		}
 
-		/*** transmitting telemetry data to xBee via UART_buffer ***/
-			//Tire Temperature Sensor Data
-				//Rear
-				UART_buffer[0] = ADC_buf[5];					//TTBR1 (TireTemp_R1)
-				UART_buffer[1] = ADC_buf[6];					//TTBR2 (TireTemp_R2)
-				UART_buffer[2] = ADC_buf[7];					//TTBR3 (TireTemp_R3)
-
-				UART_buffer[3] = ADC_buf[2];					//TTBR1 (TireTemp_L1)
-				UART_buffer[4] = ADC_buf[3];					//TTBR2 (TireTemp_L2)
-				UART_buffer[5] = ADC_buf[4];					//TTBR3 (TireTemp_L3)
-
-				//Front
-				UART_buffer[6] = telemetry_RX_buffer[TireTemp_R1];				//TTFR1 (TireTemp_R1)
-				UART_buffer[7] = telemetry_RX_buffer[TireTemp_R2];				//TTFR2 (TireTemp_R2)
-				UART_buffer[8] = telemetry_RX_buffer[TireTemp_R3];				//TTFR3 (TireTemp_R3)
-
-				UART_buffer[9]  = telemetry_RX_buffer[TireTemp_L1];				//TTFL1 (TireTemp_L1)
-				UART_buffer[10] = telemetry_RX_buffer[TireTemp_L2];				//TTFL2 (TireTemp_L2)
-				UART_buffer[11] = telemetry_RX_buffer[TireTemp_L3];				//TTFL3 (TireTemp_L3)
-
-			//Motor Temperature Sensor Data
-				UART_buffer[12] = ADC_buf[0];									//MT1 (L)
-				UART_buffer[13] = ADC_buf[1];									//MT2 (R)
-
-			//Wheel Speed Sensor Data
-				UART_buffer[14] = WheelSpeed[rightWheel];						//WSBR
-				UART_buffer[15] = WheelSpeed[leftWheel];						//WSBL
-				UART_buffer[16] = telemetry_RX_buffer[WheelSpeed_R];			//WSFR
-				UART_buffer[17] = telemetry_RX_buffer[WheelSpeed_L];			//WSFL
-
-			//Throttle Position Sensor Data
-				UART_buffer[18] = data_RX_buffer[AcceleratorR]					//throttleR
-				UART_buffer[19] = data_RX_buffer[AcceleratorL]					//throttleL
-
-			//Battery Pack Voltage, Current, and Temperature Sensor Data
-				UART_buffer[20] = OrionL5_RX_buffer[Pk_Inst_Voltage];			//packVoltage
-				UART_buffer[21] = OrionL5_RX_buffer[PackCurrent];				//packCurrent
-				UART_buffer[22] = OrionL7_RX_buffer[High_Temp];					//packTemperature
-
-			//Steering Angle Sensor Data
-				UART_buffer[23] = data_RX_buffer[SteeringAngle];				//steeringAngle
-
-			//Accelerator and Brake Angle
-				UART_buffer[24] = data_RX_buffer[AcceleratorL];					//accelAngle (L)
-				UART_buffer[25] = data_RX_buffer[BrakeAngle];					//brakeAngle
+		//transmit telemetry data to xBee if in running car mode
+		#ifdef runningMode
+		transmit_telemetry_data();
+		#endif
 	}
 }
 
+//TODO: @Jeffery test start button
 //waiting for the start sequence to be pressed before starting the vehicle
 //start button press and brake press = start condition.
 void wait_for_start_seq() {
@@ -188,7 +161,6 @@ uint8_t data_TX_buffer[FrontToRearDataMessageSize + 1] = { 0 };
 uint8_t OrionL5_RX_buffer[OrionL5_Size + 1] = { 0 };
 uint8_t OrionL7_RX_buffer[OrionL7_Size + 1] = { 0 };
 uint8_t OrionL8_RX_buffer[OrionL8_Size + 1] = { 0 };
-uint8_t data[6] = { 5, 1, 2, 3, 4, 5 };
 uint8_t err_status = 0;
 uint8_t accval;
 uint8_t steeringval;
@@ -211,7 +183,7 @@ int main(void) {
 
 	while (1) {
 
-		//TODO: implement fault checking on vehicle
+		//TODO: @Jeffery implement fault checking on vehicle
 		//if an APPS or BSE fault occurs, set the accelerator signal to 0 to prevent throttle output.
 //		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
 //			data_TX_buffer[AcceleratorL] = 0;
@@ -228,7 +200,7 @@ int main(void) {
 		accval = addCurve(ADC_buf[1]);
 		steeringval = ADC_buf[2]; //steering potentiometer value
 		steeringval = steeringval + 7; //offset to compensate for sensor placement error
-		//TORQUE VECTORING BASIC ALGORITHM
+		//TORQUE VECTORING BASIC ALGORITHM TODO: @Reza test this functionality
 //		if (steeringval < 108) { //left turn
 //			data_TX_buffer[AcceleratorR] = accval * ((A / 107) * steeringval + B); //A and B added
 //			data_TX_buffer[AcceleratorL] = accval;
@@ -241,22 +213,25 @@ int main(void) {
 //			data_TX_buffer[AcceleratorR] = accval;
 //			data_TX_buffer[AcceleratorL] = accval;
 //		}
+		//for testing: TODO: remove this
 		data_TX_buffer[AcceleratorR] = accval;
 		data_TX_buffer[AcceleratorL] = accval;
 			data_TX_buffer[FrontFault] = 0x00;
 //		}
+		TorqV_LED(data_TX_buffer[AcceleratorL],data_TX_buffer[AcceleratorR]);	//Torque Vectoring LED
 		data_TX_buffer[SteeringAngle] = ADC_buf[2];
 		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
 		data_TX_buffer[TVBias] = TorqueVectoringBias;
 		data_TX_buffer[StartButton] = Start;
 		CAN_TransmitData(FrontToRearDataMessageID, data_TX_buffer);
+
 		CAN_ReceiveData(RearToFrontDataMessageID, data_RX_buffer);
 		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
 		CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
 		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
 
-		//TODO: set LED values/Speedometer based on received data from rear
-		CAN_ReceiveData(RearToFrontDataMessageID,data_RX_buffer);
+		//sets fault LED values based on data from rear
+		Fault_LED(data_RX_buffer[IMDFault], data_RX_buffer[BMSFault], data_RX_buffer[BSPDFault], data_TX_buffer[FrontFault]);
 
 		//transmitting telemetry data to rear ECU
 		telemetry_TX_buffer[WheelSpeed_L] = WheelSpeed[leftWheel];
@@ -272,3 +247,52 @@ int main(void) {
 }
 #endif
 
+#ifdef RearECU
+void transmit_telemetry_data() {
+	/** transmitting telemetry data to xBee via UART_buffer **/
+				//Tire Temperature Sensor Data
+					//Rear
+					UART_buffer[0] = ADC_buf[5];					//TTBR1 (TireTemp_R1)
+					UART_buffer[1] = ADC_buf[6];					//TTBR2 (TireTemp_R2)
+					UART_buffer[2] = ADC_buf[7];	 				//TTBR3 (TireTemp_R3)
+
+					UART_buffer[3] = ADC_buf[2];					//TTBR1 (TireTemp_L1)
+					UART_buffer[4] = ADC_buf[3];					//TTBR2 (TireTemp_L2)
+					UART_buffer[5] = ADC_buf[4];					//TTBR3 (TireTemp_L3)
+
+					//Front
+					UART_buffer[6] = telemetry_RX_buffer[TireTemp_R1];				//TTFR1 (TireTemp_R1)
+					UART_buffer[7] = telemetry_RX_buffer[TireTemp_R2];				//TTFR2 (TireTemp_R2)
+					UART_buffer[8] = telemetry_RX_buffer[TireTemp_R3];				//TTFR3 (TireTemp_R3)
+
+					UART_buffer[9]  = telemetry_RX_buffer[TireTemp_L1];				//TTFL1 (TireTemp_L1)
+					UART_buffer[10] = telemetry_RX_buffer[TireTemp_L2];				//TTFL2 (TireTemp_L2)
+					UART_buffer[11] = telemetry_RX_buffer[TireTemp_L3];				//TTFL3 (TireTemp_L3)
+
+				//Motor Temperature Sensor Data
+					UART_buffer[12] = ADC_buf[0];									//MT1 (L)
+					UART_buffer[13] = ADC_buf[1];									//MT2 (R)
+
+				//Wheel Speed Sensor Data
+					UART_buffer[14] = WheelSpeed[rightWheel];						//WSBR
+					UART_buffer[15] = WheelSpeed[leftWheel];						//WSBL
+					UART_buffer[16] = telemetry_RX_buffer[WheelSpeed_R];			//WSFR
+					UART_buffer[17] = telemetry_RX_buffer[WheelSpeed_L];			//WSFL
+
+				//Throttle Position Sensor Data
+					UART_buffer[18] = data_RX_buffer[AcceleratorR];					//throttleR
+					UART_buffer[19] = data_RX_buffer[AcceleratorL];					//throttleL
+
+				//Battery Pack Voltage, Current, and Temperature Sensor Data
+					UART_buffer[20] = OrionL5_RX_buffer[Pk_Inst_Voltage];			//packVoltage
+					UART_buffer[21] = OrionL5_RX_buffer[PackCurrent];				//packCurrent
+					UART_buffer[22] = OrionL7_RX_buffer[High_Temp];					//packTemperature
+
+				//Steering Angle Sensor Data
+					UART_buffer[23] = data_RX_buffer[SteeringAngle];				//steeringAngle
+
+				//Accelerator and Brake Angle
+					UART_buffer[24] = data_RX_buffer[AcceleratorL];					//accelAngle (L)
+					UART_buffer[25] = data_RX_buffer[BrakeAngle];					//brakeAngle
+}
+#endif

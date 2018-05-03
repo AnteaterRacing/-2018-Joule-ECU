@@ -47,7 +47,7 @@ void UART2_IRQHandler(void) {
 		UART2_D = 0xFF;
 	}
 	else {
-		if(UART_buffer[UARTcount] == 255){
+		if(UART_buffer[UARTcount] == 255){				/* making sure no values are 255 (start bit) */
 			UART_buffer[UARTcount] -= 1;
 		}
 		UART2_D = UART_buffer[UARTcount];				/* Sends Data from UART_buffer[] */

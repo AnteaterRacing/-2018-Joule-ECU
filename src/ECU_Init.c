@@ -24,7 +24,7 @@
 //initializes ECU subsystems
 void init_ECU(){
 	init_ADC(); 		//initialize Analog to Digital Converter Module
-	//GPIO_Init();
+	GPIO_Init();
 
 	//LED initialization
 	//PCOR = Port Clear Output Register, PSOR = Port Set Output Register

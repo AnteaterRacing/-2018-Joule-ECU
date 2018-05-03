@@ -58,7 +58,7 @@ void FTM2_IRQHandler(void){
 				GPIOB_PDOR &= ~(1<<PTF0); //set output low for left motor
 			}
 			else {
-				GPIOA_PDOR &= (~1<<PTB5); //set output low for right motor
+				GPIOA_PDOR &= ~(1<<PTB5); //set output low for right motor
 			}
 		}
 		else {
