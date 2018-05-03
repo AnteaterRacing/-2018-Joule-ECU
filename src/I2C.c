@@ -37,6 +37,7 @@
 #include "common.h"
 #include "i2c.h"
 #define CPU_KEA128
+#define WHO_AM_I 	0x0F
 /******************************************************************************
 * Global variables
 ******************************************************************************/
@@ -534,7 +535,7 @@ uint8_t I2C_MasterSendWait(I2C_Type *pI2Cx,uint16_t u16SlaveAddress,uint8_t *pWr
 {
     uint32_t i;
     uint8_t u8ErrorStatus;
-
+    uint8_t RdBuff[64];
     /* send start signals to bus */
     u8ErrorStatus = I2C_Start(pI2Cx);
 
@@ -546,18 +547,27 @@ uint8_t I2C_MasterSendWait(I2C_Type *pI2Cx,uint16_t u16SlaveAddress,uint8_t *pWr
         */
     if( u8ErrorStatus == I2C_ERROR_NULL )
     {
+        u8ErrorStatus = I2C_WriteOneByte(pI2Cx,u16SlaveAddress);
         for(i=0;i<u32Length;i++)
         {
-            u8ErrorStatus = I2C_WriteOneByte(pI2Cx,pWrBuff[i]);
             if( u8ErrorStatus != I2C_ERROR_NULL )
             {
-                return u8ErrorStatus;
+            	return u8ErrorStatus;
+            }
+            else{
+            	if(u8ErrorStatus == I2C_ERROR_NULL && i != u32Length){
+                	u8ErrorStatus = I2C_MasterReadWait(pI2Cx, 0x0F,RdBuff,64);
+            	}
             }
         }
+        if(u8ErrorStatus == I2C_ERROR_NULL){
+        	u8ErrorStatus = I2C_Stop(pI2Cx);
+        }
+
      }
 
-     /* send stop signals to bus */
-     u8ErrorStatus = I2C_Stop(pI2Cx);
+     /* send repeat start signals to bus */
+     u8ErrorStatus = I2C_RepeatStart(pI2Cx);
 
      return u8ErrorStatus;
             
@@ -582,7 +592,7 @@ uint8_t I2C_MasterReadWait(I2C_Type *pI2Cx,uint16_t u16SlaveAddress,uint8_t *pRd
     uint8_t u8ErrorStatus;
 
     /* send start signals to bus */
-    u8ErrorStatus = I2C_Start(pI2Cx);
+    u8ErrorStatus = I2C_RepeatStart(pI2Cx);
 
     /* send device address to slave */
     u8ErrorStatus = I2C_WriteOneByte(pI2Cx,((uint8_t)u16SlaveAddress<<1) | I2C_READ);
@@ -606,7 +616,7 @@ uint8_t I2C_MasterReadWait(I2C_Type *pI2Cx,uint16_t u16SlaveAddress,uint8_t *pRd
         u8ErrorStatus = I2C_ReadOneByte(pI2Cx,&pRdBuff[i],I2C_SEND_NACK);
      }
      /* send stop signals to bus */
-     u8ErrorStatus = I2C_Stop(pI2Cx);
+     /*u8ErrorStatus = I2C_Stop(pI2Cx);*/
      
      return u8ErrorStatus;
             
