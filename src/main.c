@@ -77,6 +77,15 @@ int main(void)
 	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC, High Temperature, Low Temperature, CRC Checksum}
 	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
 
+	//NEW BMS SETTINGS
+	//5 messages, ID = {x28, x29, x30, x31, x32}
+	//XXXXXXID x28: {Rollering Counter, Pack CCL, Pack CCL KW, Pack DCL, Pack DCL KW, Pack Current, Pack Voltage, Pack Open Voltage}
+	//XXXXXXID x29: {Pack State of Charge, Pack Amphours, Pack Resistance, Pack Depth of Discharge, Pack Health, Pack Summed Voltage, Total Pack Cycles, Current Limit Status}
+	//XXXXXXID x30: {High Temp, High Thermister ID, Low Temp, Low Thermister ID, Avg Temp, Internal Temp, Low Cell Voltage, Low Cell Voltage ID}
+	//XXXXXXXXXXXXID x31: {High Cell Voltage, High Cell Voltage ID, Average Cell Voltage, Low Cell Open Voltage, Low Cell Open Voltage ID, High Cell Open Voltage, High Cell Open Voltage ID, Avg Cell Open Voltage}
+	//XXXXXXXXXXXXXID x32: {Low Cell Internal Res., Low Cell Resistance ID, High Cell Internal Res., High Cell Res. ID, Avg Cell Internal Res., Max Cell Voltage, Min Cell Voltage, BLANK, BLANK}
+	
+	
 	//setting message sizes for transmit buffers
 	data_TX_buffer[0] = RearToFrontDataMessageSize;
 	data_RX_buffer[0] = FrontToRearDataMessageSize;
