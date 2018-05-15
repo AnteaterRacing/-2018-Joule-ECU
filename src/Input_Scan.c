@@ -35,45 +35,47 @@ uint8_t Error_LED;
 
 void GPIO_Init(void)
 {
-				 //Front ECU Data Direction, 1 is output, 0 is not output
-	GPIOA_PDDR |= 1 << 26 /*MTempY*/| 1 << 28/*MTempR*/| 1 << 31/*S5A*/| 1 << 18/*S7A*/
-				| 1 << 19/*S1B*/| 1 << 12/*S2B*/| 1 << 13/*S3B*/| 1 << 4/*S4B*/
-				| 1 << 27/*IMD LED*/| 1 << 20 /*WSFL*/| 1 << 21/*WSFR*/| 1 << 3/*APPS LED*/;
-	GPIOB_PDDR |= 1 << 19/*S1A*/| 1 << 18/*S2A*/| 1 << 17/*S3A*/| 1 << 18/*S4A*/
-				| 1 << 25/*S6A*/| 1 << 14/*S5B*/| 1 << 13/*S6B*/| 1 << 12 /*S7B*/
-				| 1 << 7/*BSPD Fault*/| 1 << 26/*BMS Fault*/| 1 << 6/*WSRL*/| 1 << 24/*WSRR*/
-				| 1 << 4/*TVRL*/| 1 << 5/*TVRR*/| 1 << 3/*CS1*/| 1 << 30/*CS2*/
-				| 1 << 8/*APPSL*/| 1<< 9/*APPSR*/;
+	//TODO: uncomment and figure out why it doesnt work:
+//				 //Front ECU Data Direction, 1 is output, 0 is not output
+//	GPIOA_PDDR |= 1 << 26 /*MTempY*/| 1 << 28/*MTempR*/| 1 << 31/*S5A*/| 1 << 18/*S7A*/
+//				| 1 << 19/*S1B*/| 1 << 12/*S2B*/| 1 << 13/*S3B*/| 1 << 4/*S4B*/
+//				| 1 << 27/*IMD LED*/| 1 << 20 /*WSFL*/| 1 << 21/*WSFR*/| 1 << 3/*APPS LED*/;
+//	GPIOB_PDDR |= 1 << 19/*S1A*/| 1 << 18/*S2A*/| 1 << 17/*S3A*/| 1 << 18/*S4A*/
+//				| 1 << 25/*S6A*/| 1 << 14/*S5B*/| 1 << 13/*S6B*/| 1 << 12 /*S7B*/
+//				| 1 << 7/*BSPD Fault*/| 1 << 26/*BMS Fault*/| 1 << 6/*WSRL*/| 1 << 24/*WSRR*/
+//				| 1 << 4/*TVRL*/| 1 << 5/*TVRR*/| 1 << 3/*CS1*/| 1 << 30/*CS2*/
+//				| 1 << 8/*APPSL*/| 1<< 9/*APPSR*/;
 
 				//Front ECU Input Disable, 1 is not input , 0 is input
-	GPIOA_PIDR &= ~(1 << 15)/*Start Button Input*/;
-	GPIOB_PIDR &= ~(1 << 2)/*ErrorLED Input*/;
-	GPIOB_PIDR &= ~(1<<1 | 1<<2); //Torque Vectoring Toggle Switch Inputs
+//	GPIOA_PIDR &= ~(1 << 15)/*Start Button Input*/;
+//	GPIOB_PIDR &= ~(1 << 2)/*ErrorLED Input*/;
+//	GPIOB_PIDR &= ~(1<<1 | 1<<2); //Torque Vectoring Toggle Switch Inputs
 	Start = 0;
 	TorqueVectoringBias = 70;
 }
 
 void PIT_CH0_IRQHandler(void)
 {
+	//TODO: uncomment and figure out why it doesnt work:
 
-	uint8_t valuePlus 	= (GPIOB_PDIR & (1 << 1)) >> 1;	//retrieve value from plus button
-	uint8_t valueMinus	= (GPIOB_PDIR & (1 << 2)) >> 2; //retrieve value from minus button
-	//TODO: @Reza test button
-	//checking if plus or minus button was pressed
-	if ((valuePlus == 1 || valueMinus == 1) && (valuePlus != valueMinus))
-	{
-		if(valuePlus == 1 && TorqueVectoringBias < 100)//if we want to increment. no more than 100%
-		{
-			TorqueVectoringBias+=5;
-		}
-
-		else if(valueMinus == 1 && TorqueVectoringBias > 30)//if we want to decrement, no less than 30%
-		{
-			TorqueVectoringBias-=5;
-		}
-	}
-
-	Start = (GPIOB_PDIR & (1<<15)) >> 15; //Sets value of start button
+//	uint8_t valuePlus 	= (GPIOB_PDIR & (1 << 1)) >> 1;	//retrieve value from plus button
+//	uint8_t valueMinus	= (GPIOB_PDIR & (1 << 2)) >> 2; //retrieve value from minus button
+//	//TODO: @Reza test button
+//	//checking if plus or minus button was pressed
+//	if ((valuePlus == 1 || valueMinus == 1) && (valuePlus != valueMinus))
+//	{
+//		if(valuePlus == 1 && TorqueVectoringBias < 100)//if we want to increment. no more than 100%
+//		{
+//			TorqueVectoringBias+=5;
+//		}
+//
+//		else if(valueMinus == 1 && TorqueVectoringBias > 30)//if we want to decrement, no less than 30%
+//		{
+//			TorqueVectoringBias-=5;
+//		}
+//	}
+//
+//	Start = (GPIOB_PDIR & (1<<15)) >> 15; //Sets value of start button
 	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
 
 #ifdef CAN_Fucked
@@ -100,14 +102,14 @@ void PIT_CH0_IRQHandler(void)
 void GPIO_Init(void)
 {
 			  //Rear ECU Data Direction, 1 is output, 0 is not output
-//	GPIOA_PDDR = 1 << 27/*RTDS*/ ;
-//	GPIOB_PDDR = 1 << 7/*Charge LED*/;
-//	GPIOC_PDDR = 1 << 4/*ErrorLED*/;
+	GPIOA_PDDR = 1 << 27/*RTDS*/ ;
+	GPIOB_PDDR = 1 << 7/*Charge LED*/;
+	GPIOC_PDDR = 1 << 4/*ErrorLED*/;
 
 			  //Rear ECU Input Disable, 1 is not input, 0 is input
 	GPIOA_PIDR &= ~(1 << 26/*C_D*/| 1 << 28/*IMDFault*/| 1 << 30/*BMSFault*/ | 1<< 31 /*BSPDFault*/);
-	//GPIOB_PIDR &= ~(1 << 31/*WSRR*/| 1 << 19/*GyroI*/| 1 << 18/*GyroData*/| 1 << 17/*Int1*/| 1 << 16/*Int2*/);
-	//GPIOC_PIDR &= ~(1 << 6/*APPSL*/| 1 << 5/*APPSR*/);
+	GPIOB_PIDR &= ~(1 << 31/*WSRR*/| 1 << 19/*GyroI*/| 1 << 18/*GyroData*/| 1 << 17/*Int1*/| 1 << 16/*Int2*/);
+	GPIOC_PIDR &= ~(1 << 6/*APPSL*/| 1 << 5/*APPSR*/);
 
 //	C_D = (GPIOA_PDIR & C_D_Mask) >> 26; //Find C_D to pass to ECU init
 

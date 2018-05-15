@@ -28,7 +28,7 @@ void init_UART(void)  {
 	UARTcount = 0;						/* Initialize the counter*/
 	uint8_t i = 0;
 	for(; i < 26; i++) { 			//initialize buffer to 0s
-		UART_buffer[i] = 0;
+		UART_buffer[i] = 'a'+i;
 	}
 
 

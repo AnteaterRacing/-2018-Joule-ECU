@@ -23,22 +23,14 @@
 #define PTH0 24          						/* Port PTH0 output to red LED */
 #define PTH1 25          						/* Port PTH1 output to green LED */
 #define PTH6 30									/* Port PTH6 for throttle output PWM*/
-//#include "UART.h" 							/*include UART function definitions */
-
-/*Macro to choose which main to run
- *
- */
-//#define UserDefineNode1
-//#define UserDefineNode2
 
 void delay(void); //delay function
 void err_check(uint8_t); //checks for ERR_OK and returns green or red LED flash
 //void sendCANloop(uint8_t *data, uint8_t txBuffer, uint8_t rxBuffer);
 
-
 uint8_t err_status;
 
-//CAN initialization for rear ECU
+//CAN initialization for rear ECU //TODO: @Ken add new CAN messages
 #ifdef RearECU
 void CAN_Init(){
 	init_CAN_clocks();
@@ -49,14 +41,14 @@ void CAN_Init(){
 	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageID); //messagebuffer to receive the FrontToRearDataMessage
 	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageID); //messagebuffer to receive the FrontToRearTelemetryMessage
 	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageID); //messagebuffer to transmit the RearToFrontDataMessage
-	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
-	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC, high temp, low temp, crc checksum}
-	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
+	Config_CAN_MB(0,4,RXDF, OrionL5_ID);
+	Config_CAN_MB(0,5,RXDF, OrionL7_ID);
+	Config_CAN_MB(0,6,RXDF, OrionL8_ID);
 
 }
 #endif
 
-//CAN initialization for front ECU
+//CAN initialization for front ECU //TODO: @Ken add new CAN messages
 #ifdef FrontECU
 void CAN_Init() {
 	init_CAN_clocks();
@@ -71,7 +63,7 @@ void CAN_Init() {
 
 }
 #endif
-
+//TODO: @Ken add new CAN messages
 uint16_t ID_to_BUF(uint16_t ID){
 
 	switch(ID){

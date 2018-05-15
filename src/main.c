@@ -11,7 +11,6 @@
 #include "FTM.h"
 #include "ECU_Init.h"
 #include "ECU_Operations.h"
-#include "Data_Logging.h"
 #include "CAN.h"
 #include "main.h"
 #include "Input_Scan.h"
@@ -20,12 +19,14 @@
 #include "msCANcfg.h"
 #include <math.h>
 #include "WheelSpeed.h"
+#include "I2C.h"
 
 #define PTE7  7          						/* Port PTE7 output to blue LED */
 #define PTH0 24          						/* Port PTH0 output to red LED */
 #define PTH1 25          						/* Port PTH1 output to green LED */
 #define Temp_Threshold 153						/* high temperature threshold to reduce power to motors 153 = 3V = 100 Celsius */
 uint8_t started = 0;
+
 
 //converts linear function accelerator input to exponential function output
 uint8_t addCurve(uint8_t acc) {
@@ -40,7 +41,6 @@ uint8_t addCurve(uint8_t acc) {
 	return output;
 }
 
-//TODO: DELETE AFTER TESTING
 void test_PWM(uint8_t buf) {
 	//testing PWM output
 	transmit_string("buf");
@@ -53,6 +53,7 @@ void test_PWM(uint8_t buf) {
 	transmit_string("\n\r");
 }
 
+
 //REAR ECU MAIN METHOD==================================================================
 #ifdef RearECU
 
@@ -63,6 +64,8 @@ uint8_t data_TX_buffer[RearToFrontDataMessageSize+1] = {0};
 uint8_t OrionL5_RX_buffer[OrionL5_Size+1] = {0};
 uint8_t OrionL7_RX_buffer[OrionL7_Size+1] = {0};
 uint8_t OrionL8_RX_buffer[OrionL8_Size+1] = {0};
+
+void transmit_telemetry_data(void);
 
 int main(void)
 {
@@ -76,22 +79,23 @@ int main(void)
 	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
 	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC, High Temperature, Low Temperature, CRC Checksum}
 	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
+	//TODO: @Ken add new CAN messages
 
 	//NEW BMS SETTINGS
 	//5 messages, ID = {x28, x29, x30, x31, x32}
-	//XXXXXXID x28: {Rollering Counter, Pack CCL, Pack CCL KW, Pack DCL, Pack DCL KW, Pack Current, Pack Voltage, Pack Open Voltage}
+	//XXXXXXID x28: {Rolling Counter, Pack CCL, Pack CCL KW, Pack DCL, Pack DCL KW, Pack Current, Pack Voltage, Pack Open Voltage}
 	//XXXXXXID x29: {Pack State of Charge, Pack Amphours, Pack Resistance, Pack Depth of Discharge, Pack Health, Pack Summed Voltage, Total Pack Cycles, Current Limit Status}
 	//XXXXXXID x30: {High Temp, High Thermister ID, Low Temp, Low Thermister ID, Avg Temp, Internal Temp, Low Cell Voltage, Low Cell Voltage ID}
 	//XXXXXXXXXXXXID x31: {High Cell Voltage, High Cell Voltage ID, Average Cell Voltage, Low Cell Open Voltage, Low Cell Open Voltage ID, High Cell Open Voltage, High Cell Open Voltage ID, Avg Cell Open Voltage}
 	//XXXXXXXXXXXXXID x32: {Low Cell Internal Res., Low Cell Resistance ID, High Cell Internal Res., High Cell Res. ID, Avg Cell Internal Res., Max Cell Voltage, Min Cell Voltage, BLANK, BLANK}
-	
-	
+
+
 	//setting message sizes for transmit buffers
 	data_TX_buffer[0] = RearToFrontDataMessageSize;
 	data_RX_buffer[0] = FrontToRearDataMessageSize;
 	telemetry_RX_buffer[0] = FrontToRearTelemetryMessageSize;
 
-	//wait_for_start_seq();						//wait for start sequence to turn on tractive system. TODO: test start
+	//wait_for_start_seq();						//wait for start sequence to turn on tractive system
 
 	//this runs continuously once the initialization has completed
 	while(1) {
@@ -100,6 +104,8 @@ int main(void)
 		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
 		CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
 		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
+		//TODO: @Ken add new CAN messages
+
 		data_TX_buffer[Speedometer] = (uint8_t)((WheelSpeed[leftWheel]+WheelSpeed[rightWheel])/2);
 		data_TX_buffer[TractionLED] = 0; //TODO: program traction LED
 
@@ -133,6 +139,8 @@ int main(void)
 		}
 		else {
 		set_Throttle_Value(data_RX_buffer[AcceleratorL],data_RX_buffer[AcceleratorR]);//set throttle value for motor controllers
+		data_TX_buffer[5] = data_RX_buffer[AcceleratorL];
+		data_TX_buffer[6] = data_RX_buffer[AcceleratorR];
 		data_TX_buffer[MotorTempLED] = 0;	//turn off motor temp LED on dashboard
 		}
 
@@ -143,7 +151,7 @@ int main(void)
 	}
 }
 
-//TODO: @Jeffery test start button
+//TODO: @Jeffery @Lucas test start button
 //waiting for the start sequence to be pressed before starting the vehicle
 //start button press and brake press = start condition.
 void wait_for_start_seq() {
@@ -186,13 +194,10 @@ int main(void) {
 	Config_CAN_MB(0, 1, TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
 	Config_CAN_MB(0, 2, RXDF, RearToFrontDataMessageID); //messagebuffer to transmit the FrontToRearTelemetryMessage
 	Config_CAN_MB(0, 3, TXDF, FrontToRearTelemetryMessageID); //messagebuffer to receive the RearToFrontDataMessage
-	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
-	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC
-	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
 
 	while (1) {
 
-		//TODO: @Jeffery implement fault checking on vehicle
+		//TODO: @Jeffery @Lucas implement fault checking on vehicle
 		//if an APPS or BSE fault occurs, set the accelerator signal to 0 to prevent throttle output.
 //		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
 //			data_TX_buffer[AcceleratorL] = 0;
@@ -206,10 +211,11 @@ int main(void) {
 //		float B = TorqueVectoringBias/10;
 //		float A = 1 - B;
 		/*float C = -A;*/
-		accval = addCurve(ADC_buf[1]);
+		accval = ADC_buf[1];//addCurve(ADC_buf[1]); //TODO: @arnav test addCurve functionality again
 		steeringval = ADC_buf[2]; //steering potentiometer value
 		steeringval = steeringval + 7; //offset to compensate for sensor placement error
-		//TORQUE VECTORING BASIC ALGORITHM TODO: @Reza test this functionality
+		//TORQUE VECTORING BASIC ALGORITHM
+		//TODO: @Reza test this functionality based on NEW Steering Pot
 //		if (steeringval < 108) { //left turn
 //			data_TX_buffer[AcceleratorR] = accval * ((A / 107) * steeringval + B); //A and B added
 //			data_TX_buffer[AcceleratorL] = accval;
@@ -222,9 +228,10 @@ int main(void) {
 //			data_TX_buffer[AcceleratorR] = accval;
 //			data_TX_buffer[AcceleratorL] = accval;
 //		}
-		//for testing: TODO: remove this
+		//for testing: TODO: remove this after TV works
 		data_TX_buffer[AcceleratorR] = accval;
 		data_TX_buffer[AcceleratorL] = accval;
+
 			data_TX_buffer[FrontFault] = 0x00;
 //		}
 		TorqV_LED(data_TX_buffer[AcceleratorL],data_TX_buffer[AcceleratorR]);	//Torque Vectoring LED
@@ -294,15 +301,15 @@ void transmit_telemetry_data(void) {
 					UART_buffer[19] = data_RX_buffer[AcceleratorL];					//throttleL
 
 				//Battery Pack Voltage, Current, and Temperature Sensor Data
-					UART_buffer[20] = OrionL5_RX_buffer[Pk_Inst_Voltage];			//packVoltage
+					UART_buffer[20] = OrionL5_RX_buffer[PackVoltage];				//packVoltage
 					UART_buffer[21] = OrionL5_RX_buffer[PackCurrent];				//packCurrent
-					UART_buffer[22] = OrionL7_RX_buffer[High_Temp];					//packTemperature
+					UART_buffer[22] = OrionL8_RX_buffer[High_Temp];					//packTemperature
+					UART_buffer[23] = OrionL7_RX_buffer[Pack_SOC];					//state of charge
 
 				//Steering Angle Sensor Data
-					UART_buffer[23] = data_RX_buffer[SteeringAngle];				//steeringAngle
+					UART_buffer[24] = data_RX_buffer[SteeringAngle];				//steeringAngle
 
-				//Accelerator and Brake Angle
-					UART_buffer[24] = data_RX_buffer[AcceleratorL];					//accelAngle (L)
+				//Brake Angle
 					UART_buffer[25] = data_RX_buffer[BrakeAngle];					//brakeAngle
 }
 #endif

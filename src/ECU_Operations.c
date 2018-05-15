@@ -50,7 +50,7 @@ int BSE_Fault(uint8_t brakeAngle, uint8_t acc1, uint8_t acc2){
 	if((BSE_flag) || ((acc1 > 0 || acc2 > 0) && brakeAngle > 1000)) { //1000 is 20% of 5000mV
 		BSE_flag = 1;
 		BSE_faultcount++;
-		//TODO:toggle fault LEDs on dashboard corresponding to fault
+		//TODO: @lucas toggle fault LEDs on dashboard corresponding to fault
 		return 1;
 
 	}
@@ -62,45 +62,49 @@ int Fault_Not_Resolved(uint8_t acc1, uint8_t acc2){
 	if(BSE_flag){
 		if(acc1==0 && acc2==0){ //if acc1 and acc2 show accelerator is released, clear BSE fault
 			BSE_flag = 0;
-			//TODO:toggle fault LEDs on dashboard corresponding to fault
+			//TODO: @lucas toggle fault LEDs on dashboard corresponding to fault
 			return 0;
 		}
 	}
 	if(APPS_flag){
 		if(!APPS_Fault(acc1, acc2)){ //if APPS signals are within 10%, clear APPS fault
 			APPS_flag = 0;
-			//TODO:toggle fault LEDs on dashboard corresponding to fault
+			//TODO: @lucas toggle fault LEDs on dashboard corresponding to fault
 			return 0;
 		}
 	}
 	return 1;
 }
 
+
+//TODO: @Arnav test the averaging function
 //sets the throttle value based on the value of received from the front ECU for each wheel.
 //This also performs averaging by computing the average of the past 5 samples in order to get a smoother response.
 //this is done by setting the compare match value on the PWM output pin. (0-255)
 void set_Throttle_Value(uint8_t leftpos, uint8_t rightpos){
 
-	Throttle_L = 0;
-	Throttle_R = 0;
-
-	int i = 0;
-	//rotating the current buffer of throttle samples
-	for(; i < 19; i++) {
-		Throttle_L_buffer[i] = Throttle_L_buffer[i+1];
-		Throttle_R_buffer[i] = Throttle_R_buffer[i+1];
-	}
-	//updating with new sample
-	Throttle_L_buffer[19] = leftpos;
-	Throttle_R_buffer[19] = rightpos;
-	i = 0;
-	//computing the average
-	for(; i < 20; i++) {
-		Throttle_L += Throttle_L_buffer[i];
-		Throttle_R += Throttle_R_buffer[i];
-	}
-	FTM2_C0V = 4*Throttle_L/20;
-	FTM2_C1V = 4*Throttle_R/20;
+	Throttle_L = leftpos;
+	Throttle_R = rightpos;
+//
+//	int i = 0;
+//	//rotating the current buffer of throttle samples
+//	for(; i < 19; i++) {
+//		Throttle_L_buffer[i] = Throttle_L_buffer[i+1];
+//		Throttle_R_buffer[i] = Throttle_R_buffer[i+1];
+//	}
+//	//updating with new sample
+//	Throttle_L_buffer[19] = leftpos;
+//	Throttle_R_buffer[19] = rightpos;
+//	i = 0;
+//	//computing the average
+//	for(; i < 20; i++) {
+//		Throttle_L += Throttle_L_buffer[i];
+//		Throttle_R += Throttle_R_buffer[i];
+//	}
+//	FTM2_C0V = 4*Throttle_L/20;
+//	FTM2_C1V = 4*Throttle_R/20;
+	FTM2_C0V = 4*Throttle_L;
+	FTM2_C1V = 4*Throttle_R;
 }
 
 

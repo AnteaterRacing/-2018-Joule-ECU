@@ -8,6 +8,8 @@
 #define PTH1 25		/*Throttle signal output to left motor */
 #define PTB5 13		/*Throttle signal output to right motor */
 #define PTF0 8
+#define PTF1 9
+
 uint16_t CurrentCaptureVal = 0;
 uint16_t PriorCaptureVal = 0;
 uint16_t DeltaCapture = 0;
@@ -38,11 +40,11 @@ SIM_SCGC |= SIM_SCGC_FTM2_MASK; 	/* Sys Clk Gate Ctrl: enable bus clock to FTM2 
 //initializing PWM pins, timers, and interrupts
 void init_PWM(void){
 	GPIOB_PDDR |= 1<<PTF0; //set data direction to output
-	GPIOA_PDDR |= 1<<PTB5;
+	GPIOB_PDDR |= 1<<PTF1;
 	GPIOB_PIDR &= ~(1<<PTF0); //disable inputs
-	GPIOA_PIDR &= ~(1<<PTB5);
+	GPIOB_PIDR &= ~(1<<PTF1);
 	GPIOB_PDOR &= ~(1<<PTF0); //setting initial value to 0.
-	GPIOA_PDOR &= ~(1<<PTB5);
+	GPIOB_PDOR &= ~(1<<PTF1);
 	NVIC_ClearPendingIRQ(FTM2_IRQn);
 	NVIC_EnableIRQ(FTM2_IRQn);			//enable interrupt for FlexTimer2
 	NVIC_SetPriority(FTM2_IRQn,0);    	/* Set Priority for FTM2 */
@@ -58,12 +60,12 @@ void FTM2_IRQHandler(void){
 				GPIOB_PDOR &= ~(1<<PTF0); //set output low for left motor
 			}
 			else {
-				GPIOA_PDOR &= ~(1<<PTB5); //set output low for right motor
+				GPIOB_PDOR &= ~(1<<PTF1); //set output low for right motor
 			}
 		}
 		else {
 			GPIOB_PDOR |= (1<<PTF0); //set output high for left motor
-			GPIOA_PDOR |= (1<<PTB5); //set output high for right motor
+			GPIOB_PDOR |= (1<<PTF1); //set output high for right motor
 		}
 		FTM2_SC &= ~FTM_SC_TOF_MASK; //clear overflow flag
 	}
@@ -76,7 +78,7 @@ void FTM2_IRQHandler(void){
 
 		//if compare match ch1, set output low for right motor
 		if(FTM2_C1SC>>FTM_CnSC_CHF_SHIFT) {
-			GPIOA_PDOR &= ~(1<<PTB5); //set output low for right motor
+			GPIOB_PDOR &= ~(1<<PTF1); //set output low for right motor
 			FTM2_C1SC &= ~FTM_CnSC_CHF_MASK; //clear CH1 flag
 		}
 	}

@@ -29,12 +29,12 @@
 
 ////length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}; message speed: 8 ms
 #define OrionL5_ID 28
-#define OrionL5_Size 5
+#define OrionL5_Size 8
 #define OrionL5_buffVal 4
 
 //length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC, high temperature, low temperature, crc checksum}; message speed: 104 ms
 #define OrionL7_ID 29
-#define OrionL7_Size 7
+#define OrionL7_Size 8
 #define OrionL7_buffVal 5
 
 //length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}; message speed: 104 ms
@@ -74,29 +74,36 @@
 #define MotorTempLED	7
 
 //Orion_L5
-#define PackCurrent 	1
-#define IN_USE1			2
-#define Pk_Inst_Voltage 3
-#define IN_USE2			4
-#define CRC_CHECKSUM	5
+#define RollingCounter 1
+#define PackCCL 2
+#define PackCCL_KW 3
+#define PackDCL 4
+#define PackDCL_KW 5
+#define PackCurrent 6
+#define PackVoltage 7
+#define PackOpenVoltage 8
 
 //Orion_L7
-#define Pack_DCL		1
-#define Pack_CCL		2
-#define Blank			3
-#define Simulated_SOC	4
-#define High_Temp		5
-#define Low_Temp		6
+#define Pack_SOC 1
+#define PackAmphours 2
+#define Pack_Resistance 3
+#define Pack_DOD 4
+#define Pack_Health 5
+#define PackSummedVoltage 6
+#define TotalPackCycles 7
+#define Current_Limit_Status 8
 
 //Orion_L8
-#define relay_state		1
-#define pack_soc		2
-#define pack_resistance	3
-#define in_use3			4
-#define pk_open_voltage	5
-#define in_use4			6
-#define pack_amphours	7
-#define crc_checksum2	8
+#define High_Temp 1
+#define High_ThermistorID 2
+#define Low_Temp 3
+#define Low_ThermistorID 4
+#define AvgTemp 5
+#define InternalTemp 6
+#define LowCellVoltage 7
+#define LowCellVoltageID 8
+
+//TODO: @Ken add new CAN messages
 
 void CAN_Init(void); //front or rear ecu init
 void CAN_TransmitData(uint16_t, uint8_t*); 	//transmits CAN message with specified messageID
