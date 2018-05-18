@@ -195,11 +195,11 @@
 
 /* Message Object 31 */
 #define MO31_ID_TYPE_CAN0     CAN_STANDARD
-#define MO31_ID_CAN0          0x123
+#define MO31_ID_CAN0          0x31
 
 /* Message Object 32 */
 #define MO32_ID_TYPE_CAN0     CAN_STANDARD
-#define MO32_ID_CAN0          0x123
+#define MO32_ID_CAN0          0x32
 
 /* Message Object 33 */
 #define MO33_ID_TYPE_CAN0     CAN_STANDARD
