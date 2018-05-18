@@ -61,9 +61,14 @@ void test_PWM(uint8_t buf) {
 uint8_t data_RX_buffer[FrontToRearDataMessageSize+1] = {0};
 uint8_t telemetry_RX_buffer[FrontToRearTelemetryMessageSize+1] = {0};
 uint8_t data_TX_buffer[RearToFrontDataMessageSize+1] = {0};
-uint8_t OrionL5_RX_buffer[OrionL5_Size+1] = {0};
-uint8_t OrionL7_RX_buffer[OrionL7_Size+1] = {0};
-uint8_t OrionL8_RX_buffer[OrionL8_Size+1] = {0};
+//uint8_t OrionL5_RX_buffer[OrionL5_Size+1] = {0};
+//uint8_t OrionL7_RX_buffer[OrionL7_Size+1] = {0};
+//uint8_t OrionL8_RX_buffer[OrionL8_Size+1] = {0};
+uint8_t Orion1_RX_buffer[Orion1_Size+1] = {0};
+uint8_t Orion2_RX_buffer[Orion2_Size+1] = {0};
+uint8_t Orion3_RX_buffer[Orion3_Size+1] = {0};
+uint8_t Orion4_RX_buffer[Orion4_Size+1] = {0};
+uint8_t Orion5_RX_buffer[Orion5_Size+1] = {0};
 
 void transmit_telemetry_data(void);
 
@@ -76,9 +81,14 @@ int main(void)
 	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageID);//messagebuffer to receive the FrontToRearDataMessage
 	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageID);//messagebuffer to receive the FrontToRearTelemetryMessage
 	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageID);//messagebuffer to transmit the RearToFrontDataMessage
-	Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
-	Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC, High Temperature, Low Temperature, CRC Checksum}
-	Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
+	//Config_CAN_MB(0,4,RXDF, OrionL5_ID);//length: 5; {Pack Current, IN USE, PACK INSTANT VOLTAGE, IN USE, CRC CHECKSUM}
+	//Config_CAN_MB(0,5,RXDF, OrionL7_ID);//length: 7; {Pack DCL, Pack CCL, Blank, Simulated Simulated SOC, High Temperature, Low Temperature, CRC Checksum}
+	//Config_CAN_MB(0,6,RXDF, OrionL8_ID);//length: 8; {relay state, pack soc, pack resistance, in use, pack open voltage, in use, pack amphours, crc checksum}
+	Config_CAN_MB(0,4,RXDF, Orion1_ID);//ID 28
+	Config_CAN_MB(0,5,RXDF, Orion2_ID);//ID 29
+	Config_CAN_MB(0,6,RXDF, Orion3_ID);//ID 30
+	Config_CAN_MB(0,7,RXDF, Orion4_ID);//ID 31
+	Config_CAN_MB(0,8,RXDF, Orion5_ID);//ID 32
 	//TODO: @Ken add new CAN messages
 
 	//NEW BMS SETTINGS
@@ -101,10 +111,15 @@ int main(void)
 	while(1) {
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
-		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
-		CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
-		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
+		//CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
+		//CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
+		//CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
 		//TODO: @Ken add new CAN messages
+		CAN_ReceiveData(Orion1_ID, Orion1_RX_buffer);
+		CAN_ReceiveData(Orion2_ID, Orion2_RX_buffer);
+		CAN_ReceiveData(Orion3_ID, Orion3_RX_buffer);
+		CAN_ReceiveData(Orion4_ID, Orion4_RX_buffer);
+		CAN_ReceiveData(Orion5_ID, Orion5_RX_buffer);
 
 		data_TX_buffer[Speedometer] = (uint8_t)((WheelSpeed[leftWheel]+WheelSpeed[rightWheel])/2);
 		data_TX_buffer[TractionLED] = 0; //TODO: program traction LED
@@ -175,9 +190,14 @@ void wait_for_start_seq() {
 uint8_t telemetry_TX_buffer[FrontToRearTelemetryMessageSize + 1] = { 0 };
 uint8_t data_RX_buffer[RearToFrontDataMessageSize + 1] = { 0 };
 uint8_t data_TX_buffer[FrontToRearDataMessageSize + 1] = { 0 };
-uint8_t OrionL5_RX_buffer[OrionL5_Size + 1] = { 0 };
-uint8_t OrionL7_RX_buffer[OrionL7_Size + 1] = { 0 };
-uint8_t OrionL8_RX_buffer[OrionL8_Size + 1] = { 0 };
+//uint8_t OrionL5_RX_buffer[OrionL5_Size + 1] = { 0 };
+//uint8_t OrionL7_RX_buffer[OrionL7_Size + 1] = { 0 };
+//uint8_t OrionL8_RX_buffer[OrionL8_Size + 1] = { 0 };
+uint8_t Orion1_RX_buffer[Orion1_Size+1] = {0};
+uint8_t Orion2_RX_buffer[Orion2_Size+1] = {0};
+uint8_t Orion3_RX_buffer[Orion3_Size+1] = {0};
+uint8_t Orion4_RX_buffer[Orion4_Size+1] = {0};
+uint8_t Orion5_RX_buffer[Orion5_Size+1] = {0};
 uint8_t err_status = 0;
 uint8_t accval;
 uint8_t steeringval;
@@ -191,10 +211,15 @@ int main(void) {
 	data_RX_buffer[0] = RearToFrontDataMessageSize;
 	init_CAN_clocks();
 	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
-	Config_CAN_MB(0, 1, TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
-	Config_CAN_MB(0, 2, RXDF, RearToFrontDataMessageID); //messagebuffer to transmit the FrontToRearTelemetryMessage
-	Config_CAN_MB(0, 3, TXDF, FrontToRearTelemetryMessageID); //messagebuffer to receive the RearToFrontDataMessage
-
+	//Config_CAN_MB(0, 1, TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
+	//Config_CAN_MB(0, 2, RXDF, RearToFrontDataMessageID); //messagebuffer to transmit the FrontToRearTelemetryMessage
+	//Config_CAN_MB(0, 3, TXDF, FrontToRearTelemetryMessageID); //messagebuffer to receive the RearToFrontDataMessage
+	Config_CAN_MB(0,4,RXDF, Orion1_ID);//ID 28
+	Config_CAN_MB(0,5,RXDF, Orion2_ID);//ID 29
+	Config_CAN_MB(0,6,RXDF, Orion3_ID);//ID 30
+	Config_CAN_MB(0,7,RXDF, Orion4_ID);//ID 31
+	Config_CAN_MB(0,8,RXDF, Orion5_ID);//ID 32
+	
 	while (1) {
 
 		//TODO: @Jeffery @Lucas implement fault checking on vehicle
@@ -242,10 +267,17 @@ int main(void) {
 		CAN_TransmitData(FrontToRearDataMessageID, data_TX_buffer);
 
 		CAN_ReceiveData(RearToFrontDataMessageID, data_RX_buffer);
-		CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
-		CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
-		CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
+		//CAN_ReceiveData(OrionL5_ID, OrionL5_RX_buffer);
+		//CAN_ReceiveData(OrionL7_ID, OrionL7_RX_buffer);
+		//CAN_ReceiveData(OrionL8_ID, OrionL8_RX_buffer);
+		CAN_ReceiveData(Orion1_ID, Orion1_RX_buffer);
+		CAN_ReceiveData(Orion2_ID, Orion2_RX_buffer);
+		CAN_ReceiveData(Orion3_ID, Orion3_RX_buffer);
+		CAN_ReceiveData(Orion4_ID, Orion4_RX_buffer);
+		CAN_ReceiveData(Orion5_ID, Orion5_RX_buffer);
 
+
+		
 		//sets fault LED values based on data from rear
 		Fault_LED(data_RX_buffer[IMDFault], data_RX_buffer[BMSFault], data_RX_buffer[BSPDFault], data_TX_buffer[FrontFault]);
 
