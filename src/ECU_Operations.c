@@ -103,8 +103,8 @@ void set_Throttle_Value(uint8_t leftpos, uint8_t rightpos){
 //	}
 //	FTM2_C0V = 4*Throttle_L/20;
 //	FTM2_C1V = 4*Throttle_R/20;
-	FTM2_C0V = 4*Throttle_L;
-	FTM2_C1V = 4*Throttle_R;
+	FTM2_C0V = Throttle_L;
+	FTM2_C1V = Throttle_R;
 }
 
 

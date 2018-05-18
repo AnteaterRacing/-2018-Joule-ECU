@@ -12,7 +12,8 @@
 
 uint32_t C_D;
 uint8_t Count = 0;
-
+uint8_t valuePlus = 0;
+uint8_t valueMinus = 0;
 //initializes Periodic Interrupt Timer 0
 void init_PIT0 (void)
 {
@@ -49,17 +50,17 @@ void GPIO_Init(void)
 				//Front ECU Input Disable, 1 is not input , 0 is input
 //	GPIOA_PIDR &= ~(1 << 15)/*Start Button Input*/;
 //	GPIOB_PIDR &= ~(1 << 2)/*ErrorLED Input*/;
-//	GPIOB_PIDR &= ~(1<<1 | 1<<2); //Torque Vectoring Toggle Switch Inputs
+	GPIOB_PIDR &= ~(1<<1 | 1<<2); //Torque Vectoring Toggle Switch Inputs
 	Start = 0;
-	TorqueVectoringBias = 70;
+	TorqueVectoringBias = 30;
 }
 
 void PIT_CH0_IRQHandler(void)
 {
 	//TODO: uncomment and figure out why it doesnt work:
 
-//	uint8_t valuePlus 	= (GPIOB_PDIR & (1 << 1)) >> 1;	//retrieve value from plus button
-//	uint8_t valueMinus	= (GPIOB_PDIR & (1 << 2)) >> 2; //retrieve value from minus button
+//	valuePlus 	= (GPIOB_PDIR & (1 << 1)) >> 1;	//retrieve value from plus button
+//	valueMinus	= (GPIOB_PDIR & (1 << 2)) >> 2; //retrieve value from minus button
 //	//TODO: @Reza test button
 //	//checking if plus or minus button was pressed
 //	if ((valuePlus == 1 || valueMinus == 1) && (valuePlus != valueMinus))
@@ -135,6 +136,8 @@ void PIT_CH0_IRQHandler(void)
 	BMS_Fault  = (GPIOA_PDIR & BMS_Fault_Mask)  >> 30;		//pin D6 = bit A30 = BMS
 	BSPD_Fault = (GPIOA_PDIR & BSPD_Fault_Mask) >> 31;		//pin D7 = bit A31 = BSPD
 
+	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
+
 #ifdef CAN_Fucked
 	if (IMD_Fault == 0 && BMS_Fault == 0 && BSPD_Fault == 0)
 		GPIOC_PCOR = 16;
@@ -165,6 +168,7 @@ void PIT_CH0_IRQHandler(void)
 
 #endif
 
+//Used for DOF board hardware interrupts:
 //	uint8_t DOF_Int = ((GPIOB_PDIR & 1 << Gyro_Int)  >> 16) | (GPIOB_PDIR & (1 << Gyro_Data) >> 16) | ((GPIOB_PDIR & 1 << ACC_INT1)  >> 16) | ((GPIOB_PDIR & 1 << ACC_INT2) >> 16);
 
 	//DOF_Int = (GPIOB_PDIR & Gyro_Int_Mask  >> 16) | (GPIOB_PDIR & Gyro_Data_Mask >> 16) | (GPIOB_PDIR & ACC_INT1_Mask  >> 16) | (GPIOB_PDIR & ACC_INT2_Mask  >> 16);
@@ -175,6 +179,5 @@ void PIT_CH0_IRQHandler(void)
 //			return;
 //	}
 //
-	PIT_TFLG0 |= PIT_TFLG_TIF_MASK; 		//clear PIT0 Flag
 }
 #endif

@@ -8,6 +8,8 @@
 #include "UART.h"
 #define PTE7 7
 
+uint8_t send = 0;
+
 //RUNNING CAR MODE
 #ifdef runningMode
 /* Initialize UART at Baud Rate = 9600, 1 stop bit, 8 bit format, no parity */
@@ -39,20 +41,26 @@ void init_UART(void)  {
 
 	UART2_D = 0xFF; 				//start the transmit interrupt loop
 }
-
+uint8_t it = 1;
 void UART2_IRQHandler(void) {
 	(void)UART2_S1; 									//clear TDRE by reading UART2_S1
-	if(UARTcount > 25){									/* Buffer is of size 26, reset counter and make new line */
-		UARTcount = -1;
-		UART2_D = 0xFF;
+	if(send == 3) {
+		if(UARTcount > 25){									/* Buffer is of size 26, reset counter and make new line */
+			UARTcount = -1;
+			UART2_D = 0xFF;
+		}
+		else {
+			if(UART_buffer[UARTcount] == 255){				/* making sure no values are 255 (start bit) */
+				UART_buffer[UARTcount] -= 1;
+			}
+			UART2_D = UART_buffer[UARTcount];				/* Sends Data from UART_buffer[] */
+		}
+		UARTcount++;									/* Increment counter */
+		send = 0;
 	}
 	else {
-		if(UART_buffer[UARTcount] == 255){				/* making sure no values are 255 (start bit) */
-			UART_buffer[UARTcount] -= 1;
-		}
-		UART2_D = UART_buffer[UARTcount];				/* Sends Data from UART_buffer[] */
+		send = send + it;
 	}
-	UARTcount++;										/* Increment counter */
 }
 #endif
 

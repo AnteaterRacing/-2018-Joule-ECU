@@ -22,7 +22,7 @@ SIM_SCGC |= SIM_SCGC_FTM2_MASK; 	/* Sys Clk Gate Ctrl: enable bus clock to FTM2 
   FTM2_COMBINE = 0x0;
   FTM2_SC |= FTM_SC_PS(5);  		/* PS (Prescaler factor) = 7. Prescaler = 2**6 = 64 */
   FTM2_SC |= FTM_SC_TOIE_MASK; 		//timer overflow interrupt enable
-  FTM2_MOD = 1021; 					/*mod value to trigger OVF interrupt.*/
+  FTM2_MOD = 256;					/*mod value to trigger OVF interrupt.*/
 
   FTM2_C0SC |= FTM_CnSC_MSB_MASK; 	//edge aligned pwm
   FTM2_C0SC |= FTM_CnSC_ELSB_MASK;	//high true pulses
@@ -82,29 +82,4 @@ void FTM2_IRQHandler(void){
 			FTM2_C1SC &= ~FTM_CnSC_CHF_MASK; //clear CH1 flag
 		}
 	}
-}
-
-void init_FTM2_ch5_IC(void) {
-  FTM2_C5SC = 0x0000000C;       /* FTM2 ch5: Input Capture on rising or falling edge */
-	                            /* CHIE (Chan Interrupt Ena) = 0 (default) */
-	                            /* MSB:MSA (chan Mode Select) = 0b00 */
-	                            /* ELSB:ELSA (chan Edge or Level Select) = 0b11 */
-  SIM_PINSEL1 &= ~SIM_PINSEL1_FTM2PS5_MASK; /* Use default pad PTB5 */
-}
-
-void output_compare_FTM2_ch1() {
-  if (1==((FTM2_C1SC & FTM_CnSC_CHF_MASK)>>FTM_CnSC_CHF_SHIFT)) { /* If chan flag is set */
-   FTM2_C1SC &= ~FTM_CnSC_CHF_MASK;  /* Clear chan flag: read reg then write 0 to CHF  */
-   FTM2_C1V = FTM2_C1V + 19531 ;      /* Update compare value: add 19531 to current value*/
-  }
-}
-
-void input_capture_FTM2_ch5(void) {
-  if (1==((FTM2_C5SC & FTM_CnSC_CHF_MASK)>>FTM_CnSC_CHF_SHIFT)) { /* If chan flag is set */
-    FTM2_C5SC &= ~FTM_CnSC_CHF_MASK;  /* Clear chan flag: read reg then write 0 to CHF bit */
-    PriorCaptureVal = CurrentCaptureVal; /* Record value of prior capture */
-    CurrentCaptureVal = FTM2_C5V;        /* Record value of current capture */
-    DeltaCapture = CurrentCaptureVal - PriorCaptureVal;
-           /* Delta Capture will be 19531 if connected to FTM2_ch1 */
-  }
 }
