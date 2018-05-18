@@ -42,6 +42,36 @@
 #define OrionL8_Size 8
 #define OrionL8_buffVal 6
 
+/* 5 BMS buffers with respective data */
+//Orion1
+//length: 8;  {Rolling Counter, IN USE, Pack CCL KW, IN USE, Pack CCL, Pack DCL, Pack DCL KW, Pack Current}
+#define Orion1_ID 28
+#define Orion1_Size 8
+#define Orion1_buffVal 4
+
+//Orion2
+//length: 8;  {Pack Instant Voltage, Pack Open Voltage, Pack SOC, Pack Amphours, Pack Resistance, Pack DOD, Pack Health, Pack Summed Voltages}
+#define Orion1_ID 29
+#define Orion1_Size 8
+#define Orion1_buffVal 5
+
+//Orion3
+//length: 8;  {Total Pack Cycles, Current Limit Status, High Temperature, IN USE, High Thermistor ID, IN USE, Low Temperature, Low Thermistor ID}
+#define Orion1_ID 30
+#define Orion1_Size 8
+#define Orion1_buffVal 6
+
+//Orion4
+//length: 8;  {Average Temperature, Interal Temperature, Low Cell Voltage, Low Cell Voltage ID, High Cell Voltage, High Cell Voltage ID, Avg. Cell Voltage, Low Cell Voltage}
+#define Orion1_ID 31
+#define Orion1_Size 8
+#define Orion1_buffVal 7
+
+//Orion5
+//length: 8;  {Low Open Cell ID, High Cell Voltage, High Cell Open ID, Avg Opencell Voltage, Maximum Cell Voltage, Minimum Cell Voltage, BLANK, BLANK}
+#define Orion1_ID 32
+#define Orion1_Size 8
+#define Orion1_buffVal 8
 
 
 //FrontToRearDataMessage
@@ -73,6 +103,7 @@
 #define	TV_LED			6
 #define MotorTempLED	7
 
+/*
 //Orion_L5
 #define RollingCounter 1
 #define PackCCL 2
@@ -102,6 +133,59 @@
 #define InternalTemp 6
 #define LowCellVoltage 7
 #define LowCellVoltageID 8
+*/
+
+//Orion1
+#define Rolling_Counter 1
+//#define XXXX 2
+#define Pack_CCL_KW 3
+//define XXXX 4
+#define Pack_CLL 5
+#define Pack_DCL 6
+#define Pack_DCL_KW 7
+#define Pack_Current 8
+
+//Orion2
+#define Pack_Instant_Voltage 1
+#define Pack_Open_Voltage 2
+#define Pack_SOC 3
+#define Pack_Amphours 4
+#define Pack_Resistance 5
+#define Pack_DOD 6
+#define Pack_Health 7
+#define Pack_Summed_Voltages 8
+
+//Orion3
+#define Total_Pack_Cycles 1
+#define Current_Limit_Status 2
+#define High_Temperature 3
+//#define XXXX 4
+#define High_Thermistor_ID 5
+//#define XXXX 6
+#define Low_Temperature 7
+#define Low_Thermistor_ID 8
+
+//Orion 4
+#define Avg_Temperature 1
+#define Internal_Temperature 2
+#define Low_Cell_Vtolage 3
+#define Low_Cell_Voltage_ID 4
+#define High_Cell_Voltage 5
+#define High_Cell_Voltage_ID 6
+#define Avg_Cell_Voltage 7
+#define Low_Cell_Voltage 8
+
+//Orion 5
+#define Low_Open_Cell_ID 1
+#define High_Cell_Voltage 2
+#define High_Cell_Open_ID 3
+#define Avg_Opencell_Voltage 4
+#define Maximum_Cell_Voltage 5
+#define Minimum_Cell_Voltage 6
+//#define XXXX 7
+//#define XXXX 8
+
+
 
 //TODO: @Ken add new CAN messages
 
