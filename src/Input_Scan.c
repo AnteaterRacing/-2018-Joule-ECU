@@ -50,7 +50,7 @@ void GPIO_Init(void)
 				//Front ECU Input Disable, 1 is not input , 0 is input
 //	GPIOA_PIDR &= ~(1 << 15)/*Start Button Input*/;
 //	GPIOB_PIDR &= ~(1 << 2)/*ErrorLED Input*/;
-	GPIOB_PIDR &= ~(1<<1 | 1<<2); //Torque Vectoring Toggle Switch Inputs
+//	GPIOB_PIDR &= ~(1<<1 | 1<<2); //Torque Vectoring Toggle Switch Inputs
 	Start = 0;
 	TorqueVectoringBias = 30;
 }

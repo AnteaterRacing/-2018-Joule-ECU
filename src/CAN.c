@@ -42,6 +42,7 @@ void CAN_Init(){
 	Config_CAN_MB(0,6,RXDF, Orion3_ID);
 	Config_CAN_MB(0,7,RXDF, Orion4_ID);
 	Config_CAN_MB(0,8,RXDF, Orion5_ID);
+	Config_CAN_MB(0,9,TXDF, RearTelemetryMessageID);
 
 }
 #endif
@@ -65,9 +66,10 @@ void CAN_Init() {
 uint16_t ID_to_BUF(uint16_t ID){
 
 	switch(ID){
-	case 10: return 1; //Front to Rear ID 10 to buffer1
-	case 11: return 2; //Rear to Front ID 11 to buffer 2
-	case 12: return 3; //Front to Rear Telemetry ID 20 to buffer 3
+	case 10: return FrontToRearDataMessageIDRef; //Front to Rear ID 10 to buffer1
+	case 11: return RearToFrontDataMessageIDRef; //Rear to Front ID 11 to buffer 3
+	case 12: return FrontToRearTelemetryMessageIDRef; //Front to Rear Telemetry ID 20 to buffer 2
+	case 13: return RearTelemetryMessageIDRef;
 	case Orion1_ID: return Orion1_buffVal;
 	case Orion2_ID: return Orion2_buffVal;
 	case Orion3_ID: return Orion3_buffVal;

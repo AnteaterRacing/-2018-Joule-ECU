@@ -27,6 +27,10 @@
 #define RearToFrontDataMessageSize 8
 #define RearToFrontDataMessageIDRef 3
 
+#define RearTelemetryMessageID 13
+#define RearTelemetryMessageSize 8
+#define RearTelemetryMessageIDRef 9
+
 /* 5 BMS buffers with respective data */
 //Orion1
 //length: 8;  {Rolling Counter, IN USE, Pack CCL KW, IN USE, Pack CCL, Pack DCL, Pack DCL KW, Pack Current}
