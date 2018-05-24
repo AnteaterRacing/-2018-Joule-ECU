@@ -18,7 +18,7 @@ void init_WheelSpeed(void);
 // Defines the distance the wheel travels when magnet is detected in inches.
 // add if for front and rear ECUs.
 
-uint16_t WheelSpeed[2]; //stores calculated wheel speed values
+uint8_t WheelSpeed[2]; //stores calculated wheel speed values
 
 //calculates wheel speed based on PWT buffer values
 void calculateWheelSpeed(void);

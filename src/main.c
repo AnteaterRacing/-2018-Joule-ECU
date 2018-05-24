@@ -71,15 +71,6 @@ int main(void)
 	Config_CAN_MB(0,8,RXDF, Orion5_ID);//ID 32
 	Config_CAN_MB(0,9,TXDF, RearTelemetryMessageID);
 
-	//NEW BMS SETTINGS
-	//5 messages, ID = {x28, x29, x30, x31, x32}
-	//XXXXXXID x28: {Rolling Counter, Pack CCL, Pack CCL KW, Pack DCL, Pack DCL KW, Pack Current, Pack Voltage, Pack Open Voltage}
-	//XXXXXXID x29: {Pack State of Charge, Pack Amphours, Pack Resistance, Pack Depth of Discharge, Pack Health, Pack Summed Voltage, Total Pack Cycles, Current Limit Status}
-	//XXXXXXID x30: {High Temp, High Thermister ID, Low Temp, Low Thermister ID, Avg Temp, Internal Temp, Low Cell Voltage, Low Cell Voltage ID}
-	//XXXXXXXXXXXXID x31: {High Cell Voltage, High Cell Voltage ID, Average Cell Voltage, Low Cell Open Voltage, Low Cell Open Voltage ID, High Cell Open Voltage, High Cell Open Voltage ID, Avg Cell Open Voltage}
-	//XXXXXXXXXXXXXID x32: {Low Cell Internal Res., Low Cell Resistance ID, High Cell Internal Res., High Cell Res. ID, Avg Cell Internal Res., Max Cell Voltage, Min Cell Voltage, BLANK, BLANK}
-
-
 	//setting message sizes for transmit buffers
 	data_TX_buffer[0] = RearToFrontDataMessageSize;
 	data_RX_buffer[0] = FrontToRearDataMessageSize;
@@ -90,6 +81,7 @@ int main(void)
 
 	//this runs continuously once the initialization has completed
 	while(1) {
+		CAN_TransmitData(RearTelemetryMessageID, telemetry_TX_buffer);
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
 		CAN_ReceiveData(Orion1_ID, Orion1_RX_buffer);
@@ -98,7 +90,6 @@ int main(void)
 		CAN_ReceiveData(Orion4_ID, Orion4_RX_buffer);
 		CAN_ReceiveData(Orion5_ID, Orion5_RX_buffer);
 		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
-		CAN_TransmitData(RearTelemetryMessageID, telemetry_TX_buffer);
 
 		data_TX_buffer[Speedometer] = (uint8_t)((WheelSpeed[leftWheel]+WheelSpeed[rightWheel])/2);
 		//data_TX_buffer[TractionLED] = 0; //TODO: program traction LED
@@ -139,7 +130,7 @@ int main(void)
 
 
 		//checking if motor temperature or accumulator temperature is above our specified unsafe threshold
-//		else if (ADC_buf[0] > Temp_Threshold || ADC_buf[1] > Temp_Threshold) {
+//		else if (ADC_buf[0] > Temp_Threshold || ADC_buf[1] > Temp_Threshold || Orion3_RX_buffer[High_Temperature] > 50) {
 //			data_TX_buffer[MotorTempLED] = 0xFF;	//Turn on motor temp LED on dashboard
 //			set_Throttle_Value(data_RX_buffer[AcceleratorL]*0.5,data_RX_buffer[AcceleratorR]*0.5); //reduce max throttle by 50%
 //		}
@@ -150,15 +141,17 @@ int main(void)
 //		data_TX_buffer[MotorTempLED] = 0;	//turn off motor temp LED on dashboard
 //		}
 
+
+
 		//transmit telemetry data over CAN for testing
-		telemetry_TX_buffer[WheelSpeed_L] = WheelSpeed[leftWheel];
-		telemetry_TX_buffer[WheelSpeed_R] = WheelSpeed[rightWheel];
-		telemetry_TX_buffer[TireTemp_L1] = ADC_buf[2];//TTL1
-		telemetry_TX_buffer[TireTemp_L2] = ADC_buf[3];//TTL2
-		telemetry_TX_buffer[TireTemp_L3] = ADC_buf[4];//TTL3
+		telemetry_TX_buffer[WheelSpeed_L] = 69;//WheelSpeed[leftWheel];
+		telemetry_TX_buffer[WheelSpeed_R] = 69;//WheelSpeed[rightWheel];
 		telemetry_TX_buffer[TireTemp_R1] = ADC_buf[5];//TTR1
 		telemetry_TX_buffer[TireTemp_R2] = ADC_buf[6];//TTR2
 		telemetry_TX_buffer[TireTemp_R3] = ADC_buf[7];//TTR3
+		telemetry_TX_buffer[TireTemp_L1] = ADC_buf[2];//TTL1
+		telemetry_TX_buffer[TireTemp_L2] = ADC_buf[3];//TTL2
+		telemetry_TX_buffer[TireTemp_L3] = ADC_buf[4];//TTL3
 
 		//transmit telemetry data to xBee if in running car mode
 		#ifdef runningMode
@@ -281,6 +274,10 @@ int main(void) {
 	Config_CAN_MB(0, 4, RXDF, Orion1_ID);//BMS ID 28
 	Config_CAN_MB(0, 9, RXDF, RearTelemetryMessageID);
 
+	//setting outputs
+	GPIOA_PDDR |= 1 << 26 /*PTD2*/| 1 << 28/*PTD4*/| 1 << 31/*PTD7*/| 1 << 18/*PTC2*/;
+
+
 	while (1) {
 		//rolling counter to determine if CAN bus failure occurs
 		if(heartbeat==255){
@@ -343,6 +340,32 @@ int main(void) {
 		CAN_TransmitData(FrontToRearTelemetryMessageID,telemetry_TX_buffer);
 		CAN_ReceiveData(Orion1_ID, Orion1_RX_buffer); //TODO: @Arnav use Rolling Counter to fault check CAN bus
 		CAN_ReceiveData(RearTelemetryMessageID, telemetry_RX_buffer);
+
+		//CONTROLLING CURRENT DISPLAY LEDs
+		if(Orion1_RX_buffer[Pack_Current] > 40) {
+			GPIOA_PCOR |= 1 << 26;
+		}
+		else {
+			GPIOA_PCOR |= 1 << 26;
+		}
+		if(Orion1_RX_buffer[Pack_Current] > 30) {
+			GPIOA_PCOR |= 1 << 28;
+		}
+		else {
+			GPIOA_PCOR |= 1 << 28;
+		}
+		if(Orion1_RX_buffer[Pack_Current] > 20) {
+			GPIOA_PCOR |= 1 << 31;
+		}
+		else {
+			GPIOA_PSOR |= 1 << 31;
+		}
+		if(Orion1_RX_buffer[Pack_Current] > 10) {
+			GPIOA_PCOR |= 1 << 18;
+		}
+		else {
+			GPIOA_PSOR |= 1 << 18;
+		}
 
 		//sets fault LED values based on data from rear
 		Fault_LED(data_RX_buffer[IMDFault], data_RX_buffer[BMSFault], data_RX_buffer[BSPDFault], data_TX_buffer[FrontFault]);

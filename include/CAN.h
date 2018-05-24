@@ -19,13 +19,13 @@
 //size: 8 bytes: Wheelspeed L, Wheelspeed R, Tire temps L1,L2,L3,R1,R2,R3
 #define FrontToRearTelemetryMessageID 12
 #define FrontToRearTelemetryMessageSize 8
-#define FrontToRearTelemetryMessageIDRef 2
+#define FrontToRearTelemetryMessageIDRef 3
 
 //defining Message ID for rear to front ECU message transmit
 //size: 7 bytes: IMDFault,BMSFault,BSPDFault, Speedometer, TractionLED, TV_LED, MotorTempLED
 #define RearToFrontDataMessageID 11
 #define RearToFrontDataMessageSize 8
-#define RearToFrontDataMessageIDRef 3
+#define RearToFrontDataMessageIDRef 2
 
 #define RearTelemetryMessageID 13
 #define RearTelemetryMessageSize 8
@@ -114,7 +114,7 @@
 //Orion3
 #define Total_Pack_Cycles 1
 #define Current_Limit_Status 2
-#define High_Temperature 3
+#define High_Temperature 3 //Celsius
 //#define XXXX 4
 #define High_Thermistor_ID 5
 //#define XXXX 6
