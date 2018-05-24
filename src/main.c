@@ -144,14 +144,14 @@ int main(void)
 
 
 		//transmit telemetry data over CAN for testing
-		telemetry_TX_buffer[WheelSpeed_L] = 69;//WheelSpeed[leftWheel];
-		telemetry_TX_buffer[WheelSpeed_R] = 69;//WheelSpeed[rightWheel];
-		telemetry_TX_buffer[TireTemp_R1] = ADC_buf[5];//TTR1
-		telemetry_TX_buffer[TireTemp_R2] = ADC_buf[6];//TTR2
-		telemetry_TX_buffer[TireTemp_R3] = ADC_buf[7];//TTR3
+		telemetry_TX_buffer[WheelSpeed_L] = WheelSpeed[leftWheel];
+		telemetry_TX_buffer[WheelSpeed_R] = WheelSpeed[rightWheel];
 		telemetry_TX_buffer[TireTemp_L1] = ADC_buf[2];//TTL1
 		telemetry_TX_buffer[TireTemp_L2] = ADC_buf[3];//TTL2
 		telemetry_TX_buffer[TireTemp_L3] = ADC_buf[4];//TTL3
+		telemetry_TX_buffer[TireTemp_R1] = ADC_buf[5];//TTR1
+		telemetry_TX_buffer[TireTemp_R2] = ADC_buf[6];//TTR2
+		telemetry_TX_buffer[TireTemp_R3] = ADC_buf[7];//TTR3
 
 		//transmit telemetry data to xBee if in running car mode
 		#ifdef runningMode
@@ -239,6 +239,7 @@ uint8_t Orion1_RX_buffer[Orion1_Size+1] = {0};
 uint8_t accval;
 uint8_t steeringval;
 uint8_t heartbeat = 0;
+uint16_t current = 0;
 
 //converts linear function accelerator input to exponential function output
 uint8_t addCurve(uint8_t acc) {
@@ -341,26 +342,28 @@ int main(void) {
 		CAN_ReceiveData(Orion1_ID, Orion1_RX_buffer); //TODO: @Arnav use Rolling Counter to fault check CAN bus
 		CAN_ReceiveData(RearTelemetryMessageID, telemetry_RX_buffer);
 
+		current = Orion1_RX_buffer[Rolling_Counter];//((uint16)(Orion1_RX_buffer[Pack_Current]) << 8) + Orion1_RX_buffer[Pack_Current2];
+
 		//CONTROLLING CURRENT DISPLAY LEDs
-		if(Orion1_RX_buffer[Pack_Current] > 40) {
+		if(current > 200) {
 			GPIOA_PCOR |= 1 << 26;
 		}
 		else {
-			GPIOA_PCOR |= 1 << 26;
+			GPIOA_PSOR |= 1 << 26;
 		}
-		if(Orion1_RX_buffer[Pack_Current] > 30) {
+		if(current > 150) {
 			GPIOA_PCOR |= 1 << 28;
 		}
 		else {
-			GPIOA_PCOR |= 1 << 28;
+			GPIOA_PSOR |= 1 << 28;
 		}
-		if(Orion1_RX_buffer[Pack_Current] > 20) {
+		if(current > 100) {
 			GPIOA_PCOR |= 1 << 31;
 		}
 		else {
 			GPIOA_PSOR |= 1 << 31;
 		}
-		if(Orion1_RX_buffer[Pack_Current] > 10) {
+		if(current > 50) {
 			GPIOA_PCOR |= 1 << 18;
 		}
 		else {

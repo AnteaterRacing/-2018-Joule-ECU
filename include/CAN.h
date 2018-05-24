@@ -92,54 +92,51 @@
 #define MotorTempLED	7
 
 //Orion1
-#define Rolling_Counter 1
-//#define XXXX 2
-#define Pack_CCL_KW 3 //charge current limit (kW)
-//define XXXX 4
-#define Pack_CLL 5
-#define Pack_DCL 6 //discharge current limit(A)
-#define Pack_DCL_KW 7 //discharge current limit(kW)
-#define Pack_Current 8
+#define Rolling_Counter 1 //changes every 100ms
+#define Pack_CCL_KW 	2 //charge current limit (2byte) (0.1 kW increment) //TODO
+#define Pack_CCL 		3 //charge current limit (10A increment)
+#define Pack_DCL 		4 //discharge current limit(10A)
+#define Pack_DCL_KW 	5 //discharge current limit (2byte) (0.1 kW increment)
+#define Pack_DCL_KW2 	6
+#define Pack_Current	7 //0.1A increment (2byte)
+#define Pack_Current2 	8
 
 //Orion2
-#define Pack_Instant_Voltage 1
-#define Pack_Open_Voltage 2
-#define Pack_SOC 3
-#define Pack_Amphours 4
-#define Pack_Resistance 5
-#define Pack_DOD 6
-#define Pack_Health 7
-#define Pack_Summed_Voltages 8
+#define Pack_Instant_Voltage 	1 	//0.1V increment (2byte)
+#define Pack_Instant_Voltage2 	2
+#define Pack_SOC 				3	//0.5% increment state of charge
+#define Pack_Amphours 			4 	//0.1 Ah increment (2byte)
+#define Pack_Amphours2			5
+#define Pack_Resistance 		6	//1 mOhm increment (2byte)
+#define Pack_Resistance2		7
+
 
 //Orion3
-#define Total_Pack_Cycles 1
-#define Current_Limit_Status 2
-#define High_Temperature 3 //Celsius
-//#define XXXX 4
-#define High_Thermistor_ID 5
-//#define XXXX 6
-#define Low_Temperature 7
-#define Low_Thermistor_ID 8
+#define Total_Pack_Cycles 		1
+#define Current_Limit_Status 	2
+#define Pack_Summed_Voltage 	3	//0.1V increment (2byte)//#define XXXX 4
+#define Pack_Summed_Voltage		4
+#define Low_Temperature 		5	//1C increments
+#define High_Temperature 		6 	//1C increments
+#define High_Thermistor_ID 		7
+#define Low_Thermistor_ID 		8
 
 //Orion 4
-#define Avg_Temperature 1
-#define Internal_Temperature 2
-#define Low_Cell_Voltage 3
-#define Low_Cell_Voltage_ID 4
-#define High_Cell_Voltage 5
-#define High_Cell_Voltage_ID 6
-#define Avg_Cell_Voltage 7
-#define Low_Cell_Voltage2 8 //duplicate
+#define Avg_Temperature 1	//1C increment
+#define Internal_Temperature 2	//1C increment
+#define Low_Cell_Voltage 3	//0.0001v increment
+#define Low_Cell_Voltage2 4
+#define High_Cell_Voltage 5 //0.0001v increment
+#define High_Cell_Voltage2 6
+#define Avg_Cell_Voltage 7	//0.0001v increment
+#define Avg_Cell_Voltage2 8	//0.0001v increment
 
 //Orion 5
-#define Low_Open_Cell_ID 1
-#define High_Cell_Voltage2 2 //duplicate
-#define High_Cell_Open_ID 3
-#define Avg_Opencell_Voltage 4
-#define Maximum_Cell_Voltage 5
-#define Minimum_Cell_Voltage 6
-//#define XXXX 7
-//#define XXXX 8
+#define Maximum_Cell_Voltage 5 //0.0001v increment (2byte)
+#define Maximum_Cell_Voltage2 6
+#define Minimum_Cell_Voltage 7 //0.0001v increment (2byte)
+#define Minimum_Cell_Voltage2 8
+
 
 void CAN_Init(void); //front or rear ecu init
 void CAN_TransmitData(uint16_t, uint8_t*); 	//transmits CAN message with specified messageID
