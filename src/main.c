@@ -244,10 +244,25 @@ uint16_t current = 0;
 //converts linear function accelerator input to exponential function output
 uint8_t addCurve(uint8_t acc) {
 	//scaling using 1.01^x function (less exponential)
-	double scaled = 21.85 * pow(1.01, acc) - 21.85;
-	uint8_t output = (uint8_t) (scaled);
+	//double scaled = 21.85 * pow(1.01, acc) - 21.85;
+	//uint8_t output = (uint8_t) (scaled);
+	//return output;
+
+	double scaled = 0; 
+
+	if(acc <= 64)
+		scaled = pow(acc, 2) / 32;
+	else if (acc > 64 && acc <= 192)
+		scaled = (log(acc - 50.18) / log(1.0185)) - 15.3;
+	else if (acc > 192 && acc <= 255)
+		scaled = 255;
+	//default = 0
+
+	uint_t output = (unint8_t) (scaled);
 	return output;
 
+
+}
 //NEW THROTTLE CURVE
 //	if(acc > 212){ //TODO: @arnav test
 //		return 255;
