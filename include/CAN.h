@@ -115,7 +115,7 @@
 #define Total_Pack_Cycles 		1
 #define Current_Limit_Status 	2
 #define Pack_Summed_Voltage 	3	//0.1V increment (2byte)//#define XXXX 4
-#define Pack_Summed_Voltage		4
+#define Pack_Summed_Voltage2	4
 #define Low_Temperature 		5	//1C increments
 #define High_Temperature 		6 	//1C increments
 #define High_Thermistor_ID 		7
