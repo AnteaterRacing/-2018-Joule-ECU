@@ -213,18 +213,16 @@ void transmit_telemetry_data(void) {
 					UART_buffer[19] = data_RX_buffer[AcceleratorL];					//throttleL
 
 				//Battery Pack Voltage, Current, and Temperature Sensor Data
-					UART_buffer[20] = Orion2_RX_buffer[Pack_Instant_Voltage];
-					UART_buffer[21] = Orion2_RX_buffer[Pack_Instant_Voltage2];		//packVoltage
-					UART_buffer[22] = Orion1_RX_buffer[Pack_Current];
-					UART_buffer[23] = Orion1_RX_buffer[Pack_Current2]; 				//packCurrent
-					UART_buffer[24] = Orion3_RX_buffer[High_Temperature];			//packTemperature
-					UART_buffer[25] = Orion2_RX_buffer[Pack_SOC];					//state of charge
+					UART_buffer[20] = Orion2_RX_buffer[Pack_Instant_Voltage];		//packVoltage
+					UART_buffer[21] = Orion1_RX_buffer[Pack_Current];				//packCurrent
+					UART_buffer[22] = Orion3_RX_buffer[High_Temperature];			//packTemperature
+					UART_buffer[23] = Orion2_RX_buffer[Pack_SOC];					//state of charge
 
 				//Steering Angle Sensor Data
-					UART_buffer[26] = data_RX_buffer[SteeringAngle];				//steeringAngle
+					UART_buffer[24] = data_RX_buffer[SteeringAngle];				//steeringAngle
 
 				//Brake Angle
-					UART_buffer[27] = data_RX_buffer[BrakeAngle];					//brakeAngle
+					UART_buffer[25] = data_RX_buffer[BrakeAngle];					//brakeAngle
 }
 #endif
 
