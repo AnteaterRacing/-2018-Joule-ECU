@@ -67,9 +67,9 @@ uint16_t ID_to_BUF(uint16_t ID){
 
 	switch(ID){
 	case 10: return FrontToRearDataMessageIDRef; //Front to Rear ID 10 to buffer1
-	case 11: return RearToFrontDataMessageIDRef; //Rear to Front ID 11 to buffer 3
-	case 12: return FrontToRearTelemetryMessageIDRef; //Front to Rear Telemetry ID 20 to buffer 2
-	case 13: return RearTelemetryMessageIDRef;
+	case 11: return RearToFrontDataMessageIDRef; //Rear to Front ID 11 to buffer 2
+	case 12: return FrontToRearTelemetryMessageIDRef; //Front to Rear Telemetry ID 12 to buffer 3
+	case 13: return RearTelemetryMessageIDRef; //ID 13 buffer 9
 	case Orion1_ID: return Orion1_buffVal;
 	case Orion2_ID: return Orion2_buffVal;
 	case Orion3_ID: return Orion3_buffVal;

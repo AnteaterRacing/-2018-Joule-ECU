@@ -52,6 +52,7 @@ uint8_t Orion5_RX_buffer[Orion5_Size+1] = {0};
 uint8_t telemetry_TX_buffer[RearTelemetryMessageSize+1] = {0};
 uint8_t heartbeatcounter = 0;
 uint8_t heartbeat = 0;
+uint8_t transmit_timer = 0;
 
 void transmit_telemetry_data(void);
 
@@ -81,7 +82,14 @@ int main(void)
 
 	//this runs continuously once the initialization has completed
 	while(1) {
-		CAN_TransmitData(RearTelemetryMessageID, telemetry_TX_buffer);
+		if(transmit_timer > 100) {
+			CAN_TransmitData(RearTelemetryMessageID, telemetry_TX_buffer);
+			CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
+			transmit_timer = 0;
+		}
+		else {
+			transmit_timer++;
+		}
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
 		CAN_ReceiveData(Orion1_ID, Orion1_RX_buffer);
@@ -89,7 +97,6 @@ int main(void)
 		CAN_ReceiveData(Orion3_ID, Orion3_RX_buffer);
 		CAN_ReceiveData(Orion4_ID, Orion4_RX_buffer);
 		CAN_ReceiveData(Orion5_ID, Orion5_RX_buffer);
-		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
 
 		data_TX_buffer[Speedometer] = (uint8_t)((WheelSpeed[leftWheel]+WheelSpeed[rightWheel])/2);
 		//data_TX_buffer[TractionLED] = 0; //TODO: program traction LED
@@ -242,6 +249,9 @@ uint8_t accval;
 uint8_t steeringval;
 uint8_t heartbeat = 0;
 uint16_t current = 0;
+double scaled = 0;
+uint8_t output = 0;
+uint8_t transmit_timer = 0;
 
 //converts linear function accelerator input to exponential function output
 uint8_t addCurve(uint8_t acc) {
@@ -250,17 +260,20 @@ uint8_t addCurve(uint8_t acc) {
 	//uint8_t output = (uint8_t) (scaled);
 	//return output;
 
-	double scaled = 0; 
+	scaled = 0;
 
-	if(acc <= 64)
+	if(acc <= 64){
 		scaled = pow(acc, 2) / 32;
-	else if (acc > 64 && acc <= 192)
+	}
+	else if (acc > 64 && acc <= 192){
 		scaled = (log(acc - 50.18) / log(1.0185)) - 15.3;
-	else if (acc > 192 && acc <= 255)
+	}
+	else if (acc > 192){
 		scaled = 255;
+	}
 	//default = 0
 
-	uint_t output = (unint8_t) (scaled);
+	output = (uint8_t) (scaled);
 	return output;
 
 
@@ -276,7 +289,7 @@ uint8_t addCurve(uint8_t acc) {
 //		uint8_t output = (uint8_t) (scaled);
 //		return output;
 //	}
-}
+//}
 
 int main(void) {
 	init_ECU();	//initialize front ECU settings
@@ -284,6 +297,7 @@ int main(void) {
 	data_TX_buffer[0] = FrontToRearDataMessageSize;
 	telemetry_TX_buffer[0] = FrontToRearTelemetryMessageSize;
 	data_RX_buffer[0] = RearToFrontDataMessageSize;
+	telemetry_RX_buffer[0] = RearTelemetryMessageSize;
 	init_CAN_clocks();
 	Init_CAN(0, CMPTX); //initialize CAN0 to CMPTX mode
 	Config_CAN_MB(0, 1, TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
@@ -293,10 +307,24 @@ int main(void) {
 	Config_CAN_MB(0, 9, RXDF, RearTelemetryMessageID);
 
 	//setting outputs
-	GPIOA_PDDR |= 1 << 26 /*PTD2*/| 1 << 28/*PTD4*/| 1 << 31/*PTD7*/| 1 << 18/*PTC2*/;
+//	GPIOA_PDDR |= 1 << 26 /*PTD2*/| 1 << 28/*PTD4*/| 1 << 31/*PTD7*/| 1 << 18/*PTC2*/;
 
 
 	while (1) {
+		if(transmit_timer > 100) {
+			CAN_TransmitData(FrontToRearDataMessageID, data_TX_buffer);
+			CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
+			CAN_TransmitData(FrontToRearTelemetryMessageID,telemetry_TX_buffer);
+			transmit_timer = 0;
+		}
+		else {
+			transmit_timer++;
+		}
+
+		CAN_ReceiveData(RearToFrontDataMessageID, data_RX_buffer);
+		CAN_ReceiveData(Orion1_ID, Orion1_RX_buffer); //TODO: @Arnav use Rolling Counter to fault check CAN bus
+		CAN_ReceiveData(RearTelemetryMessageID, telemetry_RX_buffer);
+
 		//rolling counter to determine if CAN bus failure occurs
 		if(heartbeat==255){
 			heartbeat = 0;
@@ -353,16 +381,10 @@ int main(void) {
 		data_TX_buffer[StartButton] = Start;
 		data_TX_buffer[Heartbeat] = heartbeat;
 
-		CAN_TransmitData(FrontToRearDataMessageID, data_TX_buffer);
-		CAN_ReceiveData(RearToFrontDataMessageID, data_RX_buffer);
-		CAN_TransmitData(FrontToRearTelemetryMessageID,telemetry_TX_buffer);
-		CAN_ReceiveData(Orion1_ID, Orion1_RX_buffer); //TODO: @Arnav use Rolling Counter to fault check CAN bus
-		CAN_ReceiveData(RearTelemetryMessageID, telemetry_RX_buffer);
-
-		current = Orion1_RX_buffer[Rolling_Counter];//((uint16)(Orion1_RX_buffer[Pack_Current]) << 8) + Orion1_RX_buffer[Pack_Current2];
+//		current = Orion1_RX_buffer[Rolling_Counter];//((uint16)(Orion1_RX_buffer[Pack_Current]) << 8) + Orion1_RX_buffer[Pack_Current2];
 
 		//CONTROLLING CURRENT DISPLAY LEDs
-		if(current > 200) {
+/*		if(current > 200) {
 			GPIOA_PCOR |= 1 << 26;
 		}
 		else {
@@ -386,9 +408,9 @@ int main(void) {
 		else {
 			GPIOA_PSOR |= 1 << 18;
 		}
-
+*/
 		//sets fault LED values based on data from rear
-		Fault_LED(data_RX_buffer[IMDFault], data_RX_buffer[BMSFault], data_RX_buffer[BSPDFault], data_TX_buffer[FrontFault]);
+//		Fault_LED(data_RX_buffer[IMDFault], data_RX_buffer[BMSFault], data_RX_buffer[BSPDFault], data_TX_buffer[FrontFault]);
 
 		//transmitting telemetry data to rear ECU
 		telemetry_TX_buffer[WheelSpeed_L] = WheelSpeed[leftWheel];

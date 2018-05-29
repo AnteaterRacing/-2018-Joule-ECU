@@ -29,7 +29,7 @@ void init_UART(void)  {
 
 	UARTcount = 0;						/* Initialize the counter*/
 	uint8_t i = 0;
-	for(; i < 26; i++) { 			//initialize buffer to 0s
+	for(; i < 28; i++) { 			//initialize buffer to 0s
 		UART_buffer[i] = 'a'+i;
 	}
 
@@ -45,7 +45,7 @@ uint8_t it = 1;
 void UART2_IRQHandler(void) {
 	(void)UART2_S1; 									//clear TDRE by reading UART2_S1
 	if(send == 3) {
-		if(UARTcount > 25){									/* Buffer is of size 26, reset counter and make new line */
+		if(UARTcount > 27){									/* Buffer is of size 26, reset counter and make new line */
 			UARTcount = -1;
 			UART2_D = 0xFF;
 		}
