@@ -50,9 +50,10 @@ uint8_t Orion3_RX_buffer[Orion3_Size+1] = {0};
 uint8_t Orion4_RX_buffer[Orion4_Size+1] = {0};
 uint8_t Orion5_RX_buffer[Orion5_Size+1] = {0};
 uint8_t telemetry_TX_buffer[RearTelemetryMessageSize+1] = {0};
-uint8_t heartbeatcounter = 0;
+uint16_t heartbeatcounter = 0;
 uint8_t heartbeat = 0;
 uint8_t transmit_timer = 0;
+
 
 void transmit_telemetry_data(void);
 
@@ -60,17 +61,6 @@ int main(void)
 {
 
 	init_ECU(); 				//initialize Rear ECU settings
-	init_CAN_clocks();
-	Init_CAN(0, CMPTX);//initialize CAN0 to FAST mode
-	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageID);//messagebuffer to receive the FrontToRearDataMessage
-	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageID);//messagebuffer to receive the FrontToRearTelemetryMessage
-	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageID);//messagebuffer to transmit the RearToFrontDataMessage
-	Config_CAN_MB(0,4,RXDF, Orion1_ID);//ID 28
-	Config_CAN_MB(0,5,RXDF, Orion2_ID);//ID 29
-	Config_CAN_MB(0,6,RXDF, Orion3_ID);//ID 30
-	Config_CAN_MB(0,7,RXDF, Orion4_ID);//ID 31
-	Config_CAN_MB(0,8,RXDF, Orion5_ID);//ID 32
-	Config_CAN_MB(0,9,TXDF, RearTelemetryMessageID);
 
 	//setting message sizes for transmit buffers
 	data_TX_buffer[0] = RearToFrontDataMessageSize;
@@ -82,6 +72,7 @@ int main(void)
 
 	//this runs continuously once the initialization has completed
 	while(1) {
+		//transmit rate reduced to one transmission every ~30ms
 		if(transmit_timer > 100) {
 			CAN_TransmitData(RearTelemetryMessageID, telemetry_TX_buffer);
 			CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
@@ -117,34 +108,40 @@ int main(void)
 		} else {
 			data_TX_buffer[BSPDFault] = 0x00;
 		}
-		//if any fault is triggered set throttle to 0
+		//if any external fault is triggered set throttle to 0
 //		if (IMD_Fault || BMS_Fault || BSPD_Fault || data_RX_buffer[FrontFault]) {
 //			set_Throttle_Value(0,0);
 //		}
 		//check for disconnection from front ecu over CAN and stop throttle if disconnect occurs
-//		if(heartbeat == data_RX_buffer[Heartbeat]) {
-//			if(heartbeatcounter > 200){
-//				//set_Throttle_Value(0,0); //disable throttle
-//			}
-//			else {
-//				heartbeatcounter++;
-//			}
-//		}
-//		else {
-//			heartbeatcounter = 0;
-//			heartbeat = data_RX_buffer[Heartbeat];
-//		}
+		//since new data is received every 100 cycles at minimum, this checks for 5 missed messages before shutting off throttle
+		//this results in an automatic throttle shutoff within 150ms of CAN bus failure
+		if(heartbeat == data_RX_buffer[Heartbeat]) {
+			if(heartbeatcounter > 500){
+				set_Throttle_Value(0,0); //disable throttle
+				data_TX_buffer[5] = 0;//used for testing TODO: remove this
+				data_TX_buffer[6] = 0;//used for testing TODO: remove this
+			}
+			else {
+				heartbeatcounter++;
+			}
+		}
+		else {
+			heartbeatcounter = 0;
+			heartbeat = data_RX_buffer[Heartbeat];
+			set_Throttle_Value(data_RX_buffer[AcceleratorL],data_RX_buffer[AcceleratorR]);//set throttle value for motor controllers
+			data_TX_buffer[5] = data_RX_buffer[AcceleratorL]; //used for testing TODO: remove this
+			data_TX_buffer[6] = data_RX_buffer[AcceleratorR]; //used for testing TODO: remove this
+		}
 
 
 		//checking if motor temperature or accumulator temperature is above our specified unsafe threshold
+		//max temperature for motors 100C
+		//max temperature for Accumulator cells 50C
 //		else if (ADC_buf[0] > Temp_Threshold || ADC_buf[1] > Temp_Threshold || Orion3_RX_buffer[High_Temperature] > 50) {
 //			data_TX_buffer[MotorTempLED] = 0xFF;	//Turn on motor temp LED on dashboard
 //			set_Throttle_Value(data_RX_buffer[AcceleratorL]*0.5,data_RX_buffer[AcceleratorR]*0.5); //reduce max throttle by 50%
 //		}
 //		else {
-		set_Throttle_Value(data_RX_buffer[AcceleratorL],data_RX_buffer[AcceleratorR]);//set throttle value for motor controllers
-		data_TX_buffer[5] = data_RX_buffer[AcceleratorL]; //used for testing TODO: remove this
-		data_TX_buffer[6] = data_RX_buffer[AcceleratorR]; //used for testing TODO: remove this
 //		data_TX_buffer[MotorTempLED] = 0;	//turn off motor temp LED on dashboard
 //		}
 
@@ -298,13 +295,7 @@ int main(void) {
 	telemetry_TX_buffer[0] = FrontToRearTelemetryMessageSize;
 	data_RX_buffer[0] = RearToFrontDataMessageSize;
 	telemetry_RX_buffer[0] = RearTelemetryMessageSize;
-	init_CAN_clocks();
-	Init_CAN(0, CMPTX); //initialize CAN0 to CMPTX mode
-	Config_CAN_MB(0, 1, TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
-	Config_CAN_MB(0, 2, RXDF, RearToFrontDataMessageID); //messagebuffer to receive the RearToFrontDataMessage
-	Config_CAN_MB(0, 3, TXDF, FrontToRearTelemetryMessageID); //messagebuffer to transmit the FrontToRearTelemetryMessage
-	Config_CAN_MB(0, 4, RXDF, Orion1_ID);//BMS ID 28
-	Config_CAN_MB(0, 9, RXDF, RearTelemetryMessageID);
+
 
 	//setting outputs
 //	GPIOA_PDDR |= 1 << 26 /*PTD2*/| 1 << 28/*PTD4*/| 1 << 31/*PTD7*/| 1 << 18/*PTC2*/;
@@ -322,7 +313,7 @@ int main(void) {
 		}
 
 		CAN_ReceiveData(RearToFrontDataMessageID, data_RX_buffer);
-		CAN_ReceiveData(Orion1_ID, Orion1_RX_buffer); //TODO: @Arnav use Rolling Counter to fault check CAN bus
+		CAN_ReceiveData(Orion1_ID, Orion1_RX_buffer);
 		CAN_ReceiveData(RearTelemetryMessageID, telemetry_RX_buffer);
 
 		//rolling counter to determine if CAN bus failure occurs
@@ -354,7 +345,7 @@ int main(void) {
 		float B = TorqueVectoringBias/10;
 		float A = 1 - B;
 //		float C = -A;
-		accval = addCurve(ADC_buf[1]); //TODO: @arnav test addCurve functionality again
+		accval = addCurve(ADC_buf[1]);
 		steeringval = ADC_buf[2]; //steering potentiometer value
 		steeringval = steeringval + 7; //offset to compensate for sensor placement error
 		//TORQUE VECTORING BASIC ALGORITHM
@@ -381,34 +372,6 @@ int main(void) {
 		data_TX_buffer[StartButton] = Start;
 		data_TX_buffer[Heartbeat] = heartbeat;
 
-//		current = Orion1_RX_buffer[Rolling_Counter];//((uint16)(Orion1_RX_buffer[Pack_Current]) << 8) + Orion1_RX_buffer[Pack_Current2];
-
-		//CONTROLLING CURRENT DISPLAY LEDs
-/*		if(current > 200) {
-			GPIOA_PCOR |= 1 << 26;
-		}
-		else {
-			GPIOA_PSOR |= 1 << 26;
-		}
-		if(current > 150) {
-			GPIOA_PCOR |= 1 << 28;
-		}
-		else {
-			GPIOA_PSOR |= 1 << 28;
-		}
-		if(current > 100) {
-			GPIOA_PCOR |= 1 << 31;
-		}
-		else {
-			GPIOA_PSOR |= 1 << 31;
-		}
-		if(current > 50) {
-			GPIOA_PCOR |= 1 << 18;
-		}
-		else {
-			GPIOA_PSOR |= 1 << 18;
-		}
-*/
 		//sets fault LED values based on data from rear
 //		Fault_LED(data_RX_buffer[IMDFault], data_RX_buffer[BMSFault], data_RX_buffer[BSPDFault], data_TX_buffer[FrontFault]);
 

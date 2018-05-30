@@ -33,15 +33,15 @@ uint8_t err_status;
 #ifdef RearECU
 void CAN_Init(){
 	init_CAN_clocks();
-	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
-	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageID); //messagebuffer to receive the FrontToRearDataMessage
-	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageID); //messagebuffer to receive the FrontToRearTelemetryMessage
-	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageID); //messagebuffer to transmit the RearToFrontDataMessage
-	Config_CAN_MB(0,4,RXDF, Orion1_ID); //Orion BMS message buffers
-	Config_CAN_MB(0,5,RXDF, Orion2_ID);
-	Config_CAN_MB(0,6,RXDF, Orion3_ID);
-	Config_CAN_MB(0,7,RXDF, Orion4_ID);
-	Config_CAN_MB(0,8,RXDF, Orion5_ID);
+	Init_CAN(0, CMPTX);//initialize CAN0 to FAST mode
+	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageID);//messagebuffer to receive the FrontToRearDataMessage
+	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageID);//messagebuffer to receive the FrontToRearTelemetryMessage
+	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageID);//messagebuffer to transmit the RearToFrontDataMessage
+	Config_CAN_MB(0,4,RXDF, Orion1_ID);//ID 28
+	Config_CAN_MB(0,5,RXDF, Orion2_ID);//ID 29
+	Config_CAN_MB(0,6,RXDF, Orion3_ID);//ID 30
+	Config_CAN_MB(0,7,RXDF, Orion4_ID);//ID 31
+	Config_CAN_MB(0,8,RXDF, Orion5_ID);//ID 32
 	Config_CAN_MB(0,9,TXDF, RearTelemetryMessageID);
 
 }
@@ -51,15 +51,12 @@ void CAN_Init(){
 #ifdef FrontECU
 void CAN_Init() {
 	init_CAN_clocks();
-	err_status = Init_CAN(0, CMPTX); //initialize CAN0 to FAST mode
-	Config_CAN_MB(0,1,TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
-	Config_CAN_MB(0,2,RXDF, RearToFrontDataMessageID); //MB to receive reartofrontdatamessage
-	Config_CAN_MB(0,3,TXDF, FrontToRearTelemetryMessageID); //messagebuffer to transmit the FrontToRearTelemetryMessage
-	Config_CAN_MB(0,4,RXDF, Orion1_ID);
-	Config_CAN_MB(0,5,RXDF, Orion2_ID);
-	Config_CAN_MB(0,6,RXDF, Orion3_ID);
-	Config_CAN_MB(0,7,RXDF, Orion4_ID);
-	Config_CAN_MB(0,8,RXDF, Orion5_ID);
+	Init_CAN(0, CMPTX); //initialize CAN0 to CMPTX mode
+	Config_CAN_MB(0, 1, TXDF, FrontToRearDataMessageID); //messagebuffer to transmit the FrontToRearDataMessage
+	Config_CAN_MB(0, 2, RXDF, RearToFrontDataMessageID); //messagebuffer to receive the RearToFrontDataMessage
+	Config_CAN_MB(0, 3, TXDF, FrontToRearTelemetryMessageID); //messagebuffer to transmit the FrontToRearTelemetryMessage
+	Config_CAN_MB(0, 4, RXDF, Orion1_ID);//BMS ID 28
+	Config_CAN_MB(0, 9, RXDF, RearTelemetryMessageID);
 }
 #endif
 //TODO: @Ken add new CAN messages
