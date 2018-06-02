@@ -96,7 +96,37 @@ void PIT_CH0_IRQHandler(void)
 }
 #endif
 
+#ifdef AuxECU
+void GPIO_Init()
+{
+	GPIOA_PDDR |= ~(1 << 0/*ADC0_0*/| 1 << 1/*ADC0_1*/| 1 << 6/*ADC0_3*/| 1 << 7/*ADC0_4*/
+				| 1 << 8/*ADC0_5*/| 1 << 9/*ADC0_6*/| 1 <<10/*ADC0_7*/| 1 << 11/*ADC0_8*/
+				| 1 <<16/*ADC0_9*/| 1<<17/*ADC0_10*/| 1<<18/*ADC0_11*/| 1<<19/*ADC0_12*/);
+	GPIOB_PDDR |= ~(1 << 12/*ADC0_13*/| 1 << 13/*ADC0_14*/| 1 << 14/*ADC0_15*/|
+				| 1 << 15/*ADC0_15*/) | 1 << 26/*Output signal to nmos*/;
 
+	se0 = (GPIOA_PDDR & (1 << 0)) >> 0;
+	se1 = (GPIOA_PDDR & (1 << 1)) >> 1;
+	se2 = (GPIOA_PDDR & (1 << 6)) >> 6;
+	se3 = (GPIOA_PDDR & (1 << 7)) >> 7;
+	se4 = (GPIOA_PDDR & (1 << 8)) >> 8;
+	se5 = (GPIOA_PDDR & (1 << 9)) >> 9;
+	se6 = (GPIOA_PDDR & (1 << 10)) >> 10;
+	se7 = (GPIOA_PDDR & (1 << 11)) >> 11;
+	se8 = (GPIOA_PDDR & (1 << 16)) >> 16;
+	se9 = (GPIOA_PDDR & (1 << 17)) >> 17;
+	seA = (GPIOA_PDDR & (1 << 18)) >> 18;
+	seB = (GPIOA_PDDR & (1 << 19)) >> 19;
+	seC = (GPIOB_PDDR & (1 << 12)) >> 12;
+	seD = (GPIOB_PDDR & (1 << 13)) >> 13;
+	seE = (GPIOB_PDDR & (1 << 14)) >> 14;
+	seF = (GPIOB_PDDR & (1 << 15)) >> 15;
+	signalOut = (GPIOB_PDDR & (1 << 26)) >> 26;
+}
+
+
+
+#endif
 #ifdef RearECU
 
 void GPIO_Init(void)

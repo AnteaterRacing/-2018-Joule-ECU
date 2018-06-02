@@ -7,10 +7,14 @@
 "./src/main.o"
 "./src/ics.o"
 "./src/clocks.o"
+"./src/WheelSpeed.o"
 "./src/UART.o"
-"./src/Rear_Input_Scan.o"
+"./src/PWTModule.o"
 "./src/PWT.o"
 "./src/MSCAN_Module.o"
+"./src/LSM9DS0.o"
+"./src/Input_Scan.o"
+"./src/I2C.o"
 "./src/FTM.o"
 "./src/Error.o"
 "./src/ECU_Operations.o"
@@ -20,7 +24,7 @@
 "./Project_Settings/Startup_Code/system_SKEAZ1284.o"
 "./Project_Settings/Startup_Code/startup_SKEAZ1284.o"
 -T
-"C:/Users/arnav/workspaceS32DS.ARM/ECU/Project_Settings/Linker_Files/SKEAZ_flash.ld"
+"C:/Users/Xavier/Documents/GitHub/JouleECU/Project_Settings/Linker_Files/SKEAZ_flash.ld"
 -Wl,-Map,"ECU.map"
 -Xlinker
 --gc-sections
