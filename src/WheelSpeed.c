@@ -32,6 +32,7 @@
 															// The frequency kHz (kilohertz) returns the period in ms (milliseconds) when 1 is divided by it.
 #endif
 
+#ifndef AuxECU
 void init_WheelSpeed(void) {
 	/*
 	 * This function initializes the WheelSpeed buffers and the PWT Module.
@@ -59,3 +60,4 @@ void calculateWheelSpeed(void) {
 	}
 
 }
+#endif

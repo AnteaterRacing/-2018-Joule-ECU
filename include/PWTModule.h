@@ -7,6 +7,7 @@
 #ifndef PWTMODULE_H_
 #define PWTMODULE_H_
 #include "derivative.h"
+#include "main.h"
 
 void init_PWTModule (void);
 void pulse_width_timer_PWT (void);

@@ -7,6 +7,8 @@
 
 #ifndef WHEELSPEED_H_
 #define WHEELSPEED_H_
+#include "main.h"
+#ifndef AuxECU
 
 //initialize wheel speed sensor system
 void init_WheelSpeed(void);
@@ -23,4 +25,5 @@ uint8_t WheelSpeed[2]; //stores calculated wheel speed values
 //calculates wheel speed based on PWT buffer values
 void calculateWheelSpeed(void);
 
+#endif
 #endif /* WHEELSPEED_H_ */

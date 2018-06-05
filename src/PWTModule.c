@@ -7,6 +7,7 @@
 #include <PWTModule.h>
 #include "derivative.h" /* include peripheral declarations SKEAZ128M4 */
 #include "WheelSpeed.h"
+#ifndef AuxECU
 
 uint16_t PulseWidth = 0;
 
@@ -99,4 +100,4 @@ void PWT_IRQHandler(void) {
 		PWT_R1 &= ~PWT_R1_PINSEL_MASK; // Switches to the left wheel sensor.
 	}
 }
-
+#endif

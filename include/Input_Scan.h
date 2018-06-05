@@ -47,8 +47,9 @@ extern uint32_t C_D;
 #endif
 
 #ifdef AuxECU
-uint8_t se0, se1, se2, se3, se4, se5, se6, se7, se8, se9, seA, seB, seC, seD, seE, seF;
-uint8_t signalOut;
+int i;
+int badval;
+uint8_t count;
 #endif
 
 #endif /* INPUT_SCAN_H_ */

@@ -39,8 +39,8 @@ void init_ECU(){
 	CAN_Init();					//initialize CAN bus TODO: @arnav uncomment when CAN initialization fixed
 	init_PWM();				      	//initialize PWM Module and FTM components
 	init_FTM ();  	              	/* Initialize FTM module*/
-	init_WheelSpeed();				//TODO: @arnav uncomment and see if this breaks anything
-	init_clks_FEE_40MHz();        	/* KEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
+//	init_WheelSpeed();				//TODO: @arnav uncomment and see if this breaks anything
+	init_clks_FEE_40MHz();        	/* bKEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
 
 }
 
