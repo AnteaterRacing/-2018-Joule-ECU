@@ -50,6 +50,8 @@ uint8_t Orion3_RX_buffer[Orion3_Size+1] = {0};
 uint8_t Orion4_RX_buffer[Orion4_Size+1] = {0};
 uint8_t Orion5_RX_buffer[Orion5_Size+1] = {0};
 uint8_t telemetry_TX_buffer[RearTelemetryMessageSize+1] = {0};
+uint8_t BatteryTemperaturesRXOne[BatteryTemperaturesOneMessageSize + 1] = {0};
+uint8_t BatteryTemperaturesRXTwo[BatteryTemperaturesOneMessageSize + 1] = {0};
 uint16_t heartbeatcounter = 0;
 uint8_t heartbeat = 0;
 uint8_t transmit_timer = 0;
@@ -88,6 +90,8 @@ int main(void)
 		CAN_ReceiveData(Orion3_ID, Orion3_RX_buffer);
 		CAN_ReceiveData(Orion4_ID, Orion4_RX_buffer);
 		CAN_ReceiveData(Orion5_ID, Orion5_RX_buffer);
+		CAN_ReceiveData(BatteryTemperaturesOneMessageID,BatteryTemperaturesRXOne);
+		CAN_ReceiveData(BatteryTemperaturesTwoMessageID,BatteryTemperaturesRXTwo);
 
 		data_TX_buffer[Speedometer] = (uint8_t)((WheelSpeed[leftWheel]+WheelSpeed[rightWheel])/2);
 		//data_TX_buffer[TractionLED] = 0; //TODO: program traction LED
@@ -384,6 +388,64 @@ int main(void) {
 		telemetry_TX_buffer[TireTemp_R1] = ADC_buf[7];
 		telemetry_TX_buffer[TireTemp_R2] = ADC_buf[8];
 		telemetry_TX_buffer[TireTemp_R3] = ADC_buf[9];
+	}
+}
+#endif
+
+//AUX ECU MAIN METHOD==================================================================
+#ifdef AuxECU
+uint8_t BatteryTemperaturesTXOne[BatteryTemperaturesOneMessageSize + 1] = {0};
+uint8_t BatteryTemperaturesTXTwo[BatteryTemperaturesOneMessageSize + 1] = {0};
+uint8_t heartbeat = 0;
+uint8_t transmit_timer = 0;
+
+int main(void)
+{
+	init_ECU(); 				//initialize Rear ECU settings
+
+	// Setting Message Sizes for Transmit Buffers
+	BatteryTemperaturesTXOne[0] = BatteryTemperaturesOneMessageSize;
+	BatteryTemperaturesTXTwo[0] = BatteryTemperaturesTwoMessageSize;
+
+	while(1)
+	{
+		if(transmit_timer > 100)
+		{
+			CAN_TransmitData(BatteryTemperaturesOneMessageID, BatteryTemperaturesTXOne);
+			CAN_TransmitData(BatteryTemperaturesTwoMessageID, BatteryTemperaturesTXTwo);
+			transmit_timer = 0;
+		}
+		else {
+			transmit_timer++;
+		}
+
+		if(heartbeat==255)
+		{
+			heartbeat = 0;
+		}
+
+		else
+		{
+			heartbeat++;
+		}
+
+		BatteryTemperaturesTXOne[BatteryTemp1] = ADC_buf[0];
+		BatteryTemperaturesTXOne[BatteryTemp2] = ADC_buf[1];
+		BatteryTemperaturesTXOne[BatteryTemp3] = ADC_buf[2];
+		BatteryTemperaturesTXOne[BatteryTemp4] = ADC_buf[3];
+		BatteryTemperaturesTXOne[BatteryTemp5] = ADC_buf[4];
+		BatteryTemperaturesTXOne[BatteryTemp6] = ADC_buf[5];
+		BatteryTemperaturesTXOne[BatteryTemp7] = ADC_buf[6];
+		BatteryTemperaturesTXOne[BatteryTemp8] = ADC_buf[7];
+
+		BatteryTemperaturesTXTwo[BatteryTemp9] = ADC_buf[8];
+		BatteryTemperaturesTXTwo[BatteryTemp10] = ADC_buf[9];
+		BatteryTemperaturesTXTwo[BatteryTemp11] = ADC_buf[10];
+		BatteryTemperaturesTXTwo[BatteryTemp12] = ADC_buf[11];
+		BatteryTemperaturesTXTwo[BatteryTemp13] = ADC_buf[12];
+		BatteryTemperaturesTXTwo[BatteryTemp14] = ADC_buf[13];
+		BatteryTemperaturesTXTwo[BatteryTemp15] = ADC_buf[14];
+		BatteryTemperaturesTXTwo[BatteryTemp16] = ADC_buf[15];
 	}
 }
 #endif

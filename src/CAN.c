@@ -43,7 +43,8 @@ void CAN_Init(){
 	Config_CAN_MB(0,7,RXDF, Orion4_ID);//ID 31
 	Config_CAN_MB(0,8,RXDF, Orion5_ID);//ID 32
 	Config_CAN_MB(0,9,TXDF, RearTelemetryMessageID);
-
+	Config_CAN_MB(0,10,RXDF, BatteryTemperaturesOneMessageID);
+	Config_CAN_MB(0,11,RXDF, BatteryTemperaturesTwoMessageID);
 }
 #endif
 
@@ -59,6 +60,17 @@ void CAN_Init() {
 	Config_CAN_MB(0, 9, RXDF, RearTelemetryMessageID);
 }
 #endif
+
+#ifdef AuxECU
+void CAN_Init()
+{
+	init_CAN_clocks();
+	Init_CAN(0, CMPTX); //initialize CAN0 to CMPTX mode
+	Config_CAN_MB(0, 10, TXDF, BatteryTemperaturesOneMessageID);
+	Config_CAN_MB(0, 11, TXDF, BatteryTemperaturesTwoMessageID);
+}
+#endif
+
 //TODO: @Ken add new CAN messages
 uint16_t ID_to_BUF(uint16_t ID){
 
@@ -67,6 +79,8 @@ uint16_t ID_to_BUF(uint16_t ID){
 	case 11: return RearToFrontDataMessageIDRef; //Rear to Front ID 11 to buffer 2
 	case 12: return FrontToRearTelemetryMessageIDRef; //Front to Rear Telemetry ID 12 to buffer 3
 	case 13: return RearTelemetryMessageIDRef; //ID 13 buffer 9
+	case BatteryTemperaturesOneMessageID : return BatteryTemperaturesOneMessageIDRef;	// Battery Temperatures One ID 14 to buffer 10
+	case BatteryTemperaturesTwoMessageID : return BatteryTemperaturesTwoMessageIDRef;	// Battery Temperatures Two ID 15 to buffer 11
 	case Orion1_ID: return Orion1_buffVal;
 	case Orion2_ID: return Orion2_buffVal;
 	case Orion3_ID: return Orion3_buffVal;

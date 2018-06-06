@@ -31,6 +31,17 @@
 #define RearTelemetryMessageSize 8
 #define RearTelemetryMessageIDRef 9
 
+// Battery Temperatures 1
+#define BatteryTemperaturesOneMessageID 14
+#define BatteryTemperaturesOneMessageSize 8
+#define BatteryTemperaturesOneMessageIDRef 10
+
+// Battery Temperatures
+#define BatteryTemperaturesTwoMessageID 15
+#define BatteryTemperaturesTwoMessageSize 8
+#define BatteryTemperaturesTwoMessageIDRef 11
+
+
 /* 5 BMS buffers with respective data */
 //Orion1
 //length: 8;  {Rolling Counter, IN USE, Pack CCL KW, IN USE, Pack CCL, Pack DCL, Pack DCL KW, Pack Current}
@@ -137,6 +148,25 @@
 #define Minimum_Cell_Voltage 7 //0.0001v increment (2byte)
 #define Minimum_Cell_Voltage2 8
 
+// Battery Temperatures Part 1
+#define BatteryTemp1 	1
+#define BatteryTemp2 	2
+#define BatteryTemp3 	3
+#define BatteryTemp4 	4
+#define BatteryTemp5 	5
+#define BatteryTemp6 	6
+#define BatteryTemp7 	7
+#define BatteryTemp8 	8
+
+// Battery Temperatures Part 2
+#define BatteryTemp9 	1
+#define BatteryTemp10 	2
+#define BatteryTemp11 	3
+#define BatteryTemp12 	4
+#define BatteryTemp13 	5
+#define BatteryTemp14 	6
+#define BatteryTemp15 	7
+#define BatteryTemp16 	8
 
 void CAN_Init(void); //front or rear ecu init
 void CAN_TransmitData(uint16_t, uint8_t*); 	//transmits CAN message with specified messageID
