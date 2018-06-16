@@ -31,7 +31,6 @@ void init_ECU(){
 	//PDDR = Port Data Direction Register, PIDR = Port Input Disable Register
 	//GPIOB = GPIO bank B
 	GPIOB_PDDR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1;   				/* Output ports to LEDs + output pin */
-	GPIOB_PIDR &= 1<<PTE7 | 1<< PTH0 | 1<<PTH1;   				/* Disable inputs (default) */
 	GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1; 				/* Turn off all LEDs */
 
 	init_PIT0();     				// Initialize PIT0

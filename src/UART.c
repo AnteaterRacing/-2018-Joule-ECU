@@ -77,7 +77,8 @@ void init_UART(void)  {
 									 /* WAKE (Recvr Wakeup Method) = 0 */
 									 /*      (default, idle-line wakeup) */
 	UART2_C2 |= 1<<UART_C2_TE_SHIFT | 1<<UART_C2_RE_SHIFT; //enable TX/RX. no interrupts (use polling)
-	SIM_PINSEL1 &= ~SIM_PINSEL1_UART2PS_MASK; /* UART2PS=0 (default); */
+	SIM_PINSEL1 &= ~SIM_PINSEL1_UART2PS_MASK;//setting IO to PTD6 and PTD7
+//	SIM_PINSEL1 |= SIM_PINSEL1_UART2PS_MASK; //setting IO to PTI0 PTI1
 }
 
 /* Function to Transmit single Char */

@@ -16,8 +16,8 @@ void recieve_and_echo_char(void);
 
 
 //CHANGE DEFINITION TO CHOOSE UART FUNCTIONALITY
-#define runningMode 		//used for running car
-//#define testingMode		//used for testing other modules and general testing
+//#define runningMode 		//used for running car
+#define testingMode		//used for testing other modules and general testing
 
 #ifdef runningMode
 int UARTcount;

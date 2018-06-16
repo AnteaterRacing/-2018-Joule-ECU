@@ -20,7 +20,7 @@ SIM_SCGC |= SIM_SCGC_FTM2_MASK; 	/* Sys Clk Gate Ctrl: enable bus clock to FTM2 
                          	 	 	/* FTM2 module settings for desired channel modes: */
   FTM2_MODE |= FTM_MODE_WPDIS_MASK; /* Write protect to registers disabled (default) */
   FTM2_COMBINE = 0x0;
-  FTM2_SC |= FTM_SC_PS(5);  		/* PS (Prescaler factor) = 7. Prescaler = 2**6 = 64 */
+  FTM2_SC |= FTM_SC_PS(7);  		/* PS (Prescaler factor) = 7. Prescaler = 2**6 = 64 */
   FTM2_SC |= FTM_SC_TOIE_MASK; 		//timer overflow interrupt enable
   FTM2_MOD = 256;					/*mod value to trigger OVF interrupt.*/
 

@@ -33,75 +33,38 @@ uint8_t Throttle_R_buffer[20] = {0};
 
 //returns 1 if fault, 0 if no fault. (checks acc pedal transfer functions)
 int APPS_Fault(uint8_t acc1, uint8_t acc2){
-
 	//500 is 10% of 5000mV which is the max value for ADC inputs
 	//if apps flag has been already triggered but fault is still occurring, do nothing
-	if(APPS_flag && abs(acc1-acc2) > 26) {
-		return 1;
-	}
-	//if no apps flag triggered but fault occurring, trigger apps flag and increase faultcount
-	else if(abs(acc1-acc2) > 26) {
-		APPS_flag = 1;
-		APPS_faultcount++;
-		GPIOA_PCOR |= 1<<PTD7;
-		GPIOB_PCOR |= 1<<PTE7;			/*Turn on acc fault PTA3 LED*/
+	if((abs(acc1-acc2) > 50) || (acc1 < 10) || (acc2 < 10)) {
+		transmit_string("--APPS--");
 		return 1;
 	}
 	//if there is no fault occurring, disable APPS flag if it is triggered and continue execution.
 	else {
-		APPS_flag = 0;
-		//TODO: @lucas toggle fault LEDs on dashboard corresponding to fault
-//		GPIOA_PSOR |= 1<<PTD7;
-	//	GPIOB_PSOR |= 1<<PTE7;		/* Turn off fault LED*/
 		return 0;
 	}
 }
 
 //returns 1 if APBS fault, 0 if no fault (checks that acc is not depressed when brake is depressed >20%)
 int BSE_Fault(uint8_t brakeAngle, uint8_t acc1, uint8_t acc2){
-	if((BSE_flag) && ((acc1 > 64 || acc2 > 64) && brakeAngle > 0x4B)) { //1000 is 20% of 5000mV
-
+	if((BSE_flag) && (acc1 > 100 || acc2 > 100)) { //1000 is 20% of 5000mV
+		transmit_string("--BSE--");
 		return 1;
 	}
-	else if((acc1 > 64 || acc2 > 64) && brakeAngle > 0x4B){
+	else if((acc1 > 100 || acc2 > 100) && brakeAngle > 0x55){
 		BSE_flag = 1;
-		BSE_faultcount++;
 		//TODO: @lucas toggle fault LEDs on dashboard corresponding to fault
-		GPIOA_PCOR |= 1<<PTD7;
-		GPIOB_PCOR |= 1<<PTE7;		/*Turn on acc/bse fault LED*/
-
+		transmit_string("--BSE--");
+		return 1;
 	}
-	else if (acc1 < 13 && acc2 < 13){
+	else if ((BSE_flag) && (acc1 < 100 && acc2 < 100)){
 		BSE_flag = 0;
 		//TODO: @lucas toggle fault LEDs on dashboard corresponding to fault
-	//	GPIOA_PSOR |= 1<< PTD7;
-		//GPIOB_PSOR |= 1<<PTE7;		/* Turn off fault PTA3 LED*/
 		return 0;
 	}
+	return 0;
 
 }
-
-////returns 0 if the fault exit condition has been satisfied. returns 1 if not.
-//int Fault_Not_Resolved(uint8_t acc1, uint8_t acc2){
-//	if(BSE_flag){
-//		if(acc1 < 250 || acc2 < 250){ //if acc1 and acc2 show accelerator is less than 5% clear fault    250 is 5% of 5000mV
-//			BSE_flag = 0;
-//			//TODO: @lucas toggle fault LEDs on dashboard corresponding to fault
-//			GPIOB_PSOR |= 1<<PTE7;		/* Turn off fault PTA3 LED*/
-//			return 0;
-//		}
-//	}
-//	if(APPS_flag){
-//		if(!APPS_Fault(acc1, acc2)){ //if APPS signals are within 10%, clear APPS fault
-//			APPS_flag = 0;
-//			//TODO: @lucas toggle fault LEDs on dashboard corresponding to fault
-//			GPIOB_PSOR |= 1<<PTE7;		/* Turn off fault LED*/
-//			return 0;
-//		}
-//	}
-//	return 1;
-//}
-
 
 //TODO: @Arnav test the averaging function
 //sets the throttle value based on the value of received from the front ECU for each wheel.
@@ -278,12 +241,20 @@ void Speed (uint8_t Speed)
 
 }
 
-void Fault_LED(uint8_t IMD, uint8_t BMS, uint8_t BSPD, uint8_t APPS)
+void Fault_LED(uint8_t IMD, uint8_t BMS)
 {
-	if(IMD != 0)  FGPIOA_PSOR = 1 << 27;
-	if(BMS != 0)  FGPIOB_PSOR = 1 << 26;
-	if(BSPD != 0) FGPIOB_PSOR = 1 <<  7;
-	if(APPS != 0) FGPIOA_PSOR = 1 <<  3;
+	if(IMD != 0) {
+		GPIOA_PSOR |= 1 << 27;
+	}
+	else {
+		GPIOA_PCOR |= 1 << 27;
+	}
+	if(BMS != 0) {
+		GPIOB_PSOR |= 1 << 26;
+	}
+	else {
+		GPIOB_PCOR |= 1 << 26;
+	}
 	return;
 }
 

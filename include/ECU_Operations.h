@@ -28,7 +28,7 @@ void set_Throttle_Value(uint8_t,uint8_t);
 void Speed(uint8_t);
 
 // sets the Fault LEDS
-void Fault_LED(uint8_t, uint8_t, uint8_t, uint8_t);
+void Fault_LED(uint8_t, uint8_t);
 
 //sets Torque Vectoring LEDs based upon flag calculated in the set_throttle Value function
 void TorqV_LED(uint16_t, uint16_t);

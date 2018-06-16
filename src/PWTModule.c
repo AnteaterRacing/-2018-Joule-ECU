@@ -43,8 +43,8 @@ void init_PWTModule(void)  {
 /* PWTRDY (PWT Pulse Width valid = 0 (default) */
 /* PWTOV (PWT Counter OVerflow) = 0 (default, no overflow) */
 
-  SIM_PINSEL1 &= ~SIM_PINSEL1_PWTIN0PS_MASK; /* Map PWTIN[0] to pin PTD5 (left wheel sensor) */
-  SIM_PINSEL1 &= SIM_PINSEL1_PWTIN1PS_MASK;	 /* Map PWTIN[1] to pin PTH7 (right wheel sensor) */
+//  SIM_PINSEL1 &= ~SIM_PINSEL1_PWTIN0PS_MASK; /* Map PWTIN[0] to pin PTD5 (left wheel sensor) */
+//  SIM_PINSEL1 &= SIM_PINSEL1_PWTIN1PS_MASK;	 /* Map PWTIN[1] to pin PTH7 (right wheel sensor) */
 
   PWT_R1 &= ~PWT_R1_PCLKS_MASK;				// Setting PCLKS to "0"
   PWT_R1 &= ~PWT_R1_PINSEL_MASK;			// Setting PINSEL to "0" (Selects the left wheel sensor input)

@@ -34,7 +34,6 @@ void test_ADC(uint8_t buf) {
 	transmit_char('0' + (ADC_buf[buf] % 100) / 10);
 	transmit_char('0' + ADC_buf[buf] % 10);
 	transmit_char(',');
-	transmit_string("\n\r");
 }
 
 //REAR ECU MAIN METHOD==================================================================
@@ -260,9 +259,7 @@ uint8_t addCurve(uint8_t acc) {
 	//double scaled = 21.85 * pow(1.01, acc) - 21.85;
 	//uint8_t output = (uint8_t) (scaled);
 	//return output;
-
 	scaled = 0;
-
 	if(acc <= 64){
 		scaled = pow(acc, 2) / 32;
 	}
@@ -276,21 +273,7 @@ uint8_t addCurve(uint8_t acc) {
 
 	output = (uint8_t) (scaled);
 	return output;
-
-
 }
-//NEW THROTTLE CURVE
-//	if(acc > 212){ //TODO: @arnav test
-//		return 255;
-//	}
-
-//	else{
-//		//scaling using 1.02^x function (more exponential)
-//		double scaled = 136 * pow(1.005, acc) - 137;
-//		uint8_t output = (uint8_t) (scaled);
-//		return output;
-//	}
-//}
 
 int main(void) {
 	init_ECU();	//initialize front ECU settings
@@ -299,11 +282,6 @@ int main(void) {
 	telemetry_TX_buffer[0] = FrontToRearTelemetryMessageSize;
 	data_RX_buffer[0] = RearToFrontDataMessageSize;
 	telemetry_RX_buffer[0] = RearTelemetryMessageSize;
-
-
-	//setting outputs
-//	GPIOA_PDDR |= 1 << 26 /*PTD2*/| 1 << 28/*PTD4*/| 1 << 31/*PTD7*/| 1 << 18/*PTC2*/;
-
 
 	while (1) {
 		if(transmit_timer > 100) {
@@ -329,14 +307,14 @@ int main(void) {
 		}
 		//TODO: @Jeffery @Lucas implement fault checking on vehicle
 		//if an APPS or BSE fault occurs, set the accelerator signal to 0 to prevent throttle output.
-//		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
-//			data_TX_buffer[AcceleratorL] = 0;
-//			data_TX_buffer[AcceleratorR] = 0;
-//			data_TX_buffer[FrontFault] = 0xFF;
-//			//TODO: trigger APPS or BSE fault LED
-//		}
-//		else {
-
+		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
+			data_TX_buffer[AcceleratorL] = 0;
+			data_TX_buffer[AcceleratorR] = 0;
+			data_TX_buffer[FrontFault] = 0xFF;
+			GPIOB_PCOR |= 1 << PTE7;
+		}
+		else {
+			GPIOB_PSOR |= 1 << PTE7;
 		/*TorqueVectoringBias params*/
 		/*Resting -> Depressed
 		4B - 60 brakes
@@ -349,9 +327,10 @@ int main(void) {
 		float B = TorqueVectoringBias/10;
 		float A = 1 - B;
 //		float C = -A;
-		accval = addCurve(ADC_buf[1]);
+		if(ADC_buf[1] > 50) {
+			accval = ADC_buf[1] - 50;
+		}
 		steeringval = ADC_buf[2]; //steering potentiometer value
-		steeringval = steeringval + 7; //offset to compensate for sensor placement error
 		//TORQUE VECTORING BASIC ALGORITHM
 		//TODO: @Reza test this functionality based on NEW Steering Pot
 		if (steeringval < 108) { //left turn
@@ -368,8 +347,14 @@ int main(void) {
 		}
 
 			data_TX_buffer[FrontFault] = 0x00;
-//		}
-		TorqV_LED(data_TX_buffer[AcceleratorL],data_TX_buffer[AcceleratorR]);	//Torque Vectoring LED
+		}
+
+		test_ADC(0);
+		test_ADC(1);
+		test_ADC(2);
+		test_ADC(3);
+		transmit_string("\n\r");
+//		TorqV_LED(data_TX_buffer[AcceleratorL],data_TX_buffer[AcceleratorR]);	//Torque Vectoring LED
 		data_TX_buffer[SteeringAngle] = ADC_buf[2];
 		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
 		data_TX_buffer[TVBias] = TorqueVectoringBias;
@@ -377,8 +362,8 @@ int main(void) {
 		data_TX_buffer[Heartbeat] = heartbeat;
 
 		//sets fault LED values based on data from rear
-//		Fault_LED(data_RX_buffer[IMDFault], data_RX_buffer[BMSFault], data_RX_buffer[BSPDFault], data_TX_buffer[FrontFault]);
-
+		Fault_LED(data_RX_buffer[IMDFault], data_RX_buffer[BMSFault]);
+		set_Throttle_Value(data_TX_buffer[AcceleratorL], data_TX_buffer[AcceleratorR]);
 		//transmitting telemetry data to rear ECU
 		telemetry_TX_buffer[WheelSpeed_L] = WheelSpeed[leftWheel];
 		telemetry_TX_buffer[WheelSpeed_R] = WheelSpeed[rightWheel];

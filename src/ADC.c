@@ -26,8 +26,12 @@ void init_ADC(void)  {
 	NVIC_SetPriority(ADC0_IRQn,0);
 
 	SIM_SCGC |= SIM_SCGC_ADC_MASK;			/* Enable bus clock to ADC module */
-
-	ADC_APCTL1 = 0x0000FFFF;              	/* Disables the IO Control of all ADC channel pins */
+#ifndef AuxECU
+	ADC_APCTL1 = 0x000003FF;              	/* Disables the IO Control of 0-9 ADC channel pins */
+#endif
+#ifdef AuxECU
+	ADC_APCTL1 = 0x0000FFFF;
+#endif
 	ADC_SC3  = 0x00000003;					/* Select ADCACLK, no divide, 12 bit conversion */
 											/* ADLPC = 0 (default): hi speed config */
 											/* ADIV = 0 (default): clock rate = input clock/1 */
