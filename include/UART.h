@@ -21,7 +21,7 @@ void recieve_and_echo_char(void);
 
 #ifdef runningMode
 int UARTcount;
-uint8_t UART_buffer[28]; //stores captured values to send to xBee
+uint8_t UART_buffer[26]; //stores captured values to send to xBee
 #endif
 
 

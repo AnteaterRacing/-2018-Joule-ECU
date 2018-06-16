@@ -29,7 +29,7 @@ void init_UART(void)  {
 
 	UARTcount = 0;						/* Initialize the counter*/
 	uint8_t i = 0;
-	for(; i < 28; i++) { 			//initialize buffer to 0s
+	for(; i < 26; i++) { 			//initialize buffer to 0s
 		UART_buffer[i] = 'a'+i;
 	}
 
@@ -45,7 +45,7 @@ uint8_t it = 1;
 void UART2_IRQHandler(void) {
 	(void)UART2_S1; 									//clear TDRE by reading UART2_S1
 	if(send == 3) {
-		if(UARTcount > 27){									/* Buffer is of size 26, reset counter and make new line */
+		if(UARTcount > 25){									/* Buffer is of size 26, reset counter and make new line */
 			UARTcount = -1;
 			UART2_D = 0xFF;
 		}
@@ -77,8 +77,8 @@ void init_UART(void)  {
 									 /* WAKE (Recvr Wakeup Method) = 0 */
 									 /*      (default, idle-line wakeup) */
 	UART2_C2 |= 1<<UART_C2_TE_SHIFT | 1<<UART_C2_RE_SHIFT; //enable TX/RX. no interrupts (use polling)
-	SIM_PINSEL1 &= ~SIM_PINSEL1_UART2PS_MASK;//setting IO to PTD6 and PTD7
-//	SIM_PINSEL1 |= SIM_PINSEL1_UART2PS_MASK; //setting IO to PTI0 PTI1
+	//SIM_PINSEL1 &= ~SIM_PINSEL1_UART2PS_MASK; /* UART2PS=0 (default); */
+	SIM_PINSEL1 |= SIM_PINSEL1_UART2PS_MASK;
 }
 
 /* Function to Transmit single Char */

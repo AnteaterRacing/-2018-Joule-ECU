@@ -34,7 +34,6 @@
 #ifndef PWT_H_
 #define PWT_H_
 #include "derivative.h"
-#include "main.h"
 #ifdef __cplusplus
 extern "C" {
 #endif

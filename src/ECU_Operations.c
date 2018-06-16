@@ -33,10 +33,9 @@ uint8_t Throttle_R_buffer[20] = {0};
 
 //returns 1 if fault, 0 if no fault. (checks acc pedal transfer functions)
 int APPS_Fault(uint8_t acc1, uint8_t acc2){
-	//500 is 10% of 5000mV which is the max value for ADC inputs
+	//50 is 20% of 255 which is the max value for ADC inputs
 	//if apps flag has been already triggered but fault is still occurring, do nothing
 	if((abs(acc1-acc2) > 50) || (acc1 < 10) || (acc2 < 10)) {
-		transmit_string("--APPS--");
 		return 1;
 	}
 	//if there is no fault occurring, disable APPS flag if it is triggered and continue execution.
@@ -47,19 +46,15 @@ int APPS_Fault(uint8_t acc1, uint8_t acc2){
 
 //returns 1 if APBS fault, 0 if no fault (checks that acc is not depressed when brake is depressed >20%)
 int BSE_Fault(uint8_t brakeAngle, uint8_t acc1, uint8_t acc2){
-	if((BSE_flag) && (acc1 > 100 || acc2 > 100)) { //1000 is 20% of 5000mV
-		transmit_string("--BSE--");
+	if((BSE_flag) && (acc1 > 100 || acc2 > 100)) { //100 is 30% of 255
 		return 1;
 	}
 	else if((acc1 > 100 || acc2 > 100) && brakeAngle > 0x55){
 		BSE_flag = 1;
-		//TODO: @lucas toggle fault LEDs on dashboard corresponding to fault
-		transmit_string("--BSE--");
 		return 1;
 	}
 	else if ((BSE_flag) && (acc1 < 100 && acc2 < 100)){
 		BSE_flag = 0;
-		//TODO: @lucas toggle fault LEDs on dashboard corresponding to fault
 		return 0;
 	}
 	return 0;
@@ -74,24 +69,6 @@ void set_Throttle_Value(uint8_t leftpos, uint8_t rightpos){
 
 	Throttle_L = leftpos;
 	Throttle_R = rightpos;
-//
-//	int i = 0;
-//	//rotating the current buffer of throttle samples
-//	for(; i < 19; i++) {
-//		Throttle_L_buffer[i] = Throttle_L_buffer[i+1];
-//		Throttle_R_buffer[i] = Throttle_R_buffer[i+1];
-//	}
-//	//updating with new sample
-//	Throttle_L_buffer[19] = leftpos;
-//	Throttle_R_buffer[19] = rightpos;
-//	i = 0;
-//	//computing the average
-//	for(; i < 20; i++) {
-//		Throttle_L += Throttle_L_buffer[i];
-//		Throttle_R += Throttle_R_buffer[i];
-//	}
-//	FTM2_C0V = 4*Throttle_L/20;
-//	FTM2_C1V = 4*Throttle_R/20;
 	FTM2_C0V = 4*Throttle_L;
 	FTM2_C1V = 4*Throttle_R;
 }

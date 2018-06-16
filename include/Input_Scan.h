@@ -46,10 +46,4 @@ extern uint32_t C_D;
 
 #endif
 
-#ifdef AuxECU
-int i;
-int badval;
-uint8_t count;
-#endif
-
 #endif /* INPUT_SCAN_H_ */

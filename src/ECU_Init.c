@@ -24,22 +24,20 @@
 //initializes ECU subsystems
 void init_ECU(){
 	init_ADC(); 		//initialize Analog to Digital Converter Module
-	GPIO_Init();
 
 	//LED initialization
 	//PCOR = Port Clear Output Register, PSOR = Port Set Output Register
 	//PDDR = Port Data Direction Register, PIDR = Port Input Disable Register
 	//GPIOB = GPIO bank B
-	GPIOB_PDDR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1;   				/* Output ports to LEDs + output pin */
-	GPIOB_PSOR |= 1<<PTE7 | 1<< PTH0 | 1<<PTH1; 				/* Turn off all LEDs */
+	GPIOB_PDDR |= 1<<PTE7;   				/* Output ports to LEDs + output pin */
+	GPIOB_PSOR |= 1<<PTE7; 				/* Turn off all LEDs */
 
-	init_PIT0();     				// Initialize PIT0
 	init_UART(); 					//Initialize UART
-	CAN_Init();					//initialize CAN bus TODO: @arnav uncomment when CAN initialization fixed
+	//CAN_Init();					//initialize CAN bus TODO: uncomment when CAN initialization fixed
 	init_PWM();				      	//initialize PWM Module and FTM components
 	init_FTM ();  	              	/* Initialize FTM module*/
-//	init_WheelSpeed();				//TODO: @arnav uncomment and see if this breaks anything
-	init_clks_FEE_40MHz();        	/* bKEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
+//	init_WheelSpeed();
+	init_clks_FEE_40MHz();        	/* KEA128 clks FEE, 8MHz xtal: core 40 MHz, bus 20MHz */
 
 }
 

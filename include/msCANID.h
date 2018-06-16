@@ -111,19 +111,19 @@
 
 /* Message Object 10 */
 #define MO10_ID_TYPE_CAN0     CAN_STANDARD
-#define MO10_ID_CAN0          0x010
+#define MO10_ID_CAN0          0x08A 
 
 /* Message Object 11 */
 #define MO11_ID_TYPE_CAN0     CAN_STANDARD
-#define MO11_ID_CAN0          0x011
+#define MO11_ID_CAN0          0x08B
 
 /* Message Object 12 */
 #define MO12_ID_TYPE_CAN0     CAN_STANDARD
-#define MO12_ID_CAN0          0x012
+#define MO12_ID_CAN0          0x08C
 
 /* Message Object 13 */
 #define MO13_ID_TYPE_CAN0     CAN_STANDARD
-#define MO13_ID_CAN0          0x013
+#define MO13_ID_CAN0          0x08D
 
 /* Message Object 14 */
 #define MO14_ID_TYPE_CAN0     CAN_STANDARD
