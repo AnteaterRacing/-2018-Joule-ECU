@@ -26,18 +26,13 @@
 #define PTH1 25          						/* Port PTH1 output to green LED */
 #define Temp_Threshold 153						/* high temperature threshold to reduce power to motors 153 = 3V = 100 Celsius */
 uint8_t started = 0;
-
+uint8_t output = 0;
+double scaled = 0;
 
 //converts linear function accelerator input to exponential function output
 uint8_t addCurve(uint8_t acc) {
-	//scaling using 1.01^x function (less exponential)
-	double scaled = 21.85 * pow(1.01, acc) - 21.85;
-	uint8_t output = (uint8_t) (scaled);
-
-	//scaling using 1.02^x function (more exponential)
-//	double scaled = 1.64 * pow(1.02, acc) - 1.64;
-//	uint8_t output = (uint8_t) (scaled);
-
+	scaled = ((double)(acc-50))*255/205;
+	output = (uint8_t)scaled;
 	return output;
 }
 
@@ -123,7 +118,7 @@ int main(void)
 		//data_TX_buffer[TractionLED] = 0; //TODO: program traction LED
 
 		IMD_Fault  = (GPIOA_PDIR & (1<<28))  >> 28; 		//pin D4 = bit A28 = IMD
-		BMS_Fault  = (GPIOA_PDIR & (1<<13))  >> 13;		//pin B5 = bit A13 = BMS    *NOTE BMS FAULT IS SHORTED WITH BSPD FAULT
+		BMS_Fault  = (GPIOA_PDIR & (1<<13))  >> 13;	//pin B5 = bit A13 = BMS    *NOTE BMS FAULT IS SHORTED WITH BSPD FAULT
 		BSPD_Fault = (GPIOA_PDIR & (1<<12))  >> 12;     //pin B4 = bit A12 = BSPD
 
 		//checking for IMD, BMS, & BSPD Faults:
@@ -220,15 +215,15 @@ int main(void) {
 		Start = (GPIOB_PDIR & (1<<15)) >> 15;
 		//TODO: @Jeffery @Lucas implement fault checking on vehicle
 		//if an APPS or BSE fault occurs, set the accelerator signal to 0 to prevent throttle output.
-		/*if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
-			data_TX_buffer[AcceleratorL] = 0;
-			data_TX_buffer[AcceleratorR] = 0;
-			data_TX_buffer[FrontFault] = 0xFF;
-			GPIOB_PCOR |= 1 << PTE7;
-//			//TODO: trigger APPS or BSE fault LED
-		}
-		else {
-			GPIOB_PSOR |= 1 << PTE7;
+//		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
+//			data_TX_buffer[AcceleratorL] = 0;
+//			data_TX_buffer[AcceleratorR] = 0;
+//			data_TX_buffer[FrontFault] = 0xFF;
+//			GPIOB_PCOR |= 1 << PTE7;
+////			//TODO: trigger APPS or BSE fault LED
+//		}
+//		else {
+//			GPIOB_PSOR |= 1 << PTE7;
 		/*TorqueVectoringBias params*/
 		/*Resting -> Depressed
 		4B - 60 brakes
@@ -241,8 +236,10 @@ int main(void) {
 		float B = TorqueVectoringBias/10;
 		float A = 1 - B;
 		if(ADC_buf[1] > 50) {
-			accval = ADC_buf[1] - 50;
-		//}
+			accval = addCurve(ADC_buf[1]);
+		} else {
+			accval = 0;
+		}
 		steeringval = ADC_buf[2]; //steering potentiometer value
 		steeringval = steeringval + 7; //offset to compensate for sensor placement error
 		//TORQUE VECTORING BASIC ALGORITHM
@@ -261,7 +258,7 @@ int main(void) {
 		}
 
 			data_TX_buffer[FrontFault] = 0x00;
-		}
+//		}
 	//	TorqV_LED(data_TX_buffer[AcceleratorL],data_TX_buffer[AcceleratorR]);	//Torque Vectoring LED
 		data_TX_buffer[SteeringAngle] = ADC_buf[2];
 		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
