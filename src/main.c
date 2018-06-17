@@ -123,7 +123,8 @@ int main(void)
 		//data_TX_buffer[TractionLED] = 0; //TODO: program traction LED
 
 		IMD_Fault  = (GPIOA_PDIR & (1<<28))  >> 28; 		//pin D4 = bit A28 = IMD
-		BMS_Fault  = (GPIOA_PDIR & (1<<26))  >> 26;		//pin D2 = bit A22 = BMS
+		BMS_Fault  = (GPIOA_PDIR & (1<<13))  >> 13;		//pin B5 = bit A13 = BMS    *NOTE BMS FAULT IS SHORTED WITH BSPD FAULT
+		BSPD_Fault = (GPIOA_PDIR & (1<<12))  >> 12;     //pin B4 = bit A12 = BSPD
 
 		//checking for IMD, BMS, & BSPD Faults:
 		if(IMD_Fault) {
@@ -219,7 +220,7 @@ int main(void) {
 		Start = (GPIOB_PDIR & (1<<15)) >> 15;
 		//TODO: @Jeffery @Lucas implement fault checking on vehicle
 		//if an APPS or BSE fault occurs, set the accelerator signal to 0 to prevent throttle output.
-		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
+		/*if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
 			data_TX_buffer[AcceleratorL] = 0;
 			data_TX_buffer[AcceleratorR] = 0;
 			data_TX_buffer[FrontFault] = 0xFF;
@@ -241,7 +242,7 @@ int main(void) {
 		float A = 1 - B;
 		if(ADC_buf[1] > 50) {
 			accval = ADC_buf[1] - 50;
-		}
+		//}
 		steeringval = ADC_buf[2]; //steering potentiometer value
 		steeringval = steeringval + 7; //offset to compensate for sensor placement error
 		//TORQUE VECTORING BASIC ALGORITHM
