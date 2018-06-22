@@ -61,6 +61,8 @@ uint8_t Orion2_RX_buffer[Orion2_Size+1] = {0};
 uint8_t Orion3_RX_buffer[Orion3_Size+1] = {0};
 uint8_t Orion4_RX_buffer[Orion4_Size+1] = {0};
 uint8_t Orion5_RX_buffer[Orion5_Size+1] = {0};
+uint16_t slowdown=0;
+uint8_t timer = 0;
 
 void transmit_telemetry_data(void);
 void wait_for_start_seq(void);
@@ -94,12 +96,15 @@ int main(void)
 	data_RX_buffer[0] = FrontToRearDataMessageSize;
 	telemetry_RX_buffer[0] = FrontToRearTelemetryMessageSize;
 	GPIOA_PDDR |= 1 << 27; //RTDS
-	GPIOA_PIDR &= ~((1<<28) | (1<<26)); //IMD Fault and BMS Fault
+	GPIOA_PIDR &= ~((1<<28) | (1<<26) | (1<<13) | (1<<12)); //IMD Fault and BMS Fault
 	GPIOA_PIDR |= 1 << 27;
 	GPIOA_PCOR |= 1 << 27;
 	IMD_Fault = 0;
 	BMS_Fault = 0;
 	BSPD_Fault = 0;
+	data_TX_buffer[IMDFault] = 0;
+	data_TX_buffer[BMSFault] = 0;
+	data_TX_buffer[BSPDFault] = 0;
 
 	wait_for_start_seq();						//wait for start sequence to turn on tractive system
 
@@ -147,10 +152,11 @@ int main(void)
 //			set_Throttle_Value(data_RX_buffer[AcceleratorL]*0.5,data_RX_buffer[AcceleratorR]*0.5); //reduce max throttle by 50%
 //		}
 //		else {
-		set_Throttle_Value(data_RX_buffer[AcceleratorL],data_RX_buffer[AcceleratorR]);//set throttle value for motor controllers
+//		set_Throttle_Value(data_RX_buffer[AcceleratorL],data_RX_buffer[AcceleratorR]);//set throttle value for motor controllers
 		data_TX_buffer[5] = data_RX_buffer[AcceleratorL];
 		data_TX_buffer[6] = data_RX_buffer[AcceleratorR];
-//		data_TX_buffer[MotorTempLED] = 0;	//turn off motor temp LED on dashboard
+
+		set_Throttle_Value(data_RX_buffer[AcceleratorL],data_RX_buffer[AcceleratorR]);
 //		}
 
 		//transmit telemetry data to xBee if in running car mode
@@ -170,11 +176,32 @@ void wait_for_start_seq(void) {
 	while(!data_RX_buffer[StartButton]/* && ADC_buf[3] < 0x50*/) {
 		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
+
+		IMD_Fault  = (GPIOA_PDIR & (1<<28))  >> 28; 		//pin D4 = bit A28 = IMD
+		BMS_Fault  = (GPIOA_PDIR & (1<<13))  >> 13;	//pin B5 = bit A13 = BMS    *NOTE BMS FAULT IS SHORTED WITH BSPD FAULT
+		BSPD_Fault = (GPIOA_PDIR & (1<<12))  >> 12;     //pin B4 = bit A12 = BSPD
+
+		//checking for IMD, BMS, & BSPD Faults:
+		if(IMD_Fault) {
+			data_TX_buffer[IMDFault] = 0xFF;
+		} else {
+			data_TX_buffer[IMDFault] = 0x00;
+		}
+		if(BMS_Fault) {
+			data_TX_buffer[BMSFault] = 0xFF;
+		} else {
+			data_TX_buffer[BMSFault] = 0x00;
+		}
+		if(BSPD_Fault) {
+			data_TX_buffer[BSPDFault] = 0xFF;
+		} else {
+			data_TX_buffer[BSPDFault] = 0x00;
+		}
 	}
 
-	GPIOB_PSOR |= 1 << 27; 	//RTDS is bit 15 of GPIOB. set RTDS on.
+	GPIOA_PSOR |= 1 << 27; 	//RTDS is bit 15 of GPIOB. set RTDS on.
 	delay();//leave RTDS on for 1 sec
-	GPIOB_PCOR |= 1 << 27;	//set RTDS off.
+	GPIOA_PCOR |= 1 << 27;	//set RTDS off.
 }
 
 #endif

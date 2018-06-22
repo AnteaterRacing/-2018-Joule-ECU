@@ -103,7 +103,7 @@ void PIT_CH0_IRQHandler(void)
 void GPIO_Init(void)
 {
 			  //Rear ECU Data Direction, 1 is output, 0 is not output
-	GPIOA_PDDR = 1 << 27/*RTDS*/ ;
+//	GPIOA_PDDR = 1 << 27/*RTDS*/ ;
 //	GPIOB_PDDR = 1 << 7/*Charge LED*/;
 //	GPIOC_PDDR = 1 << 4/*ErrorLED*/;
 

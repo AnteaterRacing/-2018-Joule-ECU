@@ -35,7 +35,7 @@ uint8_t Throttle_R_buffer[20] = {0};
 int APPS_Fault(uint8_t acc1, uint8_t acc2){
 	//50 is 20% of 255 which is the max value for ADC inputs
 	//if apps flag has been already triggered but fault is still occurring, do nothing
-	if((abs(acc1-acc2) > 50) || (acc1 < 10) || (acc2 < 10)) {
+	if((abs(acc1-acc2) > 100) || (acc1 < 60) || (acc2 < 60)) {
 		return 1;
 	}
 	//if there is no fault occurring, disable APPS flag if it is triggered and continue execution.
@@ -49,7 +49,7 @@ int BSE_Fault(uint8_t brakeAngle, uint8_t acc1, uint8_t acc2){
 	if((BSE_flag) && (acc1 > 100 || acc2 > 100)) { //100 is 30% of 255
 		return 1;
 	}
-	else if((acc1 > 100 || acc2 > 100) && brakeAngle > 0x55){
+	else if((acc1 > 100 || acc2 > 100) && brakeAngle > 0x65){
 		BSE_flag = 1;
 		return 1;
 	}
