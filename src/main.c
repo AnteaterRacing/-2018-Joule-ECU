@@ -75,11 +75,11 @@ int main(void)
 	Config_CAN_MB(0,1,RXDF, FrontToRearDataMessageID);//messagebuffer to receive the FrontToRearDataMessage
 	Config_CAN_MB(0,2,TXDF, RearToFrontDataMessageID);//messagebuffer to receive the FrontToRearTelemetryMessage
 	Config_CAN_MB(0,3,RXDF, FrontToRearTelemetryMessageID);//messagebuffer to transmit the RearToFrontDataMessage
-	Config_CAN_MB(0,4,RXDF, Orion1_ID);//ID 28
-	Config_CAN_MB(0,5,RXDF, Orion2_ID);//ID 29
-	Config_CAN_MB(0,6,RXDF, Orion3_ID);//ID 30
-	Config_CAN_MB(0,7,RXDF, Orion4_ID);//ID 31
-	Config_CAN_MB(0,8,RXDF, Orion5_ID);//ID 32
+//	Config_CAN_MB(0,4,RXDF, Orion1_ID);//ID 28
+//	Config_CAN_MB(0,5,RXDF, Orion2_ID);//ID 29
+//	Config_CAN_MB(0,6,RXDF, Orion3_ID);//ID 30
+//	Config_CAN_MB(0,7,RXDF, Orion4_ID);//ID 31
+//	Config_CAN_MB(0,8,RXDF, Orion5_ID);//ID 32
 
 	//NEW BMS SETTINGS
 	//5 messages, ID = {x28, x29, x30, x31, x32}
@@ -112,11 +112,11 @@ int main(void)
 	while(1) {
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 		CAN_ReceiveData(FrontToRearTelemetryMessageID,telemetry_RX_buffer);
-		CAN_ReceiveData(Orion1_ID, Orion1_RX_buffer);
-		CAN_ReceiveData(Orion2_ID, Orion2_RX_buffer);
-		CAN_ReceiveData(Orion3_ID, Orion3_RX_buffer);
-		CAN_ReceiveData(Orion4_ID, Orion4_RX_buffer);
-		CAN_ReceiveData(Orion5_ID, Orion5_RX_buffer);
+//		CAN_ReceiveData(Orion1_ID, Orion1_RX_buffer);
+//		CAN_ReceiveData(Orion2_ID, Orion2_RX_buffer);
+//		CAN_ReceiveData(Orion3_ID, Orion3_RX_buffer);
+//		CAN_ReceiveData(Orion4_ID, Orion4_RX_buffer);
+//		CAN_ReceiveData(Orion5_ID, Orion5_RX_buffer);
 		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
 
 		data_TX_buffer[Speedometer] = (uint8_t)((WheelSpeed[leftWheel]+WheelSpeed[rightWheel])/2);
@@ -201,6 +201,7 @@ void wait_for_start_seq(void) {
 
 	GPIOA_PSOR |= 1 << 27; 	//RTDS is bit 15 of GPIOB. set RTDS on.
 	delay();//leave RTDS on for 1 sec
+	delay();
 	GPIOA_PCOR |= 1 << 27;	//set RTDS off.
 }
 
@@ -231,7 +232,7 @@ int main(void) {
 	Config_CAN_MB(0, 3, TXDF, FrontToRearTelemetryMessageID); //messagebuffer to receive the RearToFrontDataMessage
 	Config_CAN_MB(0,4,RXDF, Orion1_ID);//ID 28
 
-	GPIOB_PIDR &= ~(1 << 15);
+	GPIOB_PIDR &= ~(1 << 15); //set start button as input
 	GPIOA_PDDR |= 1 << 27;//imd fault led
 	GPIOB_PDDR |= 1 << 26;//bms fault led
 	GPIOA_PIDR |= 1 << 27;
@@ -242,15 +243,14 @@ int main(void) {
 		Start = (GPIOB_PDIR & (1<<15)) >> 15;
 		//TODO: @Jeffery @Lucas implement fault checking on vehicle
 		//if an APPS or BSE fault occurs, set the accelerator signal to 0 to prevent throttle output.
-//		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
-//			data_TX_buffer[AcceleratorL] = 0;
-//			data_TX_buffer[AcceleratorR] = 0;
-//			data_TX_buffer[FrontFault] = 0xFF;
-//			GPIOB_PCOR |= 1 << PTE7;
-////			//TODO: trigger APPS or BSE fault LED
-//		}
-//		else {
-//			GPIOB_PSOR |= 1 << PTE7;
+		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
+			data_TX_buffer[AcceleratorL] = 0;
+			data_TX_buffer[AcceleratorR] = 0;
+			data_TX_buffer[FrontFault] = 0xFF;
+			GPIOB_PCOR |= 1 << PTE7;
+		}
+		else {
+			GPIOB_PSOR |= 1 << PTE7;
 		/*TorqueVectoringBias params*/
 		/*Resting -> Depressed
 		4B - 60 brakes
@@ -262,14 +262,13 @@ int main(void) {
 		*/
 		float B = TorqueVectoringBias/10;
 		float A = 1 - B;
-		if(ADC_buf[1] > 50) {
-			accval = addCurve(ADC_buf[1]);
+		if(ADC_buf[0] > 50) {
+			accval = addCurve(ADC_buf[0]);
 		} else {
 			accval = 0;
 		}
 		steeringval = ADC_buf[2]; //steering potentiometer value
-		steeringval = steeringval + 7; //offset to compensate for sensor placement error
-		//TORQUE VECTORING BASIC ALGORITHM
+//TORQUE VECTORING BASIC ALGORITHM
 		//TODO: @Reza test this functionality based on NEW Steering Pot
 		if (steeringval < 108) { //left turn
 			data_TX_buffer[AcceleratorR] = accval * ((A / 107) * steeringval + B); //A and B added
@@ -285,7 +284,7 @@ int main(void) {
 		}
 
 			data_TX_buffer[FrontFault] = 0x00;
-//		}
+		}
 	//	TorqV_LED(data_TX_buffer[AcceleratorL],data_TX_buffer[AcceleratorR]);	//Torque Vectoring LED
 		data_TX_buffer[SteeringAngle] = ADC_buf[2];
 		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
