@@ -48,7 +48,7 @@ int BSE_Fault(uint8_t brakeAngle, uint8_t acc1, uint8_t acc2){
 	if((BSE_flag) && (acc1 > 50 || acc2 > 50)) { //100 is 30% of 255
 		return 1;
 	}
-	else if((acc1 > 50 || acc2 > 50) && brakeAngle > 0x41){
+	else if((acc1 > 50 || acc2 > 50) && brakeAngle > 0x55){
 		BSE_flag = 1;
 		return 1;
 	}

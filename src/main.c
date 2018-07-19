@@ -65,7 +65,7 @@ uint16_t slowdown=0;
 uint8_t timer = 0;
 
 void transmit_telemetry_data(void);
-void wait_for_start_seq(void);
+//void wait_for_start_seq(void);
 int main(void)
 {
 
@@ -106,7 +106,7 @@ int main(void)
 	data_TX_buffer[BMSFault] = 0;
 	data_TX_buffer[BSPDFault] = 0;
 
-	wait_for_start_seq();						//wait for start sequence to turn on tractive system
+	//wait_for_start_seq();						//wait for start sequence to turn on tractive system
 
 	//this runs continuously once the initialization has completed
 	while(1) {
@@ -169,12 +169,12 @@ int main(void)
 //TODO: @Jeffery @Lucas test start button
 //waiting for the start sequence to be pressed before starting the vehicle
 //start button press and brake press = start condition.
-void wait_for_start_seq(void) {
+/*void wait_for_start_seq(void) {
 
 	set_Throttle_Value(0,0);//zeroing out throttle value (precautionary).
 	GPIOA_PCOR |= 1<<27; //make sure RTDS is off
-	while(!data_RX_buffer[StartButton]/* && ADC_buf[3] < 0x50*/) {
-		CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
+	while(!data_RX_buffer[StartButton]/* && ADC_buf[3] < 0x50*///) {
+/*	CAN_TransmitData(RearToFrontDataMessageID,data_TX_buffer);
 		CAN_ReceiveData(FrontToRearDataMessageID,data_RX_buffer);
 
 		IMD_Fault  = (GPIOA_PDIR & (1<<28))  >> 28; 		//pin D4 = bit A28 = IMD
@@ -203,7 +203,7 @@ void wait_for_start_seq(void) {
 	delay();//leave RTDS on for 1 sec
 	delay();
 	GPIOA_PCOR |= 1 << 27;	//set RTDS off.
-}
+} */
 
 #endif
 

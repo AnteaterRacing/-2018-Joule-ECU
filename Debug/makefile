@@ -2,7 +2,7 @@
 # Automatically-generated file. Do not edit!
 ################################################################################
 
-#Progress monitor hint: 25
+#Progress monitor hint: 2
 first : all
 -include ../makefile.init
 
@@ -16,7 +16,6 @@ RM := rm -rf
 -include subdir.mk
 -include Project_Settings/Linker_Files/subdir.mk
 -include Project_Settings/Startup_Code/subdir.mk
--include src/subdir.mk
 -include objects.mk
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -44,7 +43,7 @@ all: warning-messages explicit-dependencies ECU.elf secondary-outputs
 # Tool invocations
 ECU.elf: $(OBJS) C:/Users/Xavier/Documents/GitHub/JouleECU/Project_Settings/Linker_Files/SKEAZ_flash.ld $(USER_OBJS)
 	@echo 'Building target: $@'
-	@echo 'Executing target #26 $@'
+	@echo 'Executing target #3 $@'
 	@echo 'Invoking: Standard S32DS C Linker'
 	arm-none-eabi-gcc -o "ECU.elf" "@ECU.args"  $(USER_OBJS_QUOTED) $(LIBS_QUOTED)
 	@echo 'Finished building target: $@'
@@ -52,7 +51,7 @@ ECU.elf: $(OBJS) C:/Users/Xavier/Documents/GitHub/JouleECU/Project_Settings/Link
 
 # Other Targets
 clean:
-	-$(RM) ./*/*.d ./*/*/*.d  ./*/*.o ./*/*/*.o  $(EXECUTABLES_QUOTED)
+	-$(RM) ./*/*/*.d  ./*/*/*.o  $(EXECUTABLES_QUOTED)
 	-@echo ' '
 
 secondary-outputs:
