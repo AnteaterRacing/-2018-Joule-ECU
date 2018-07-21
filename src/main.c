@@ -31,9 +31,10 @@ double scaled = 0;
 
 //converts linear function accelerator input to exponential function output
 uint8_t addCurve(uint8_t acc) {
-	scaled = ((double)(acc-50))*255/205;
-	output = (uint8_t)scaled;
-	return output;
+//	scaled = ((double)(acc-50))*255/205;
+//	output = (uint8_t)scaled;
+//	return output;
+	return acc * 2;
 }
 
 void test_PWM(uint8_t buf) {
@@ -123,7 +124,7 @@ int main(void)
 		//data_TX_buffer[TractionLED] = 0; //TODO: program traction LED
 
 		IMD_Fault  = (GPIOA_PDIR & (1<<28))  >> 28; 		//pin D4 = bit A28 = IMD
-		BMS_Fault  = (GPIOA_PDIR & (1<<13))  >> 13;	//pin B5 = bit A13 = BMS    *NOTE BMS FAULT IS SHORTED WITH BSPD FAULT
+		BMS_Fault  = (GPIOA_PDIR & (1<<13))  >> 13;	//pin B5 = bit A13 = BMS    *NOTE BMS FftorqueAULT IS SHORTED WITH BSPD FAULT
 		BSPD_Fault = (GPIOA_PDIR & (1<<12))  >> 12;     //pin B4 = bit A12 = BSPD
 
 		//checking for IMD, BMS, & BSPD Faults:
@@ -141,7 +142,7 @@ int main(void)
 			data_TX_buffer[BSPDFault] = 0xFF;
 		} else {
 			data_TX_buffer[BSPDFault] = 0x00;
-		}
+		}f
 		//if any fault is triggered set throttle to 0
 //		if (IMD_Fault || BMS_Fault || BSPD_Fault || data_RX_buffer[FrontFault]) {
 //			set_Throttle_Value(0,0);
@@ -243,14 +244,14 @@ int main(void) {
 		Start = (GPIOB_PDIR & (1<<15)) >> 15;
 		//TODO: @Jeffery @Lucas implement fault checking on vehicle
 		//if an APPS or BSE fault occurs, set the accelerator signal to 0 to prevent throttle output.
-		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
-			data_TX_buffer[AcceleratorL] = 0;
-			data_TX_buffer[AcceleratorR] = 0;
-			data_TX_buffer[FrontFault] = 0xFF;
-			GPIOB_PCOR |= 1 << PTE7;
-		}
-		else {
-			GPIOB_PSOR |= 1 << PTE7;
+//		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
+//			data_TX_buffer[AcceleratorL] = 0;
+//			data_TX_buffer[AcceleratorR] = 0;
+//			data_TX_buffer[FrontFault] = 0xFF;
+//			GPIOB_PCOR |= 1 << PTE7;
+//		}
+//		else {
+		GPIOB_PSOR |= 1 << PTE7;
 		/*TorqueVectoringBias params*/
 		/*Resting -> Depressed
 		4B - 60 brakes
@@ -263,8 +264,11 @@ int main(void) {
 		float B = TorqueVectoringBias/10;
 		float A = 1 - B;
 		if(ADC_buf[0] > 50) {
-			accval = addCurve(ADC_buf[0]);
-		} else {
+			accval = ADC_buf[0];
+		} else if (ADC_buf[0] >= 125){
+			accval = 255;
+		}
+		else {
 			accval = 0;
 		}
 		steeringval = ADC_buf[2]; //steering potentiometer value
@@ -283,8 +287,9 @@ int main(void) {
 			data_TX_buffer[AcceleratorL] = accval;
 		}
 
-			data_TX_buffer[FrontFault] = 0x00;
-		}
+		data_TX_buffer[FrontFault] = 0x00;
+
+		data_TX_buffer[AcceleratorR] = data_TX_buffer[AcceleratorL];
 	//	TorqV_LED(data_TX_buffer[AcceleratorL],data_TX_buffer[AcceleratorR]);	//Torque Vectoring LED
 		data_TX_buffer[SteeringAngle] = ADC_buf[2];
 		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
@@ -310,6 +315,7 @@ int main(void) {
 		telemetry_TX_buffer[TireTemp_R3] = ADC_buf[9];
 	}
 }
+
 #endif
 
 #ifdef RearECU

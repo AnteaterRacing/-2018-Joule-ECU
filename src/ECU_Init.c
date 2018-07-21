@@ -33,7 +33,7 @@ void init_ECU(){
 	GPIOB_PSOR |= 1<<PTE7; 				/* Turn off all LEDs */
 
 	init_UART(); 					//Initialize UART
-	//CAN_Init();					//initialize CAN bus TODO: uncomment when CAN initialization fixed
+	CAN_Init();					//initialize CAN bus TODO: uncomment when CAN initialization fixed
 	init_PWM();				      	//initialize PWM Module and FTM components
 	init_FTM ();  	              	/* Initialize FTM module*/
 //	init_WheelSpeed();

@@ -10,7 +10,7 @@
 
 //SELECT A DEFINITION TO CHOOSE FRONT OR REAR ECU PROGRAMMING:
 #define FrontECU
-//#define FrontECU
+//#define RearECU
 //#define CAN_Fucked 		//used to revert to alternate settings if CAN bus is not functional
 #define RTDS_MASK 32768 	//used in wait_for_start_seq()
 

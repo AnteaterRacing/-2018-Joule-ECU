@@ -22,7 +22,7 @@
 #define FrontToRearTelemetryMessageIDRef 2
 
 //defining Message ID for rear to front ECU message transmit
-//size: 7 bytes: IMDFault,BMSFault,BSPDFault, Speedometer, TractionLED, TV_LED, MotorTempLED
+//size: 7 bytes: IMDFauflt,BMSFault,BSPDFault, Speedometer, TractionLED, TV_LED, MotorTempLED
 #define RearToFrontDataMessageID 11
 #define RearToFrontDataMessageSize 8
 #define RearToFrontDataMessageIDRef 3
