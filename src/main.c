@@ -258,15 +258,20 @@ int main(void) {
 
 		Steering Values
 		C2 - full right
+		Right value range is 97 in decimal
 		71 -center
+		Left Value is 92 in decimal
 		15 - full left
 		*/
-		float B = TorqueVectoringBias/10;
-		float A = 1 - B;
-		if(ADC_buf[0] > 50) {
-			accval = ADC_buf[0];
-		} else if (ADC_buf[0] >= 125){
-			accval = 255;
+		TorqueVectoringBias = 5;
+		float B = .4; // offset of curve for torque vectoring
+		float A = .6/(72); // slope of curve for left  turn torque vectoring
+		float C = .6/(77); // slope of curve for right turn torque vectoring
+		if (ADC_buf[0] >= 127){
+					accval = 255;
+		}
+		else if(ADC_buf[0] > 50) {
+			accval = 2*ADC_buf[0];
 		}
 		else {
 			accval = 0;
@@ -274,13 +279,13 @@ int main(void) {
 		steeringval = ADC_buf[2]; //steering potentiometer value
 //TORQUE VECTORING BASIC ALGORITHM
 		//TODO: @Reza test this functionality based on NEW Steering Pot
-		if (steeringval < 108) { //left turn
-			data_TX_buffer[AcceleratorR] = accval * ((A / 107) * steeringval + B); //A and B added
+		if (steeringval < 93) { //left turn calibrated for 20% margine b4 turn engaging
+			data_TX_buffer[AcceleratorR] = accval *( A*(steeringval - 21) + B); //calibrated so it is 40% at full turn
 			data_TX_buffer[AcceleratorL] = accval;
 
-		} else if (steeringval > 148) { 				//right turn
+		} else if (steeringval > 133) { 				//right turn calibrated for 20% margine
 			data_TX_buffer[AcceleratorR] = accval;
-			data_TX_buffer[AcceleratorL] = accval * ((-A / 107) * (steeringval - 148) + 1);  //-A added, 1 is always 1
+			data_TX_buffer[AcceleratorL] = accval *(C *(210-steeringval) + B);  //calibrated so it is 40% at full turn
 
 		} else { //on center steering. deadzone between 108 and 148
 			data_TX_buffer[AcceleratorR] = accval;
@@ -289,7 +294,7 @@ int main(void) {
 
 		data_TX_buffer[FrontFault] = 0x00;
 
-		data_TX_buffer[AcceleratorR] = data_TX_buffer[AcceleratorL];
+		//data_TX_buffer[AcceleratorR] = data_TX_buffer[AcceleratorL];
 	//	TorqV_LED(data_TX_buffer[AcceleratorL],data_TX_buffer[AcceleratorR]);	//Torque Vectoring LED
 		data_TX_buffer[SteeringAngle] = ADC_buf[2];
 		data_TX_buffer[BrakeAngle] = ADC_buf[3];			//set brake angle to value read from ADC3 (brake pot)
