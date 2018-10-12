@@ -240,17 +240,18 @@ int main(void) {
 	GPIOB_PIDR |= 1 << 26;
 	GPIOA_PCOR |= 1 << 27;
 	GPIOB_PCOR |= 1 << 26;
+	GPIOB_PDDR |= 1<<PTE7;//APPS/BSE fault led
 	while (1) {
 		Start = (GPIOB_PDIR & (1<<15)) >> 15;
-		//TODO: @Jeffery @Lucas implement fault checking on vehicle
+		//TODO: @Lucas implement fault checking on vehicle
 		//if an APPS or BSE fault occurs, set the accelerator signal to 0 to prevent throttle output.
-//		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
-//			data_TX_buffer[AcceleratorL] = 0;
-//			data_TX_buffer[AcceleratorR] = 0;
-//			data_TX_buffer[FrontFault] = 0xFF;
-//			GPIOB_PCOR |= 1 << PTE7;
-//		}
-//		else {
+		if(APPS_Fault(ADC_buf[0],ADC_buf[1]) || BSE_Fault(ADC_buf[3],ADC_buf[0],ADC_buf[1])){
+			data_TX_buffer[AcceleratorL] = 0;
+			data_TX_buffer[AcceleratorR] = 0;
+			data_TX_buffer[FrontFault] = 0xFF;
+			GPIOB_PCOR |= 1 << PTE7;
+		}
+		else {
 		GPIOB_PSOR |= 1 << PTE7;
 		/*TorqueVectoringBias params*/
 		/*Resting -> Depressed
@@ -268,7 +269,7 @@ int main(void) {
 		float A = .6/(72); // slope of curve for left  turn torque vectoring
 		float C = .6/(77); // slope of curve for right turn torque vectoring
 		if (ADC_buf[0] >= 127){
-					accval = 255;
+			accval = 255;
 		}
 		else if(ADC_buf[0] > 50) {
 			accval = 2*ADC_buf[0];
@@ -319,6 +320,7 @@ int main(void) {
 		telemetry_TX_buffer[TireTemp_R2] = ADC_buf[8];
 		telemetry_TX_buffer[TireTemp_R3] = ADC_buf[9];
 	}
+}
 }
 
 #endif
